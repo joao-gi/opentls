@@ -1,5 +1,7 @@
 """Test BIO API"""
 import ctypes
+import os
+import tempfile
 import unittest
 
 from tls.api import bio
@@ -34,7 +36,7 @@ class BioWrite:
         self.assertFalse(bio.BIO_eof(self.bio))
         self.assertEqual(written, len(self.data))
         bio.BIO_reset(self.bio)
-        self.assertTrue(bio.BIO_eof(self.bio))
+        self.assertEqual(bio.BIO_tell(self.bio), 0)
 
     def test_tell(self):
         start = bio.BIO_tell(self.bio)
@@ -52,6 +54,7 @@ class BioWrite:
         self.assertEqual(stop, 1)
 
     def test_eof(self):
+        bio.BIO_read(self.bio, bytes(1), 1)
         self.assertTrue(bio.BIO_eof(self.bio))
         written = bio.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
@@ -67,11 +70,14 @@ class BioRead:
         self.assertEqual(buf, self.data)
 
     def test_read_one(self):
+        count = 0
         buf = bytes(1)
-        for c in self.data:
-            read = bio.BIO_read(self.bio, buf, len(buf))
+        read = bio.BIO_read(self.bio, buf, len(buf))
+        while read > 0:
             self.assertEqual(read, len(buf))
-            self.assertEqual(buf, bytes([c]))
+            self.assertEqual(ord(buf), self.data[count])
+            read = bio.BIO_read(self.bio, buf, len(buf))
+            count += 1
         self.assertTrue(bio.BIO_eof(self.bio))
 
     def test_read_long(self):
@@ -106,20 +112,18 @@ class BioRead:
         bio.BIO_seek(self.bio, 1)
         buf = bytes(len(self.data))
         read = bio.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(buf))
-        self.assertEqual(buf, self.data[1:])
+        self.assertEqual(read, len(buf)-1)
+        self.assertEqual(buf[:read], self.data[1:1+read])
 
     def test_eof(self):
-        buf = bytes(1)
-        for c in self.data:
-            self.assertFalse(bio.BIO_eof(self.bio))
-            read = bio.BIO_read(self.bio, buf, 1)
-            self.assertEqual(read, len(buf))
-            self.assertEqual(buf, bytes([c]))
+        buf = bytes(len(self.data)+1)
+        read = bio.BIO_read(self.bio, buf, len(buf))
+        self.assertEqual(read, len(self.data))
         self.assertTrue(bio.BIO_eof(self.bio))
 
 
-class TestBioNew(unittest.TestCase):
+# Mem buffers
+class TestBioMem(unittest.TestCase):
 
     def test_bio_new_mem(self):
         try:
@@ -170,8 +174,60 @@ class TestBioMemRead(unittest.TestCase, BioRead):
     def setUp(self):
         self.bio = bio.BIO_new_mem_buf(self.data, -1)
 
-    def testDown(self):
+    def tearDown(self):
         bio.BIO_free(self.bio)
 
     test_tell = unittest.expectedFailure(BioRead.test_tell)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
+
+
+# Files
+class TestBioFile(unittest.TestCase):
+    pass
+
+
+class TestBioFileWrite(unittest.TestCase, BioWrite):
+
+    data = b"HELLO WORLD"
+
+    @classmethod
+    def setUpClass(cls):
+        fd, cls.name = tempfile.mkstemp()
+        os.close(fd)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(cls.name)
+
+    def setUp(self):
+        name = self.name.encode()
+        self.bio = bio.BIO_new_file(name, b'w+')
+
+    def tearDown(self):
+        bio.BIO_free(self.bio)
+
+
+class TestBioFileread(unittest.TestCase, BioRead):
+
+    data = b"HELLO WORLD"
+
+    @classmethod
+    def setUpClass(cls):
+        fd, cls.name = tempfile.mkstemp()
+        os.close(fd)
+        with open(cls.name, 'wb') as dest:
+            dest.write(cls.data)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(cls.name)
+
+    def setUp(self):
+        name = self.name.encode()
+        self.bio = bio.BIO_new_file(name, b'r')
+
+    def tearDown(self):
+        bio.BIO_free(self.bio)
+
+    test_pending = unittest.expectedFailure(BioRead.test_pending)
+    test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)
