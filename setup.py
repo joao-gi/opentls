@@ -24,7 +24,7 @@ setup(
     author='Aaron Iles',
     author_email='aaron.iles@gmail.com',
     url='https://github.com/aliles/opentls',
-    description='Python API for OpenSSL using ctypes',
+    description='Cryptographic APIs for Python using OpenSSL',
     long_description=open('README.rst').read(),
     license='ASL',
     classifiers=[
