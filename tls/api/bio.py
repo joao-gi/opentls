@@ -10,12 +10,9 @@ from ctypes import c_size_t
 from ctypes import c_void_p
 
 from tls.api import build_error_func, prototype_type, prototype_func
+from tls.api.exceptions import BIOError
 import tls.api.constant
 
-
-# Error checking functions
-class BIOError(IOError):
-    "An IO error occured with BIO"
 
 build_bio_error = partial(build_error_func, template='BIO error', category=BIOError)
 
