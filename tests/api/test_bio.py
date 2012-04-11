@@ -4,7 +4,18 @@ import os
 import tempfile
 import unittest
 
-from tls.api import bio
+from tls.api import bio, version
+
+
+def expect_fail_before(major, minor, fix=None, patch=None):
+    "Decorate function with expected failure for early OpenSSL versions"
+    def expect_failure(func):
+        return unittest.expectedFailure(func)
+    def noop(func):
+        return func
+    if version() < (major, minor, fix, patch):
+        return expect_failure
+    return noop
 
 
 class BioWrite:
@@ -53,13 +64,14 @@ class BioWrite:
         stop = bio.BIO_tell(self.bio)
         self.assertEqual(stop, 1)
 
+    @expect_fail_before(1, 0)
     def test_eof(self):
         bio.BIO_read(self.bio, bytes(1), 1)
         self.assertTrue(bio.BIO_eof(self.bio))
         written = bio.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
         self.assertTrue(bio.BIO_flush(self.bio))
-        self.assertFalse(bio.BIO_eof(self.bio))
+        self.assertTrue(bio.BIO_eof(self.bio))
 
 
 class BioRead:

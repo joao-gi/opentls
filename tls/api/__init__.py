@@ -1,4 +1,5 @@
 """ctypes wrapper for openssl"""
+from collections import namedtuple
 import ctypes
 import ctypes.util
 import inspect
@@ -70,3 +71,25 @@ def build_error_func(passes=lambda r, a: bool(r), template='{0}', category=Excep
     return errcheck
 
 prototype_func('SSL_library_init', ctypes.c_int, None)
+prototype_func('SSLeay', ctypes.c_int, None)
+prototype_func('SSLeay_version', ctypes.c_int, None)
+
+SSLVersion = namedtuple('SSLVersion', 'major minor fix patch status')
+
+
+def version():
+    "Return SSL version information"
+    version = SSLeay()
+    major = version >> (7 * 4) & 0xFF
+    minor = version >> (5 * 4) & 0xFF
+    fix = version >> (3 * 4) & 0xFF
+    patch = version >> (1 * 4) & 0xFF
+    patch = None if not patch else chr(96 + patch)
+    status = version & 0x0F
+    if status == 0x0F:
+        status = 'release'
+    elif status == 0x00:
+        status = 'dev'
+    else:
+        status = 'beta{}'.format(status)
+    return SSLVersion(major, minor, fix, patch, status)
