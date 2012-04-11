@@ -29,7 +29,7 @@ class BioWrite:
     def test_ctrl_wpending(self):
         written = bio.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(bio.BIO_ctrl_wpending(self.bio), 0)
-        self.assertEqual(written, len(self.data))    
+        self.assertEqual(written, len(self.data))
 
     def test_reset(self):
         written = bio.BIO_write(self.bio, self.data, len(self.data))
@@ -81,14 +81,14 @@ class BioRead:
         self.assertTrue(bio.BIO_eof(self.bio))
 
     def test_read_long(self):
-        buf = bytes(2*len(self.data))
+        buf = bytes(2 * len(self.data))
         size = bio.BIO_read(self.bio, buf, len(buf))
         self.assertEqual(size, len(self.data))
 
     def test_gets(self):
         buf = bytes(len(self.data))
         got = bio.BIO_gets(self.bio, buf, len(buf))
-        self.assertEqual(got+1, len(buf))
+        self.assertEqual(got + 1, len(buf))
         self.assertEqual(buf, self.data[:-1] + b'\x00')
 
     def test_pending(self):
@@ -112,11 +112,11 @@ class BioRead:
         bio.BIO_seek(self.bio, 1)
         buf = bytes(len(self.data))
         read = bio.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(buf)-1)
-        self.assertEqual(buf[:read], self.data[1:1+read])
+        self.assertEqual(read, len(buf) - 1)
+        self.assertEqual(buf[:read], self.data[1:1 + read])
 
     def test_eof(self):
-        buf = bytes(len(self.data)+1)
+        buf = bytes(len(self.data) + 1)
         read = bio.BIO_read(self.bio, buf, len(buf))
         self.assertEqual(read, len(self.data))
         self.assertTrue(bio.BIO_eof(self.bio))

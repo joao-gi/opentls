@@ -5,7 +5,7 @@ from tls.api import error
 
 
 class TestErrorFetch(unittest.TestCase):
-    
+
     first = 0x2006D080
     last = 0x140943E8
 
@@ -57,7 +57,7 @@ class TestErrorParse(unittest.TestCase):
         stop = len(self.text) - 1
         buf = bytes(stop)
         error.ERR_error_string_n(self.code, buf, stop)
-        self.assertEqual(buf, self.text[:stop-1] + b'\x00')
+        self.assertEqual(buf, self.text[:stop - 1] + b'\x00')
 
     def test_lib_error_string(self):
         value = error.ERR_lib_error_string(self.code)
@@ -92,7 +92,7 @@ class TestErrorParse(unittest.TestCase):
         func = 1
         reason = 1
         code = error.ERR_pack(lib, func, reason)
-        array= (error.ERR_STRING_DATA * 2)()
+        array = (error.ERR_STRING_DATA * 2)()
         array[0].error = code
         array[0].string = b"MY ERROR"
         array[0].error = 0

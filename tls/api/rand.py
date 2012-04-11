@@ -10,7 +10,9 @@ from ctypes import c_size_t
 from ctypes import c_ubyte
 from ctypes import c_void_p
 
-from tls.api import build_error_func, prototype_type, prototype_func
+from tls.api import build_error_func
+from tls.api import prototype_func
+
 
 # error checking functions
 class RANDError(Exception):

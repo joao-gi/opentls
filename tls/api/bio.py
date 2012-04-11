@@ -9,11 +9,14 @@ from ctypes import c_long
 from ctypes import c_size_t
 from ctypes import c_void_p
 
-from tls.api import build_error_func, prototype_type, prototype_func
+from tls.api import build_error_func
+from tls.api import prototype_type
+from tls.api import prototype_func
 from tls.api.exceptions import BIOError
 import tls.api.constant
 
 
+# Error checking functions
 build_bio_error = partial(build_error_func, template='BIO error', category=BIOError)
 
 err_null = build_bio_error(template='Unable to create new BIO object')

@@ -39,8 +39,8 @@ def cumulative_average(average=0, samples=0):
         cma = cma + (new - cma) / cnt
 
 
-class RandTests:    
-    
+class RandTests:
+
     def test_range(self):
         """Test extremes of valid range for random values has been generated.
 
@@ -93,7 +93,7 @@ class RandTests:
         samples = int(1e3)
         counts = Counter()
         for value in self.data[:samples]:
-            for x in range(value+1):
+            for x in range(value + 1):
                 counts[x] += 1
         empirical = [counts[i] / samples for i in range(256)]
         theoretical = [1.0 - (x / 255) for x in range(256)]
