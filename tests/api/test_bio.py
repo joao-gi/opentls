@@ -58,6 +58,7 @@ class BioWrite:
         self.assertTrue(bio.BIO_eof(self.bio))
         written = bio.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
+        self.assertTrue(bio.BIO_flush(self.bio))
         self.assertFalse(bio.BIO_eof(self.bio))
 
 
