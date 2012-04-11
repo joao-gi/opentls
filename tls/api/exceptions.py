@@ -10,5 +10,9 @@ class BIOError(IOError, CryptError):
     "An IO error occured with BIO"
 
 
+class UnregisteredError(ValueError, CryptError):
+    "The error code is unknown"
+
+
 class TLSError(socket.error, CryptError):
     "A network error occured with TLS"

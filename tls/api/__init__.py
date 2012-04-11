@@ -4,7 +4,7 @@ import ctypes.util
 import inspect
 import warnings
 
-__all__ = ['bio', 'constant', 'rand']
+__all__ = ['bio', 'constant', 'error', 'rand']
 
 libname = ctypes.util.find_library('ssl')
 openssl = ctypes.CDLL(libname)
@@ -48,7 +48,8 @@ def prototype_func(symbol, restype, argtypes, errcheck=None):
         message = template.format(symbol, libname)
         warnings.warn_explicit(message, ImportWarning, trace.filename, trace.lineno)
     else:
-        function.argtypes = argtypes
+        if argtypes is not Ellipsis:
+            function.argtypes = argtypes
         function.restype = restype
         if errcheck:
             function.errcheck = errcheck
