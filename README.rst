@@ -20,7 +20,7 @@ using OpenSSL to implement cryptographic APIs.
 
 Status
 ------
-There are no usable modules implemented as yet.
+|build_status| There are no usable modules implemented as yet.
 
 Currently some parts of OpenSSL's APIs have been wrapped
 using `ctypes <http://docs.python.org/dev/library/ctypes.html>`_.
@@ -51,6 +51,17 @@ a replacement module
 that can be monkey patched
 in place of the current implementation.
 
+SNI Support
+^^^^^^^^^^^
+`Server name identification <http://en.wikipedia.org/wiki/Server_Name_Indication>`_
+(SNI) is an extension to TLS
+that adds support for
+`virtual hosting <http://en.wikipedia.org/wiki/Virtual_hosting#Name-based>`_
+to TLS enabled servers.
+The current SSL module in the standard library
+does not support SNI.
+I'm interested in determing how support is enabled.
+
 SSL Session Resumption
 ^^^^^^^^^^^^^^^^^^^^^^
 Currently there is no way to support 
@@ -79,6 +90,17 @@ know and understand when and how to:
 I have thought about implementing a simple API
 that manages these automatically for the developer.
 
+Buffered IO Implementations in Python
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OpenSSL has an IO abstraction standard
+known as buffered io (BIO).
+I'm am interesting in determining
+if the API could be exposed to enable
+new BIO methods to be implemented in Python.
+A possible use case for this is
+to support SSL over new transport layers,
+such as `SOCKS <http://en.wikipedia.org/wiki/SOCKS>`_ proxies.
+
 Documenation
 ------------
 There is none.
@@ -87,3 +109,6 @@ A `Sphinx <http://sphinx.pocoo.org/>`_ project skeleton
 has been created for use.
 But as yet there are no usable modules
 that are ready to be documented.
+
+.. |build_status| image:: https://secure.travis-ci.org/aliles/opentls.png?branch=master
+   :target: http://travis-ci.org/#!/aliles/opentls
