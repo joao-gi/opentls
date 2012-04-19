@@ -20,9 +20,14 @@ using OpenSSL to implement cryptographic APIs.
 
 Status
 ------
-|build_status| There are no usable modules implemented as yet.
+|build_status| One usable module has been implemented.
 
-Currently some parts of OpenSSL's APIs have been wrapped
+``tls.random`` is an implementation
+of Python's random module
+using OpenSSL's pseudo-random number API.
+It is suitable for cryptogrpahic use.
+
+Additionally, some parts of OpenSSL's APIs have been wrapped
 using `ctypes <http://docs.python.org/dev/library/ctypes.html>`_.
 This wrapping is limited to:
 
@@ -107,8 +112,8 @@ There is none.
 
 A `Sphinx <http://sphinx.pocoo.org/>`_ project skeleton
 has been created for use.
-But as yet there are no usable modules
-that are ready to be documented.
+But as yet there are no documentation
+has been written.
 
 .. |build_status| image:: https://secure.travis-ci.org/aliles/opentls.png?branch=master
    :target: http://travis-ci.org/#!/aliles/opentls
