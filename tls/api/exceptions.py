@@ -10,9 +10,17 @@ class BIOError(IOError, CryptError):
     "An IO error occured with BIO"
 
 
-class UnregisteredError(ValueError, CryptError):
-    "The error code is unknown"
+class DigestError(ValueError, CryptError):
+    "An error occured in digest function"
 
 
+class RANDError(EnvironmentError, CryptError):
+    "An error with random numbers occured"
+
+    
 class TLSError(socket.error, CryptError):
     "A network error occured with TLS"
+
+
+class UnregisteredError(ValueError, CryptError):
+    "The error code is unknown"

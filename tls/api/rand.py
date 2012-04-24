@@ -12,12 +12,10 @@ from ctypes import c_void_p
 
 from tls.api import build_error_func
 from tls.api import prototype_func
+from tls.api.exceptions import RANDError
 
 
 # error checking functions
-class RANDError(Exception):
-    "An error with random numbers occured"
-
 build_rand_error = partial(build_error_func, template='RAND error', category=RANDError)
 
 err_seeded = build_rand_error(passes=lambda r, a: r >= 0, template='Insufficiently seeded PRNG')
