@@ -108,9 +108,13 @@ class TestEVP(unittest.TestCase):
     def test_md_null_func(self):
         self._test_md_func('md_null', 'undef')
 
-    @expect_fail_system('Darwin')
+    @unittest.skip('unpredictable support')
     def test_dsa_func(self):
-        self._test_md_func('dsa')
+        self._test_md_func('dsa_sha', 'DSS')
+
+    @unittest.skip('unpredictable support')
+    def test_dsa_func(self):
+        self._test_md_func('dsa_sha1', 'DSS1')
 
     def test_dss_func(self):
         self._test_md_func('dss')
@@ -121,6 +125,7 @@ class TestEVP(unittest.TestCase):
     def test_ecdsa_func(self):
         self._test_md_func('ecdsa')
 
+    @unittest.skip('unpredictable support')
     def test_md2_func(self):
         self._test_md_func('md2')
 
@@ -130,6 +135,7 @@ class TestEVP(unittest.TestCase):
     def test_md5_func(self):
         self._test_md_func('md5')
 
+    @unittest.skip('unpredictable support')
     def test_mdc2_func(self):
         self._test_md_func('mdc2')
 
@@ -171,7 +177,7 @@ class TestEVP(unittest.TestCase):
     def test_ecdsa_name(self):
         self._test_md_name('ecdsa-with-SHA1', 'ECDSA')
 
-    @expect_fail_system('Darwin')
+    @unittest.skip('unpredictable support')
     def test_md2_name(self):
         self._test_md_name('MD2')
 
@@ -181,6 +187,7 @@ class TestEVP(unittest.TestCase):
     def test_md5_name(self):
         self._test_md_name('MD5')
 
+    @unittest.skip('unpredictable support')
     def test_mdc2_name(self):
         self._test_md_name('MDC2')
 
@@ -210,7 +217,7 @@ class TestEVP(unittest.TestCase):
         md = digest.EVP_get_digestbynid(nid)
         self.assertTrue(md)
 
-    @expect_fail_system('Darwin')
+    @unittest.skip('unpredictable support')
     def test_md2_nid(self):
         self._test_md_nid(nid.MD2, b'MD2')
 
@@ -220,6 +227,7 @@ class TestEVP(unittest.TestCase):
     def test_md5_nid(self):
         self._test_md_nid(nid.MD5, b'MD5')
 
+    @unittest.skip('unpredictable support')
     def test_mdc2_nid(self):
         self._test_md_nid(nid.MDC2, b'MDC2')
 
