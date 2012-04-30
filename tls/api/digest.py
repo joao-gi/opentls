@@ -14,8 +14,9 @@ from ctypes import c_void_p
 from tls.api import build_error_func
 from tls.api import prototype_type
 from tls.api import prototype_func
-from tls.api.exceptions import DigestError
 from tls.api.constant import EVP_MAX_MD_SIZE
+from tls.api.exceptions import DigestError
+from tls.api.objects import OBJ_nid2sn
 
 
 # error checking functions
@@ -58,13 +59,6 @@ class c_evp_md_ctx(Structure):
 
 c_evp_md_ctx_p = POINTER(c_evp_md_ctx)
 
-# Init
-prototype_func('OpenSSL_add_all_algorithms', None, None)
-prototype_func('OpenSSL_add_all_ciphers', None, None)
-prototype_func('OpenSSL_add_all_digests', None, None)
-
-prototype_func('EVP_cleanup', None, None)
-
 # Digest functions
 prototype_func('EVP_MD_CTX_init', None, [c_evp_md_ctx_p])
 prototype_func('EVP_MD_CTX_create', c_evp_md_ctx_p, None)
@@ -81,6 +75,8 @@ prototype_func('EVP_MD_CTX_destroy', None, [c_evp_md_ctx_p])
 
 prototype_func('EVP_DigestInit', c_int, [c_evp_md_ctx_p, c_evp_md_p])
 prototype_func('EVP_DigestFinal', c_int, [c_evp_md_ctx_p, POINTER(c_ubyte), POINTER(c_uint)])
+
+prototype_func('EVP_get_digestbyname', c_evp_md_p, [c_char_p], errcheck=err_null)
 
 prototype_func('EVP_md_null', c_evp_md_p, None)
 prototype_func('EVP_md2', c_evp_md_p, None)
@@ -99,9 +95,6 @@ prototype_func('EVP_mdc2', c_evp_md_p, None)
 prototype_func('EVP_ripemd160', c_evp_md_p, None)
 prototype_func('EVP_dsa_sha', c_evp_md_p, None)
 prototype_func('EVP_dsa_sha1', c_evp_md_p, None)
-
-prototype_func('EVP_get_digestbyname', c_evp_md_p, [c_char_p], errcheck=err_null)
-prototype_func('OBJ_nid2sn', c_char_p, [c_int])
 
 # message digest macros
 def EVP_MD_type(md):

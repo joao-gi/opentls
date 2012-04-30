@@ -5,7 +5,7 @@ import ctypes.util
 import inspect
 import warnings
 
-__all__ = ['bio', 'constant', 'digest', 'error', 'nid', 'rand']
+__all__ = ['bio', 'constant', 'digest', 'error', 'nid', 'objects', 'rand']
 
 libname = ctypes.util.find_library('ssl')
 openssl = ctypes.CDLL(libname)
@@ -70,6 +70,13 @@ def build_error_func(passes=lambda r, a: bool(r), template='{0}', category=Excep
         return result
     return errcheck
 
+# init
+prototype_func('OpenSSL_add_all_algorithms', None, None)
+prototype_func('OpenSSL_add_all_ciphers', None, None)
+prototype_func('OpenSSL_add_all_digests', None, None)
+prototype_func('EVP_cleanup', None, None)
+
+# version
 prototype_func('SSL_library_init', ctypes.c_int, None)
 prototype_func('SSLeay', ctypes.c_int, None)
 prototype_func('SSLeay_version', ctypes.c_int, None)

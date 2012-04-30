@@ -14,6 +14,10 @@ class DigestError(ValueError, CryptError):
     "An error occured in digest function"
 
 
+class ASNError(ValueError, CryptError):
+    "An error occured with ASN.1 object"
+
+
 class RANDError(EnvironmentError, CryptError):
     "An error with random numbers occured"
 

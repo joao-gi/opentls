@@ -5,6 +5,7 @@ import platform
 import unittest
 
 from tls.api import digest, nid
+from tls.api import OpenSSL_add_all_digests, EVP_cleanup
 
 def expect_fail_system(system):
     "Decorate function with expected failure for OpenSSL on platform"
@@ -120,11 +121,11 @@ class TestEVP(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        digest.OpenSSL_add_all_digests()
+        OpenSSL_add_all_digests()
 
     @classmethod
     def tearDownClass(cls):
-        digest.EVP_cleanup()
+        EVP_cleanup()
 
     def test_init(self):
         ctx = digest.c_evp_md_ctx()
