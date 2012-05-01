@@ -20,12 +20,16 @@ using OpenSSL to implement cryptographic APIs.
 
 Status
 ------
-|build_status| One usable module has been implemented.
+|build_status| Two usable modules have been implemented.
 
 ``tls.random`` is an implementation
 of Python's random module
 using OpenSSL's pseudo-random number API.
 It is suitable for cryptogrpahic use.
+
+``tls.hashlib`` is an implementation
+of Python's hashlib module
+using OpenSSL's cryptographically secure hash functions.
 
 Additionally, some parts of OpenSSL's APIs have been wrapped
 using `ctypes <http://docs.python.org/dev/library/ctypes.html>`_.
@@ -33,6 +37,7 @@ This wrapping is limited to:
 
 * buffered io (memory and file methods)
 * random data (pseduo and cryptographically strong)
+* message digests (cryptographically secure hash functions)
 
 The low level OpenSSL APIs are in the `tls.api` package.
 
