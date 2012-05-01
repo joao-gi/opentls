@@ -1,5 +1,6 @@
 """ctypes wrapper for openssl"""
 from collections import namedtuple
+import atexit
 import ctypes
 import ctypes.util
 import inspect
@@ -100,3 +101,8 @@ def version():
     else:
         status = 'beta{}'.format(status)
     return SSLVersion(major, minor, fix, patch, status)
+
+# initialise openssl, schedule cleanup at exit
+OpenSSL_add_all_digests()
+OpenSSL_add_all_ciphers()
+atexit.register(EVP_cleanup)

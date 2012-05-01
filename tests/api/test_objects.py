@@ -2,7 +2,6 @@
 import unittest
 
 from tls.api import objects, nid
-from tls.api import OpenSSL_add_all_digests, EVP_cleanup
 from tls.api.constant import OBJ_NAME_TYPE_MD_METH
 
 
@@ -42,14 +41,6 @@ class TestNameTo(unittest.TestCase):
 
 class TestDoAll(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        OpenSSL_add_all_digests()
-
-    @classmethod
-    def tearDownClass(cls):
-        EVP_cleanup()
-
     def test_do_all(self):
         names = set()
         def add_name(a, b):
@@ -57,7 +48,6 @@ class TestDoAll(unittest.TestCase):
         callback = objects.c_do_all_callback(add_name)
         objects.OBJ_NAME_do_all(OBJ_NAME_TYPE_MD_METH, callback, None)
         self.assertGreater(len(names), 0)
-
 
     def test_do_all_sorted(self):
         names = set()
