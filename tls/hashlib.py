@@ -102,6 +102,9 @@ class MessageDigest:
         if data:
             self.update(data)
 
+    def __del__(self):
+        tls.api.digest.EVP_MD_CTX_cleanup(self._pointer)
+
     @property
     def name(self):
         nid = tls.api.digest.EVP_MD_CTX_type(self._pointer)
@@ -143,6 +146,7 @@ class MessageDigest:
         tls.api.digest.EVP_DigestInit_ex(pointer, self._md, None)
         tls.api.digest.EVP_MD_CTX_copy_ex(pointer, self._pointer)
         tls.api.digest.EVP_DigestFinal_ex(pointer, buff, ctypes.byref(size))
+        tls.api.digest.EVP_MD_CTX_cleanup(pointer)
         return buff[:size.value]
 
 
