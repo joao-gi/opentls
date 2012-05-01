@@ -4,7 +4,7 @@ deps:
 	pip install -r requirements.txt
 
 lint:
-	flake8 --exit-zero tls tests
+	flake8 --exit-zero tls/*py
 
 dist:
 	python setup.py sdist
