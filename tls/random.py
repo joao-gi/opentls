@@ -36,7 +36,6 @@ cryptogrpahic purposes.
 from random import Random as _Random
 import ctypes
 import math
-import numbers
 import os
 
 from tls.api import rand as _api
@@ -128,8 +127,8 @@ class Random(_Random):
         bytes = math.ceil(num.bit_length() / 8)
         data = (ctypes.c_ubyte * bytes)()
         for pos in range(bytes):
-            data[pos] = state & 0xFF
-            state = state >> 8
+            data[pos] = num & 0xFF
+            num = num >> 8
         return data
 
     def _notimplemented(self, *args, **kwds):
