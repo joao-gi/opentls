@@ -84,6 +84,8 @@ prototype_func('BIO_write_filename', c_int, [c_bio_p, c_char_p], errcheck=err_ze
 prototype_func('BIO_append_filename', c_int, [c_bio_p, c_char_p], errcheck=err_zero)
 prototype_func('BIO_rw_filename', c_int, [c_bio_p, c_char_p], errcheck=err_zero)
 
+# BIO null
+prototype_func('BIO_s_null', c_method_p, None)
 
 # BIO macros
 def _bio_ctrl_macro(symbol, errcheck=lambda r, f, a: r, words=1):
