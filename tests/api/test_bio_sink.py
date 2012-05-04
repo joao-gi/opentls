@@ -177,7 +177,7 @@ class TestBioMemWrite(unittest.TestCase, BioWrite):
 
     test_tell = unittest.expectedFailure(BioRead.test_tell)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
-    test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
+    test_eof = unittest.expectedFailure(BioWrite.test_eof)
 
 
 class TestBioMemRead(unittest.TestCase, BioRead):
