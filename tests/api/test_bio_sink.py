@@ -1,4 +1,4 @@
-"""Test BIO API"""
+"""Test BIO Sinks"""
 import ctypes
 import os
 import tempfile
@@ -64,7 +64,6 @@ class BioWrite:
         stop = bio.BIO_tell(self.bio)
         self.assertEqual(stop, 1)
 
-    @expect_fail_before(1, 0, 0)
     def test_eof(self):
         bio.BIO_read(self.bio, bytes(1), 1)
         self.assertTrue(bio.BIO_eof(self.bio))
@@ -178,7 +177,7 @@ class TestBioMemWrite(unittest.TestCase, BioWrite):
 
     test_tell = unittest.expectedFailure(BioRead.test_tell)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
-    test_eof = unittest.expectedFailure(BioRead.test_eof)
+    test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
 
 
 class TestBioMemRead(unittest.TestCase, BioRead):
@@ -220,8 +219,10 @@ class TestBioFileWrite(unittest.TestCase, BioWrite):
     def tearDown(self):
         bio.BIO_free(self.bio)
 
+    test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
 
-class TestBioFileread(unittest.TestCase, BioRead):
+
+class TestBioFileRead(unittest.TestCase, BioRead):
 
     data = b"HELLO WORLD"
 
@@ -245,3 +246,34 @@ class TestBioFileread(unittest.TestCase, BioRead):
 
     test_pending = unittest.expectedFailure(BioRead.test_pending)
     test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)
+
+
+# Null buffers
+class TestBioNullWrite(unittest.TestCase, BioWrite):
+
+    data = b"HELLO WORLD"
+
+    def setUp(self):
+        self.bio = bio.BIO_new(bio.BIO_s_null())
+
+    def tearDown(self):
+        bio.BIO_free(self.bio)
+
+    test_reset = unittest.expectedFailure(BioWrite.test_reset)
+    test_seek = unittest.expectedFailure(BioWrite.test_seek)
+    test_tell = unittest.expectedFailure(BioWrite.test_tell)
+
+
+class TestBioNullRead(unittest.TestCase, BioRead):
+
+    data = b""
+
+    def setUp(self):
+        self.bio = bio.BIO_new(bio.BIO_s_null())
+
+    def tearDown(self):
+        bio.BIO_free(self.bio)
+
+    test_gets = unittest.expectedFailure(BioRead.test_gets)
+    test_seek = unittest.expectedFailure(BioRead.test_seek)
+    test_tell = unittest.expectedFailure(BioRead.test_tell)
