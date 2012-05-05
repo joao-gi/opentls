@@ -6,6 +6,7 @@ deps:
 	            -r requirements/production.txt
 
 lint:
+	flake8 --exit-zero tls/api/*py | grep -v -E '(E501|W802)'
 	flake8 --exit-zero tls/*py
 
 dist:

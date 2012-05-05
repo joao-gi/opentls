@@ -2,7 +2,7 @@
 
 # NID_*
 undef = 0
-DSS  = 66
+DSS = 66
 DSS1 = 116
 ECDSA = 416
 MD2 = 3

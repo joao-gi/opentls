@@ -98,6 +98,7 @@ prototype_func('BIO_f_zlib', c_method_p, None)
 # BIO base64
 prototype_func('BIO_f_base64', c_method_p, None)
 
+
 # BIO macros
 def _bio_ctrl_macro(symbol, errcheck=lambda r, f, a: r, words=1):
     """Create function definition for BIO_ctrl calling macro."""

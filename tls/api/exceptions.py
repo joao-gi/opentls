@@ -21,7 +21,7 @@ class ASNError(ValueError, CryptError):
 class RANDError(EnvironmentError, CryptError):
     "An error with random numbers occured"
 
-    
+
 class TLSError(socket.error, CryptError):
     "A network error occured with TLS"
 

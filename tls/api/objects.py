@@ -9,7 +9,6 @@ from ctypes import c_int
 from ctypes import c_void_p
 
 from tls.api import build_error_func
-from tls.api import prototype_type
 from tls.api import prototype_func
 from tls.api.nid import undef
 from tls.api.exceptions import ASNError
@@ -20,7 +19,8 @@ build_object_error = partial(build_error_func, template='ASN.1 Object Error', ca
 
 error_null = build_object_error(template='Unknown ASN.1 id')
 
-error_undef = build_object_error(passes= lambda r, a: r != undef, template='Unknown ASN.1 name')
+error_undef = build_object_error(passes=lambda r, a: r != undef, template='Unknown ASN.1 name')
+
 
 # asn.1 object types
 class c_obj_name(Structure):

@@ -29,6 +29,7 @@ err_null = build_digest_error()
 # Digest C types
 prototype_type('c_engine')
 
+
 class c_evp_md(Structure):
     _fields_ = (
         ('type', c_int),
@@ -48,6 +49,7 @@ class c_evp_md(Structure):
     )
 
 c_evp_md_p = POINTER(c_evp_md)
+
 
 class c_evp_md_ctx(Structure):
     _fields_ = (
@@ -96,31 +98,40 @@ prototype_func('EVP_ripemd160', c_evp_md_p, None)
 prototype_func('EVP_dsa_sha', c_evp_md_p, None)
 prototype_func('EVP_dsa_sha1', c_evp_md_p, None)
 
+
 # message digest macros
 def EVP_MD_type(md):
     return md.contents.type
 
+
 def EVP_MD_pkey_type(md):
     return md.contents.pkey_type
+
 
 def EVP_MD_size(md):
     return md.contents.md_size
 
+
 def EVP_MD_block_size(md):
     return md.contents.block_size
+
 
 # digest context macros
 def EVP_MD_CTX_md(ctx):
     return ctx.contents.digest
 
+
 def EVP_MD_CTX_size(ctx):
     return EVP_MD_size(EVP_MD_CTX_md(ctx))
+
 
 def EVP_MD_CTX_block_size(ctx):
     return EVP_MD_block_size(EVP_MD_CTX_md(ctx))
 
+
 def EVP_MD_CTX_type(ctx):
     return EVP_MD_type(EVP_MD_CTX_md(ctx))
+
 
 # get macros
 def EVP_get_digestbynid(nid):

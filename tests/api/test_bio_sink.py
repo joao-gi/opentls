@@ -256,7 +256,7 @@ class TestBioNullWrite(BioWrite, unittest.TestCase):
 class TestBioNullRead(BioRead, unittest.TestCase):
 
     data = b""
-    
+
     method = bio.BIO_s_null()
 
     test_gets = unittest.expectedFailure(BioRead.test_gets)
