@@ -6,14 +6,14 @@ IT HAS NOT BE BEEN REVIEWED BY ANYBODY WHO IS.**
 
 Purpose
 -------
-Provide an area for with cryptogrpahic APIs in Python,
+Provide an area for with cryptographic APIs in Python,
 implemented using `OpenSSL <http://openssl.org/>`_.
 
-Motiviation
+Motivation
 -----------
 Doing encryption in *correctly* in Python is hard.
-Inspite of `The Zen of Python <http://www.python.org/dev/peps/pep-0020/>`_
-the is often no obivous way to do something.
+In spite of `The Zen of Python <http://www.python.org/dev/peps/pep-0020/>`_
+the is often no obvious way to do something.
 This repository is a place
 to both experiment and learn about
 using OpenSSL to implement cryptographic APIs.
@@ -25,7 +25,7 @@ Status
 ``tls.random`` is an implementation
 of Python's random module
 using OpenSSL's pseudo-random number API.
-It is suitable for cryptogrpahic use.
+It is suitable for cryptographic use.
 
 ``tls.hashlib`` is an implementation
 of Python's hashlib module
@@ -36,7 +36,7 @@ using `ctypes <http://docs.python.org/dev/library/ctypes.html>`_.
 This wrapping is limited to:
 
 * buffered io (memory and file methods)
-* random data (pseduo and cryptographically strong)
+* random data (pseudo and cryptographically strong)
 * message digests (cryptographically secure hash functions)
 
 The low level OpenSSL APIs are in the `tls.api` package.
@@ -70,7 +70,7 @@ that adds support for
 to TLS enabled servers.
 The current SSL module in the standard library
 does not support SNI.
-I'm interested in determing how support is enabled.
+I'm interested in determining how support is enabled.
 
 SSL Session Resumption
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -80,13 +80,13 @@ or across multiple hosts.
 I am not even sure if session resumption is enabled
 for connections to the same process.
 
-I have thought about implemeting a plugin API
+I have thought about implementing a plugin API
 for storing SSL session state.
 `Redis <http://redis.io/>`_ is
 an obvious choice for an initial implementation.
 
-Symetric Encryption
-^^^^^^^^^^^^^^^^^^^
+Symmetric Encryption
+^^^^^^^^^^^^^^^^^^^^
 I have not been able to find a simple API
 that handles the complexities of encrypting a file.
 It is usually necessary for the developer to
@@ -111,8 +111,8 @@ A possible use case for this is
 to support SSL over new transport layers,
 such as `SOCKS <http://en.wikipedia.org/wiki/SOCKS>`_ proxies.
 
-Documenation
-------------
+Documentation
+-------------
 There is none.
 
 A `Sphinx <http://sphinx.pocoo.org/>`_ project skeleton
