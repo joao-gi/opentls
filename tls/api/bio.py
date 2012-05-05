@@ -54,6 +54,10 @@ prototype_func('BIO_free', c_int, [c_bio_p], errcheck=err_free)
 prototype_func('BIO_vfree', None, [c_bio_p])
 prototype_func('BIO_free_all', None, [c_bio_p])
 
+# BIO stacking functions
+prototype_func('BIO_push', c_bio_p, [c_bio_p, c_bio_p])
+prototype_func('BIO_pop', c_bio_p, [c_bio_p])
+
 # BIO control functions
 prototype_func('BIO_ctrl', c_long, [c_bio_p, c_int, c_long, c_void_p])
 prototype_func('BIO_callback_ctrl', c_long, [c_bio_p, c_int, c_bio_callback])
@@ -86,6 +90,13 @@ prototype_func('BIO_rw_filename', c_int, [c_bio_p, c_char_p], errcheck=err_zero)
 
 # BIO null
 prototype_func('BIO_s_null', c_method_p, None)
+prototype_func('BIO_f_null', c_method_p, None)
+
+# BIO zlib
+prototype_func('BIO_f_zlib', c_method_p, None)
+
+# BIO base64
+prototype_func('BIO_f_base64', c_method_p, None)
 
 # BIO macros
 def _bio_ctrl_macro(symbol, errcheck=lambda r, f, a: r, words=1):
