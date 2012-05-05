@@ -20,6 +20,14 @@ def expect_fail_before(major, minor, fix):
 
 class BioWrite:
 
+    data = b"HELLO WORLD"
+
+    def setUp(self):
+        self.bio = bio.BIO_new(self.method)
+
+    def tearDown(self):
+        bio.BIO_free(self.bio)
+
     def test_write(self):
         written = bio.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
@@ -74,6 +82,14 @@ class BioWrite:
 
 
 class BioRead:
+
+    data = b"HELLO WORLD"
+
+    def setUp(self):
+        self.bio = bio.BIO_new(self.method)
+
+    def tearDown(self):
+        bio.BIO_free(self.bio)
 
     def test_read_all(self):
         buf = bytes(len(self.data))
@@ -165,30 +181,19 @@ class TestBioMem(unittest.TestCase):
             bio.BIO_free(mem)
 
 
-class TestBioMemWrite(unittest.TestCase, BioWrite):
+class TestBioMemWrite(BioWrite, unittest.TestCase):
 
-    data = b"HELLO WORLD"
-
-    def setUp(self):
-        self.bio = bio.BIO_new(bio.BIO_s_mem())
-
-    def tearDown(self):
-        bio.BIO_free(self.bio)
+    method = bio.BIO_s_mem()
 
     test_tell = unittest.expectedFailure(BioRead.test_tell)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
     test_eof = unittest.expectedFailure(BioWrite.test_eof)
 
 
-class TestBioMemRead(unittest.TestCase, BioRead):
-
-    data = b"HELLO WORLD"
+class TestBioMemRead(BioRead, unittest.TestCase):
 
     def setUp(self):
         self.bio = bio.BIO_new_mem_buf(self.data, -1)
-
-    def tearDown(self):
-        bio.BIO_free(self.bio)
 
     test_tell = unittest.expectedFailure(BioRead.test_tell)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
@@ -199,9 +204,7 @@ class TestBioFile(unittest.TestCase):
     pass
 
 
-class TestBioFileWrite(unittest.TestCase, BioWrite):
-
-    data = b"HELLO WORLD"
+class TestBioFileWrite(BioWrite, unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -216,15 +219,10 @@ class TestBioFileWrite(unittest.TestCase, BioWrite):
         name = self.name.encode()
         self.bio = bio.BIO_new_file(name, b'w+')
 
-    def tearDown(self):
-        bio.BIO_free(self.bio)
-
     test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
 
 
-class TestBioFileRead(unittest.TestCase, BioRead):
-
-    data = b"HELLO WORLD"
+class TestBioFileRead(BioRead, unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -241,38 +239,25 @@ class TestBioFileRead(unittest.TestCase, BioRead):
         name = self.name.encode()
         self.bio = bio.BIO_new_file(name, b'r')
 
-    def tearDown(self):
-        bio.BIO_free(self.bio)
-
     test_pending = unittest.expectedFailure(BioRead.test_pending)
     test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)
 
 
 # Null buffers
-class TestBioNullWrite(unittest.TestCase, BioWrite):
+class TestBioNullWrite(BioWrite, unittest.TestCase):
 
-    data = b"HELLO WORLD"
-
-    def setUp(self):
-        self.bio = bio.BIO_new(bio.BIO_s_null())
-
-    def tearDown(self):
-        bio.BIO_free(self.bio)
+    method = bio.BIO_s_null()
 
     test_reset = unittest.expectedFailure(BioWrite.test_reset)
     test_seek = unittest.expectedFailure(BioWrite.test_seek)
     test_tell = unittest.expectedFailure(BioWrite.test_tell)
 
 
-class TestBioNullRead(unittest.TestCase, BioRead):
+class TestBioNullRead(BioRead, unittest.TestCase):
 
     data = b""
-
-    def setUp(self):
-        self.bio = bio.BIO_new(bio.BIO_s_null())
-
-    def tearDown(self):
-        bio.BIO_free(self.bio)
+    
+    method = bio.BIO_s_null()
 
     test_gets = unittest.expectedFailure(BioRead.test_gets)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
