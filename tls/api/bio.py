@@ -98,18 +98,32 @@ prototype_func('BIO_f_zlib', c_method_p, None)
 # BIO base64
 prototype_func('BIO_f_base64', c_method_p, None)
 
+# BIO message digests
+prototype_func('BIO_f_md', c_method_p, None)
+
 
 # BIO macros
-def _bio_ctrl_macro(symbol, errcheck=lambda r, f, a: r, words=1):
+def _bio_ctrl_macro(symbol, errcheck=lambda r, f, a: r, template='void', words=1):
     """Create function definition for BIO_ctrl calling macro."""
-    template = """
-def BIO_{0}(bio, larg=0, parg=None):
-    args = (bio, {1}, larg, parg)
+    void = """
+def BIO_{0}(bio):
+    args = (bio, {1}, 0, None)
     return errcheck(BIO_ctrl(*args), BIO_ctrl, args)
 """
+    larg = """
+def BIO_{0}(bio, larg):
+    args = (bio, {1}, larg, None)
+    return errcheck(BIO_ctrl(*args), BIO_ctrl, args)
+"""
+    parg = """
+def BIO_{0}(bio, parg):
+    args = (bio, {1}, 0, parg)
+    return errcheck(BIO_ctrl(*args), BIO_ctrl, args)
+"""
+    templates = {'void': void, 'long': larg, 'pointer': parg}
     name = '_'.join(s.lower() for s in symbol.split('_')[-words:])
     constant = getattr(tls.api.constant, symbol)
-    statement = template.format(name, constant)
+    statement = templates[template].format(name, constant)
     namespace = dict(locals())
     namespace.update(globals())
     exec(statement, namespace, globals())
@@ -122,5 +136,10 @@ _bio_ctrl_macro('BIO_CTRL_GET_CLOSE', words=2)
 _bio_ctrl_macro('BIO_CTRL_PENDING')
 _bio_ctrl_macro('BIO_CTRL_WPENDING')
 
-_bio_ctrl_macro('BIO_C_FILE_SEEK', err_neg)
+_bio_ctrl_macro('BIO_C_FILE_SEEK', err_neg, template='long')
 _bio_ctrl_macro('BIO_C_FILE_TELL', err_neg)
+
+_bio_ctrl_macro('BIO_C_GET_MD', template='pointer', words=2)
+_bio_ctrl_macro('BIO_C_SET_MD', template='pointer', words=2)
+_bio_ctrl_macro('BIO_C_GET_MD_CTX', template='pointer', words=3)
+_bio_ctrl_macro('BIO_C_SET_MD_CTX', template='pointer', words=3)
