@@ -8,6 +8,7 @@ from ctypes import c_size_t
 from ctypes import c_ulong
 
 from tls.api import build_error_func
+from tls.api import macro_definition
 from tls.api import prototype_type
 from tls.api import prototype_func
 from tls.api.bio import c_bio_p, c_file_p
@@ -61,6 +62,7 @@ prototype_func('ERR_get_next_error_library', c_int, None)
 
 
 # Error codes
+@macro_definition
 def ERR_pack(lib, func, reason):
     "Create compact error code from a library, function and reason code"
     if lib > 255:
@@ -73,18 +75,21 @@ def ERR_pack(lib, func, reason):
     return code
 
 
+@macro_definition
 def ERR_get_lib(code):
     "Get library code from error code"
     lib = (code >> 24) & 255
     return lib
 
 
+@macro_definition
 def ERR_get_func(code):
     "Get function code from error code"
     func = (code >> 12) & 4095
     return func
 
 
+@macro_definition
 def ERR_get_reason(code):
     "Get reason code from error code"
     reason = code & 4095

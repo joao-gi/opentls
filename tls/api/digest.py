@@ -11,6 +11,7 @@ from ctypes import c_ulong
 from ctypes import c_void_p
 
 from tls.api import build_error_func
+from tls.api import macro_definition
 from tls.api import prototype_type
 from tls.api import prototype_func
 from tls.api.constant import EVP_MAX_MD_SIZE
@@ -93,39 +94,48 @@ prototype_func('EVP_dsa_sha1', c_evp_md_p, None)
 
 
 # message digest macros
+@macro_definition
 def EVP_MD_type(md):
     return md.contents.type
 
 
+@macro_definition
 def EVP_MD_pkey_type(md):
     return md.contents.pkey_type
 
 
+@macro_definition
 def EVP_MD_size(md):
     return md.contents.md_size
 
 
+@macro_definition
 def EVP_MD_block_size(md):
     return md.contents.block_size
 
 
 # digest context macros
+@macro_definition
 def EVP_MD_CTX_md(ctx):
     return ctx.contents.digest
 
 
+@macro_definition
 def EVP_MD_CTX_size(ctx):
     return EVP_MD_size(EVP_MD_CTX_md(ctx))
 
 
+@macro_definition
 def EVP_MD_CTX_block_size(ctx):
     return EVP_MD_block_size(EVP_MD_CTX_md(ctx))
 
 
+@macro_definition
 def EVP_MD_CTX_type(ctx):
     return EVP_MD_type(EVP_MD_CTX_md(ctx))
 
 
 # get macros
+@macro_definition
 def EVP_get_digestbynid(nid):
     return EVP_get_digestbyname(OBJ_nid2sn(nid))

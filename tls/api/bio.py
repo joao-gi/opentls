@@ -10,6 +10,7 @@ from ctypes import c_size_t
 from ctypes import c_void_p
 
 from tls.api import build_error_func
+from tls.api import macro_definition
 from tls.api import prototype_type
 from tls.api import prototype_func
 from tls.api.exceptions import BIOError
@@ -106,16 +107,19 @@ prototype_func('BIO_f_md', c_method_p, None)
 def _bio_ctrl_macro(symbol, errcheck=lambda r, f, a: r, template='void', words=1):
     """Create function definition for BIO_ctrl calling macro."""
     void = """
+@macro_definition
 def BIO_{0}(bio):
     args = (bio, {1}, 0, None)
     return errcheck(BIO_ctrl(*args), BIO_ctrl, args)
 """
     larg = """
+@macro_definition
 def BIO_{0}(bio, larg):
     args = (bio, {1}, larg, None)
     return errcheck(BIO_ctrl(*args), BIO_ctrl, args)
 """
     parg = """
+@macro_definition
 def BIO_{0}(bio, parg):
     args = (bio, {1}, 0, parg)
     return errcheck(BIO_ctrl(*args), BIO_ctrl, args)

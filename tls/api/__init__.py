@@ -69,6 +69,11 @@ def prototype_func(symbol, restype, argtypes, errcheck=None):
         del stack, frame, trace
 
 
+def macro_definition(func):
+    "Declare function as a C macro definition"
+    return func
+
+
 def build_error_func(passes=lambda r, a: bool(r), template='{0}', category=Exception):
     """Create error checking function to add to ctype function definition.
     """
