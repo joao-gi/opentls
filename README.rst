@@ -35,7 +35,9 @@ Additionally, some parts of OpenSSL's APIs have been wrapped
 using `ctypes <http://docs.python.org/dev/library/ctypes.html>`_.
 This wrapping is limited to:
 
-* buffered io (memory and file methods)
+* buffered io 
+  * sinks (null, memory and files)
+  * filters (null, zlib, base64 and message digests)
 * random data (pseudo and cryptographically strong)
 * message digests (cryptographically secure hash functions)
 
