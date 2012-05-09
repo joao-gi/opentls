@@ -2,7 +2,6 @@
 from functools import partial
 
 from ctypes import POINTER
-from ctypes import Structure
 from ctypes import c_char_p
 from ctypes import c_int
 from ctypes import c_size_t
@@ -29,37 +28,31 @@ err_null = build_digest_error()
 # Digest C types
 prototype_type('c_engine')
 
+prototype_type('c_evp_md',
+    fields=(
+        ('type', 'c_int'),
+        ('pkey_type', 'c_int'),
+        ('md_size', 'c_int'),
+        ('flags', 'c_ulong'),
+        ('init', 'c_void_p'),
+        ('update', 'c_void_p'),
+        ('final', 'c_void_p'),
+        ('copy', 'c_void_p'),
+        ('cleanup', 'c_void_p'),
+        ('sign', 'c_void_p'),
+        ('verify', 'c_void_p'),
+        ('required_pkey_type', 'c_int * 5'),
+        ('block_size', 'c_int'),
+        ('ctx_size', 'c_int')
+    ))
 
-class c_evp_md(Structure):
-    _fields_ = (
-        ('type', c_int),
-        ('pkey_type', c_int),
-        ('md_size', c_int),
-        ('flags', c_ulong),
-        ('init', c_void_p),
-        ('update', c_void_p),
-        ('final', c_void_p),
-        ('copy', c_void_p),
-        ('cleanup', c_void_p),
-        ('sign', c_void_p),
-        ('verify', c_void_p),
-        ('required_pkey_type', c_int * 5),
-        ('block_size', c_int),
-        ('ctx_size', c_int)
-    )
-
-c_evp_md_p = POINTER(c_evp_md)
-
-
-class c_evp_md_ctx(Structure):
-    _fields_ = (
-        ('digest', c_evp_md_p),
-        ('engine', c_engine_p),
-        ('flags', c_ulong),
-        ('md_data', c_void_p)
-    )
-
-c_evp_md_ctx_p = POINTER(c_evp_md_ctx)
+prototype_type('c_evp_md_ctx',
+    fields=(
+        ('digest', 'c_evp_md_p'),
+        ('engine', 'c_engine_p'),
+        ('flags', 'c_ulong'),
+        ('md_data', 'c_void_p')
+    ))
 
 # Digest functions
 prototype_func('EVP_MD_CTX_init', None, [c_evp_md_ctx_p])

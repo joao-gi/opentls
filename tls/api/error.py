@@ -2,13 +2,14 @@
 from functools import partial
 
 from ctypes import POINTER
-from ctypes import Structure
 from ctypes import c_char_p
 from ctypes import c_int
 from ctypes import c_size_t
 from ctypes import c_ulong
 
-from tls.api import build_error_func, prototype_func
+from tls.api import build_error_func
+from tls.api import prototype_type
+from tls.api import prototype_func
 from tls.api.bio import c_bio_p, c_file_p
 from tls.api.exceptions import UnregisteredError
 
@@ -51,8 +52,7 @@ prototype_func('ERR_peek_last_error_line_data', c_ulong,
 
 
 # Error raising
-class ERR_STRING_DATA(Structure):
-    _fields_ = (('error', c_ulong), ('string', c_char_p))
+prototype_type('ERR_STRING_DATA', fields=(('error', 'c_ulong'), ('string', 'c_char_p')))
 
 prototype_func('ERR_put_error', None, [c_int, c_int, c_int, c_char_p, c_int])
 prototype_func('ERR_add_error_data', None, Ellipsis)

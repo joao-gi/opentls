@@ -4,6 +4,7 @@ import atexit
 import ctypes
 import ctypes.util
 import inspect
+import itertools
 import warnings
 
 __all__ = ['bio', 'constant', 'digest', 'error', 'nid', 'objects', 'rand']
@@ -12,7 +13,7 @@ libname = ctypes.util.find_library('ssl')
 openssl = ctypes.CDLL(libname)
 
 
-def prototype_type(symbol):
+def prototype_type(symbol, fields=None):
     """Forward declare OpenSSL data structure.
 
     The data struct and pointer for data structure is added to the callers
@@ -20,15 +21,22 @@ def prototype_type(symbol):
     """
     template = """
 class {0}(ctypes.Structure):
-    pass
+    {1}
 
 {0}_p = ctypes.POINTER({0})
 """
+    body = ['pass']
+    if fields is not None:
+        body = ['_fields_ = (']
+        for name, ctype in fields:
+            body.append('("{0}", {1}),'.format(name, ctype))
+        body.append(')')
     try:
         stack = inspect.stack()
         frame = stack[1][0]
-        statement = template.format(symbol)
-        exec(statement, globals(), frame.f_globals)
+        statement = template.format(symbol, ''.join(body))
+        env = itertools.chain(globals().items(), frame.f_globals.items())
+        exec(statement, dict(env), frame.f_globals)
     finally:
         del stack, frame
 

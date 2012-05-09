@@ -1,15 +1,14 @@
 """ctypes wrapper for openssl's objects api"""
 from functools import partial
 
-from ctypes import POINTER
 from ctypes import CFUNCTYPE
-from ctypes import Structure
 from ctypes import c_char_p
 from ctypes import c_int
 from ctypes import c_void_p
 
 from tls.api import build_error_func
 from tls.api import prototype_func
+from tls.api import prototype_type
 from tls.api.nid import undef
 from tls.api.exceptions import ASNError
 
@@ -21,18 +20,14 @@ error_null = build_object_error(template='Unknown ASN.1 id')
 
 error_undef = build_object_error(passes=lambda r, a: r != undef, template='Unknown ASN.1 name')
 
-
 # asn.1 object types
-class c_obj_name(Structure):
-
-    _fields_ = (
-        ('type', c_int),
-        ('alias', c_int),
-        ('name', c_char_p),
-        ('data', c_char_p)
-    )
-
-c_obj_name_p = POINTER(c_obj_name)
+prototype_type('c_obj_name',
+    fields=(
+        ('type', 'c_int'),
+        ('alias', 'c_int'),
+        ('name', 'c_char_p'),
+        ('data', 'c_char_p')
+    ))
 
 c_do_all_callback = CFUNCTYPE(None, c_obj_name_p, c_void_p)
 
