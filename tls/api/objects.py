@@ -23,10 +23,10 @@ error_undef = build_object_error(passes=lambda r, a: r != undef, template='Unkno
 # asn.1 object types
 prototype_type('c_obj_name',
     fields=(
-        ('type', 'c_int'),
-        ('alias', 'c_int'),
-        ('name', 'c_char_p'),
-        ('data', 'c_char_p')
+        ('type', c_int),
+        ('alias', c_int),
+        ('name', c_char_p),
+        ('data', c_char_p)
     ))
 
 prototype_callback('c_do_all_callback', None, c_obj_name_p, c_void_p)

@@ -49,18 +49,14 @@ class {0}(ctypes.Structure):
 
 {0}_p = ctypes.POINTER({0})
 """
-    body = ['pass']
-    if fields is not None:
-        body = ['_fields_ = (']
-        for name, ctype in fields:
-            body.append('("{0}", {1}),'.format(name, ctype))
-        body.append(')')
     try:
         stack = inspect.stack()
         frame = stack[1][0]
-        statement = template.format(symbol, ''.join(body))
-        env = itertools.chain(globals().items(), frame.f_globals.items())
-        exec(statement, dict(env), frame.f_globals)
+        body = 'pass' if fields is None else '_fields_ = fields'
+        statement = template.format(symbol, body)
+        env = dict(globals())
+        env['fields'] = fields
+        exec(statement, env, frame.f_globals)
     finally:
         del stack, frame
 

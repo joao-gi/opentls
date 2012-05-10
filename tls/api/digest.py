@@ -31,28 +31,28 @@ prototype_type('c_engine')
 
 prototype_type('c_evp_md',
     fields=(
-        ('type', 'c_int'),
-        ('pkey_type', 'c_int'),
-        ('md_size', 'c_int'),
-        ('flags', 'c_ulong'),
-        ('init', 'c_void_p'),
-        ('update', 'c_void_p'),
-        ('final', 'c_void_p'),
-        ('copy', 'c_void_p'),
-        ('cleanup', 'c_void_p'),
-        ('sign', 'c_void_p'),
-        ('verify', 'c_void_p'),
-        ('required_pkey_type', 'c_int * 5'),
-        ('block_size', 'c_int'),
-        ('ctx_size', 'c_int')
+        ('type', c_int),
+        ('pkey_type', c_int),
+        ('md_size', c_int),
+        ('flags', c_ulong),
+        ('init', c_void_p),
+        ('update', c_void_p),
+        ('final', c_void_p),
+        ('copy', c_void_p),
+        ('cleanup', c_void_p),
+        ('sign', c_void_p),
+        ('verify', c_void_p),
+        ('required_pkey_type', c_int * 5),
+        ('block_size', c_int),
+        ('ctx_size', c_int)
     ))
 
 prototype_type('c_evp_md_ctx',
     fields=(
-        ('digest', 'c_evp_md_p'),
-        ('engine', 'c_engine_p'),
-        ('flags', 'c_ulong'),
-        ('md_data', 'c_void_p')
+        ('digest', c_evp_md_p),
+        ('engine', c_engine_p),
+        ('flags', c_ulong),
+        ('md_data', c_void_p)
     ))
 
 # Digest functions

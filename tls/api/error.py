@@ -53,7 +53,7 @@ prototype_func('ERR_peek_last_error_line_data', c_ulong,
 
 
 # Error raising
-prototype_type('ERR_STRING_DATA', fields=(('error', 'c_ulong'), ('string', 'c_char_p')))
+prototype_type('ERR_STRING_DATA', fields=(('error', c_ulong), ('string', c_char_p)))
 
 prototype_func('ERR_put_error', None, [c_int, c_int, c_int, c_char_p, c_int])
 prototype_func('ERR_add_error_data', None, Ellipsis)
