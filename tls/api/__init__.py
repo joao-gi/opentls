@@ -13,6 +13,30 @@ libname = ctypes.util.find_library('ssl')
 openssl = ctypes.CDLL(libname)
 
 
+def prototype_callback(name, restype, *args, use_errno=False, use_last_error=False):
+    """Declare ctypes callback function.
+
+    The C function type is added to the caller's scope.
+    """
+    template = """
+{0} = ctypes.CFUNCTYPE(restype, *args, use_errno=use_errno, use_last_error=use_last_error)
+"""
+    try:
+        stack = inspect.stack()
+        frame = stack[1][0]
+        statement = template.format(name)
+        env = {
+            'restype': restype,
+            'args': args,
+            'use_errno': use_errno,
+            'use_last_error': use_last_error
+        }
+        env.update(globals())
+        exec(statement, env, frame.f_globals)
+    finally:
+        del stack, frame
+
+
 def prototype_type(symbol, fields=None):
     """Forward declare OpenSSL data structure.
 

@@ -1,12 +1,12 @@
 """ctypes wrapper for openssl's objects api"""
 from functools import partial
 
-from ctypes import CFUNCTYPE
 from ctypes import c_char_p
 from ctypes import c_int
 from ctypes import c_void_p
 
 from tls.api import build_error_func
+from tls.api import prototype_callback
 from tls.api import prototype_func
 from tls.api import prototype_type
 from tls.api.nid import undef
@@ -29,7 +29,7 @@ prototype_type('c_obj_name',
         ('data', 'c_char_p')
     ))
 
-c_do_all_callback = CFUNCTYPE(None, c_obj_name_p, c_void_p)
+prototype_callback('c_do_all_callback', None, c_obj_name_p, c_void_p)
 
 # object names
 prototype_func('OBJ_NAME_init', None, None)

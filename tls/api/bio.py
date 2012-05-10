@@ -1,7 +1,6 @@
 """ctypes wrapper for openssl's io abstraction, BIO"""
 from functools import partial
 
-from ctypes import CFUNCTYPE
 from ctypes import POINTER
 from ctypes import c_char_p
 from ctypes import c_int
@@ -11,6 +10,7 @@ from ctypes import c_void_p
 
 from tls.api import build_error_func
 from tls.api import macro_definition
+from tls.api import prototype_callback
 from tls.api import prototype_type
 from tls.api import prototype_func
 from tls.api.exceptions import BIOError
@@ -46,7 +46,7 @@ prototype_func('fclose', c_int, [c_file_p],
 prototype_type('c_bio')
 prototype_type('c_method')
 
-c_bio_callback = CFUNCTYPE(None, c_bio_p, c_int, c_char_p, c_int, c_long, c_long)
+prototype_callback('c_bio_callback', None, c_bio_p, c_int, c_char_p, c_int, c_long, c_long)
 
 # BIO create functions
 prototype_func('BIO_new', c_bio_p, [c_method_p], errcheck=err_null)
