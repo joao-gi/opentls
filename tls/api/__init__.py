@@ -4,13 +4,28 @@ import atexit
 import ctypes
 import ctypes.util
 import inspect
-import itertools
 import warnings
 
 __all__ = ['bio', 'constant', 'digest', 'error', 'nid', 'objects', 'rand']
 
 libname = ctypes.util.find_library('ssl')
 openssl = ctypes.CDLL(libname)
+
+
+def build_error_func(passes=lambda r, a: bool(r), template='{0}', category=Exception):
+    """Create error checking function to add to ctype function definition.
+    """
+    def errcheck(result, func, arguments):
+        if not passes(result, arguments):
+            message = template.format(*arguments, result=result)
+            raise category(message)
+        return result
+    return errcheck
+
+
+def macro_definition(func):
+    "Declare function as a C macro definition"
+    return func
 
 
 def prototype_callback(name, restype, *args, use_errno=False, use_last_error=False):
@@ -32,30 +47,6 @@ def prototype_callback(name, restype, *args, use_errno=False, use_last_error=Fal
             'use_last_error': use_last_error
         }
         env.update(globals())
-        exec(statement, env, frame.f_globals)
-    finally:
-        del stack, frame
-
-
-def prototype_type(symbol, fields=None):
-    """Forward declare OpenSSL data structure.
-
-    The data struct and pointer for data structure is added to the callers
-    scope.
-    """
-    template = """
-class {0}(ctypes.Structure):
-    {1}
-
-{0}_p = ctypes.POINTER({0})
-"""
-    try:
-        stack = inspect.stack()
-        frame = stack[1][0]
-        body = 'pass' if fields is None else '_fields_ = fields'
-        statement = template.format(symbol, body)
-        env = dict(globals())
-        env['fields'] = fields
         exec(statement, env, frame.f_globals)
     finally:
         del stack, frame
@@ -89,20 +80,29 @@ def prototype_func(symbol, restype, argtypes, errcheck=None):
         del stack, frame, trace
 
 
-def macro_definition(func):
-    "Declare function as a C macro definition"
-    return func
+def prototype_type(symbol, fields=None):
+    """Forward declare OpenSSL data structure.
 
-
-def build_error_func(passes=lambda r, a: bool(r), template='{0}', category=Exception):
-    """Create error checking function to add to ctype function definition.
+    The data struct and pointer for data structure is added to the callers
+    scope.
     """
-    def errcheck(result, func, arguments):
-        if not passes(result, arguments):
-            message = template.format(*arguments, result=result)
-            raise category(message)
-        return result
-    return errcheck
+    template = """
+class {0}(ctypes.Structure):
+    {1}
+
+{0}_p = ctypes.POINTER({0})
+"""
+    try:
+        stack = inspect.stack()
+        frame = stack[1][0]
+        body = 'pass' if fields is None else '_fields_ = fields'
+        statement = template.format(symbol, body)
+        env = dict(globals())
+        env['fields'] = fields
+        exec(statement, env, frame.f_globals)
+    finally:
+        del stack, frame
+
 
 # init
 prototype_func('OpenSSL_add_all_algorithms', None, None)
@@ -134,6 +134,7 @@ def version():
     else:
         status = 'beta{}'.format(status)
     return SSLVersion(major, minor, fix, patch, status)
+
 
 # initialise openssl, schedule cleanup at exit
 OpenSSL_add_all_digests()
