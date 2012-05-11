@@ -16,6 +16,7 @@ from tls.api import prototype_func
 from tls.api.exceptions import BIOError
 import tls.api.constant
 
+__all__ = []
 
 # Error checking functions
 build_bio_error = partial(build_error_func, template='BIO error', category=BIOError)

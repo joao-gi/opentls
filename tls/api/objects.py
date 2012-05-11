@@ -12,6 +12,7 @@ from tls.api import prototype_type
 from tls.api.nid import undef
 from tls.api.exceptions import ASNError
 
+__all__ = []
 
 # error checking functions
 build_object_error = partial(build_error_func, template='ASN.1 Object Error', category=ASNError)

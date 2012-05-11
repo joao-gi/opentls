@@ -14,6 +14,7 @@ from tls.api import build_error_func
 from tls.api import prototype_func
 from tls.api.exceptions import RANDError
 
+__all__ = []
 
 # error checking functions
 build_rand_error = partial(build_error_func, template='RAND error', category=RANDError)

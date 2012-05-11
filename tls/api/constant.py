@@ -1,5 +1,7 @@
 """constants used in openssl"""
 
+__all__ = []
+
 # BIO_CTRL_*
 BIO_CTRL_RESET = 1
 BIO_CTRL_EOF = 2
@@ -98,3 +100,5 @@ OBJ_NAME_TYPE_CIPHER_METH = 0x02
 OBJ_NAME_TYPE_PKEY_METH = 0x03
 OBJ_NAME_TYPE_COMP_METH = 0x04
 OBJ_NAME_TYPE_NUM = 0x05
+
+__all__.extend(name for name in locals() if name[0].isalpha())

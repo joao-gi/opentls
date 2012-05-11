@@ -14,6 +14,8 @@ from tls.api import prototype_func
 from tls.api.bio import c_bio_p, c_file_p
 from tls.api.exceptions import UnregisteredError
 
+__all__ = []
+
 # Error checking functions
 build_error_error = partial(build_error_func,
     template='The error code is unknown',

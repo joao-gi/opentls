@@ -1,6 +1,9 @@
 """Exception class hierarchy for OpenSSL API errors"""
 import socket
 
+__all__ = ['CryptError', 'BIOError', 'DigestError', 'ASNError', 'RANDError',
+            'TLSError', 'UnregisteredError']
+
 
 class CryptError(Exception):
     "Base error for all OpenSSL errors"

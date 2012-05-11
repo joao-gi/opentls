@@ -6,7 +6,8 @@ import ctypes.util
 import inspect
 import warnings
 
-__all__ = ['bio', 'constant', 'digest', 'error', 'nid', 'objects', 'rand']
+__all__ = ['bio', 'constant', 'digest', 'error', 'exceptions', 'nid',
+            'objects', 'rand']
 
 libname = ctypes.util.find_library('ssl')
 openssl = ctypes.CDLL(libname)
@@ -23,12 +24,18 @@ def build_error_func(passes=lambda r, a: bool(r), template='{0}', category=Excep
     return errcheck
 
 
-def macro_definition(func):
+def macro_definition(macro):
     "Declare function as a C macro definition"
-    return func
+    try:
+        stack = inspect.stack()
+        frame = stack[1][0]
+        frame.f_globals['__all__'].append(macro.__name__)
+        return macro
+    finally:
+        del stack, frame
 
 
-def prototype_callback(name, restype, *args, use_errno=False, use_last_error=False):
+def prototype_callback(symbol, restype, *args, use_errno=False, use_last_error=False):
     """Declare ctypes callback function.
 
     The C function type is added to the caller's scope.
@@ -39,7 +46,7 @@ def prototype_callback(name, restype, *args, use_errno=False, use_last_error=Fal
     try:
         stack = inspect.stack()
         frame = stack[1][0]
-        statement = template.format(name)
+        statement = template.format(symbol)
         env = {
             'restype': restype,
             'args': args,
@@ -48,6 +55,7 @@ def prototype_callback(name, restype, *args, use_errno=False, use_last_error=Fal
         }
         env.update(globals())
         exec(statement, env, frame.f_globals)
+        frame.f_globals['__all__'].append(symbol)
     finally:
         del stack, frame
 
@@ -76,6 +84,7 @@ def prototype_func(symbol, restype, argtypes, errcheck=None):
             function.errcheck = errcheck
         statement = template.format(symbol)
         exec(statement, globals(), frame.f_globals)
+        frame.f_globals['__all__'].append(symbol)
     finally:
         del stack, frame, trace
 
@@ -100,6 +109,7 @@ class {0}(ctypes.Structure):
         env = dict(globals())
         env['fields'] = fields
         exec(statement, env, frame.f_globals)
+        frame.f_globals['__all__'].append(symbol)
     finally:
         del stack, frame
 
