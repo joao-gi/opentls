@@ -1,5 +1,6 @@
 """ctypes wrapper for openssl error handling"""
 from functools import partial
+import atexit
 
 from ctypes import POINTER
 from ctypes import c_char_p
@@ -96,3 +97,8 @@ def ERR_get_reason(code):
     "Get reason code from error code"
     reason = code & 4095
     return reason
+
+
+# initialise error strings, schedule cleanup at exit
+SSL_load_error_strings()
+atexit.register(ERR_free_strings)
