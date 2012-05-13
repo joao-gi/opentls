@@ -9,17 +9,14 @@ class TestSSLMethod(unittest.TestCase):
 
     @expect_fail_after(1, 0, 0)
     def test_ssl_v2(self):
-        self.assertTrue(hasattr(method, 'SSLv2_method'))
         self.assertTrue(method.SSLv2_method())
 
     @expect_fail_after(1, 0, 0)
     def test_ssl_v2_client(self):
-        self.assertTrue(hasattr(method, 'SSLv2_client_method'))
         self.assertTrue(method.SSLv2_client_method())
 
     @expect_fail_after(1, 0, 0)
     def test_ssl_v2_server(self):
-        self.assertTrue(hasattr(method, 'SSLv2_server_method'))
         self.assertTrue(method.SSLv2_server_method())
 
     def test_ssl_v3(self):
