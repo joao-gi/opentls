@@ -1,17 +1,21 @@
 """Test SSL methods"""
 import unittest
 
+from tests import expect_fail_after
 from tls.api.ssl import method
 
 
 class TestSSLMethod(unittest.TestCase):
 
+    @expect_fail_after(1, 0, 0)
     def test_ssl_v2(self):
         self.assertTrue(method.SSLv2_method())
 
+    @expect_fail_after(1, 0, 0)
     def test_ssl_v2_client(self):
         self.assertTrue(method.SSLv2_client_method())
 
+    @expect_fail_after(1, 0, 0)
     def test_ssl_v2_server(self):
         self.assertTrue(method.SSLv2_server_method())
 
