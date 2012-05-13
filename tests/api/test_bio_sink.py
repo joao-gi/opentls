@@ -4,18 +4,8 @@ import os
 import tempfile
 import unittest
 
-from tls.api import bio, version
-
-
-def expect_fail_before(major, minor, fix):
-    "Decorate function with expected failure for early OpenSSL versions"
-    def expect_failure(func):
-        return unittest.expectedFailure(func)
-    def noop(func):
-        return func
-    if version()[0:3] < (major, minor, fix):
-        return expect_failure
-    return noop
+from tests import expect_fail_before
+from tls.api import bio
 
 
 class BioWrite:
