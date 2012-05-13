@@ -38,7 +38,12 @@ class TestTlsApi(unittest.TestCase):
 
     def test_objects(self):
         self.assertIn('objects', tls.api.__all__)
+        self.assertGreater(len(objects.__all__), 0)
 
     def test_rand(self):
         self.assertIn('rand', tls.api.__all__)
         self.assertGreater(len(rand.__all__), 0)
+
+    def test_ssl(self):
+        self.assertIn('ssl', tls.api.__all__)
+        self.assertGreater(len(ssl.__all__), 0)

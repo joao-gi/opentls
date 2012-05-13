@@ -7,7 +7,7 @@ import inspect
 import warnings
 
 __all__ = ['bio', 'constant', 'digest', 'error', 'exceptions', 'nid',
-            'objects', 'rand']
+            'objects', 'rand', 'ssl']
 
 libname = ctypes.util.find_library('ssl')
 openssl = ctypes.CDLL(libname)
