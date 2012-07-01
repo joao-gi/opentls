@@ -41,8 +41,8 @@ class TestRandomApi(unittest.TestCase):
 
     def test_randint(self):
         num = random.randint(0, 255)
-        self.assertGreater(num, 0)
-        self.assertLess(num, 256)
+        self.assertGreaterEqual(num, 0)
+        self.assertLessEqual(num, 256)
 
     def test_seed(self):
         random.seed(0)
