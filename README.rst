@@ -32,7 +32,7 @@ of Python's hashlib module
 using OpenSSL's cryptographically secure hash functions.
 
 Additionally, some parts of OpenSSL's APIs have been wrapped
-using `ctypes <http://docs.python.org/dev/library/ctypes.html>`_.
+using `cffi <https://cffi.readthedocs.org/en/latest/index.html>`_.
 This wrapping is limited to:
 
 * buffered io 
