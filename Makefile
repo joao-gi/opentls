@@ -19,7 +19,7 @@ test:
 	coverage run setup.py test
 
 unittest:
-	coverage run -m unittest
+	coverage run -m unittest2 discover
 
 coverage:
 	coverage report --include="tls*"
