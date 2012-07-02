@@ -35,13 +35,13 @@ def macro_definition(macro):
         del stack, frame
 
 
-def prototype_callback(symbol, restype, *args, use_errno=False, use_last_error=False):
+def prototype_callback(symbol, restype, *args, **kwargs):
     """Declare ctypes callback function.
 
     The C function type is added to the caller's scope.
     """
     template = """
-{0} = ctypes.CFUNCTYPE(restype, *args, use_errno=use_errno, use_last_error=use_last_error)
+{0} = ctypes.CFUNCTYPE(restype, *args, **kwargs)
 """
     try:
         stack = inspect.stack()
@@ -50,8 +50,7 @@ def prototype_callback(symbol, restype, *args, use_errno=False, use_last_error=F
         env = {
             'restype': restype,
             'args': args,
-            'use_errno': use_errno,
-            'use_last_error': use_last_error
+            'kwargs': kwargs
         }
         env.update(globals())
         exec(statement, env, frame.f_globals)

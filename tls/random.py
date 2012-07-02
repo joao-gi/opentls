@@ -33,6 +33,8 @@ sufficiently seeded.
 The PseudoRandom class is also provided which is not suitable for all
 cryptogrpahic purposes.
 """
+from __future__ import absolute_import
+
 from random import Random as _Random
 import ctypes
 import math
@@ -70,7 +72,13 @@ class Random(_Random):
         """Get the next random number in the range [0.0, 1.0)."""
         buff = (ctypes.c_ubyte * 7)()
         self._rand_bytes(buff, len(buff))
-        num = (int.from_bytes(buff, 'big') >> 3) * EPSILON
+        # python2 version of following python3 code
+        # >>> num = (int.from_bytes(buff, 'big') >> 3) * EPSILON
+        num = 0
+        for byte in buff:
+            num <<= 8
+            num |= byte
+        num = (num >> 3) * EPSILON
         return num
 
     def getrandbits(self, bits):
