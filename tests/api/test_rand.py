@@ -6,7 +6,6 @@ in 'Beautiful Testing' titled 'How to test a random number generator'.
 
 http://www.johndcook.com/blog/2010/12/06/how-to-test-a-random-number-generator-2/
 """
-from collections import Counter
 import ctypes
 import math
 import random
@@ -83,9 +82,9 @@ class RandTests:
     @unittest.skip('needs to be ported to cffi')
     def test_buckets(self):
         """Test the distribution of values across the range."""
-        counts = Counter()
+        counts = {}
         for value in self.data:
-            counts[value] += 1
+            counts[value] = 1 + counts.get(value, 0)
         for value, count in counts.items():
             self.assertGreater(count, 0)
             self.assertLess(count, 2.0 * (self.samples / 255))
@@ -97,10 +96,10 @@ class RandTests:
         Range values for K+ sourced from 'Beautiful Testing'
         """
         samples = int(1e3)
-        counts = Counter()
+        counts = {}
         for value in self.data[:samples]:
             for x in range(value + 1):
-                counts[x] += 1
+                counts[x] = 1 + counts.get(x, 0)
         empirical = [counts[i] / samples for i in range(256)]
         theoretical = [1.0 - (x / 255) for x in range(256)]
         kplus = math.sqrt(samples) * max(empirical[i] - theoretical[i] for i in range(256))
