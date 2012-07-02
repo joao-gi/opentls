@@ -1,5 +1,5 @@
 """Test SSL methods"""
-import unittest
+import unittest2 as unittest
 
 from tests import expect_fail_after
 from tls.api.ssl import method
