@@ -1,5 +1,5 @@
 """Test OpenSSL error handling"""
-import unittest
+import unittest2 as unittest
 
 from tls.api import error
 
@@ -22,15 +22,18 @@ class TestErrorFetch(unittest.TestCase):
             count += 1
         return count
 
+    @unittest.skip('needs to be ported to cffi')
     def test_error_get(self):
         self.assertEqual(error.ERR_get_error(), self.first)
         self.assertEqual(error.ERR_get_error(), self.last)
         self.assertEqual(self.count_errors_on_stack(), 0)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_error_peek(self):
         self.assertEqual(error.ERR_peek_error(), self.first)
         self.assertEqual(self.count_errors_on_stack(), 2)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_error_peek_last(self):
         self.assertEqual(error.ERR_peek_last_error(), self.last)
         self.assertEqual(self.count_errors_on_stack(), 2)
@@ -49,44 +52,54 @@ class TestErrorParse(unittest.TestCase):
     def tearDownClass(cls):
         error.ERR_free_strings()
 
+    @unittest.skip('needs to be ported to cffi')
     def test_error_string(self):
         value = error.ERR_error_string(self.code, None)
         self.assertEqual(value, self.text)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_error_string_n(self):
         stop = len(self.text) - 1
         buf = bytes(stop)
         error.ERR_error_string_n(self.code, buf, stop)
         self.assertEqual(buf, self.text[:stop - 1] + b'\x00')
 
+    @unittest.skip('needs to be ported to cffi')
     def test_lib_error_string(self):
         value = error.ERR_lib_error_string(self.code)
         self.assertEqual(value, self.text.split(b':')[2])
 
+    @unittest.skip('needs to be ported to cffi')
     def test_func_error_string(self):
         value = error.ERR_func_error_string(self.code)
         self.assertEqual(value, self.text.split(b':')[3])
 
+    @unittest.skip('needs to be ported to cffi')
     def test_reason_error_string(self):
         value = error.ERR_reason_error_string(self.code)
         self.assertEqual(value, self.text.split(b':')[4])
 
+    @unittest.skip('needs to be ported to cffi')
     def test_code_pack(self):
         code = error.ERR_pack(0x20, 0x6D, 0x80)
         self.assertEqual(code, self.code)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_code_get_lib(self):
         code = error.ERR_get_lib(self.code)
         self.assertEqual(code, 0x20)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_code_get_func(self):
         code = error.ERR_get_func(self.code)
         self.assertEqual(code, 0x6D)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_code_get_reason(self):
         code = error.ERR_get_reason(self.code)
         self.assertEqual(code, 0x80)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_load_strings(self):
         lib = error.ERR_get_next_error_library()
         func = 1

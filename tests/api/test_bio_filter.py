@@ -1,6 +1,6 @@
 """Test BIO Filters"""
 import ctypes
-import unittest
+import unittest2 as unittest
 
 from tls.api import bio, digest
 
@@ -18,6 +18,7 @@ class BioFilter:
         bio.BIO_free_all(self.bio)
         del self.bio, self.filter, self.sink
 
+    @unittest.skip('needs to be ported to cffi')
     def test_filter(self):
         buf = bytes(len(self.output))
         bio.BIO_write(self.bio, self.input, len(self.input))
@@ -54,6 +55,7 @@ class HashFilter(BioFilter):
         BioFilter.setUp(self)
         bio.BIO_set_md(self.filter, self.md)
 
+    @unittest.skip('needs to be ported to cffi')
     def test_filter(self):
         BioFilter.test_filter(self)
         buf = bytes(digest.EVP_MD_size(self.md))

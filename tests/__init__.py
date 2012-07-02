@@ -1,7 +1,7 @@
 """OpenTLS Tests"""
 import operator
 import functools
-import unittest
+import unittest2 as unittest
 
 from tls.api import version
 
