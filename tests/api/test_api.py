@@ -6,11 +6,9 @@ import tls.api
 
 class TestTlsApi(unittest.TestCase):
 
-    @unittest.skip('needs to be ported to cffi')
     def test_init(self):
         tls.api.SSL_library_init()
 
-    @unittest.skip('needs to be ported to cffi')
     def test_version(self):
         tls.api.version()
 
