@@ -18,6 +18,11 @@ This repository is a place
 to both experiment and learn about
 using OpenSSL to implement cryptographic APIs.
 
+Legal
+-----
+This package is distributed under the
+`Apache License 2.0 <http://www.tldrlegal.com/license/APACHE2>`_.
+
 Status
 ------
 |build_status| Two usable modules have been implemented.
