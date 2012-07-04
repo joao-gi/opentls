@@ -24,6 +24,13 @@ class API(object):
 
     SSLVersion = namedtuple('SSLVersion', 'major minor fix patch status')
 
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.__instance:
+            cls.__instance = super(API, cls).__new__(cls, *args, **kwargs)
+        return cls.__instance
+
     def __init__(self):
         self.ffi = FFI()
         self._cdef()
