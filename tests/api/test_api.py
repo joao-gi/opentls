@@ -1,16 +1,15 @@
 import unittest2 as unittest
 
-from tls.api import *
-import tls.api
+from tls.c import api
 
 
 class TestTlsApi(unittest.TestCase):
 
     def test_init(self):
-        tls.api.SSL_library_init()
+        api.SSL_library_init()
 
     def test_version(self):
-        tls.api.version()
+        api.version()
 
     @unittest.skip('needs to be ported to cffi')
     def test_bio(self):

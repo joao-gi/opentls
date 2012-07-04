@@ -1,6 +1,6 @@
 import unittest2 as unittest
 
-import tls.api
+import tls
 
 
 class TestTls(unittest.TestCase):

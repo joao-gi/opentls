@@ -3,7 +3,7 @@ import operator
 import functools
 import unittest2 as unittest
 
-from tls.api import version
+import tls.c
 
 def expect_fail_with(major, minor, fix, comparison=operator.eq):
     "Decorate function with expected failure compared to given OpenSSL versions"
@@ -11,7 +11,7 @@ def expect_fail_with(major, minor, fix, comparison=operator.eq):
         return unittest.expectedFailure(func)
     def noop(func):
         return func
-    if comparison(version()[0:3], (major, minor, fix)):
+    if comparison(tls.c.api.version()[0:3], (major, minor, fix)):
         return expect_failure
     return noop
 
