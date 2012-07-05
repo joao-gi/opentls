@@ -71,6 +71,10 @@ class API(object):
                 continue
             name = decl.split(None, 1)[1]
             setattr(self, name, getattr(self.openssl, name))
+        self.cast = self.ffi.cast
+        self.buffer = self.ffi.buffer
+        self.new = self.ffi.new
+        self.NULL = self.ffi.cast("void *", 0)
 
     def _initialise(self):
         "initialise openssl, schedule cleanup at exit"

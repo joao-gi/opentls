@@ -10,8 +10,8 @@ class TestErrorFetch(unittest.TestCase):
     last = 0x140943E8
 
     def setUp(self):
-        api.ERR_put_error(0x20, 0x6D, 0x80, api.ffi.NULL, 0)
-        api.ERR_put_error(0x14, 0x94, 0x3E8, api.ffi.NULL, 0)
+        api.ERR_put_error(0x20, 0x6D, 0x80, api.NULL, 0)
+        api.ERR_put_error(0x14, 0x94, 0x3E8, api.NULL, 0)
 
     def tearDown(self):
         self.count_errors_on_stack()
@@ -50,12 +50,12 @@ class TestErrorParse(unittest.TestCase):
         api.ERR_free_strings()
 
     def test_error_string(self):
-        value = api.ERR_error_string(self.code, api.ffi.NULL)
+        value = api.ERR_error_string(self.code, api.NULL)
         self.assertEqual(str(value), self.text)
 
     def test_error_string_n(self):
         stop = len(self.text) - 1
-        buf = api.ffi.new('char[]', 2*len(self.text))
+        buf = api.new('char[]', 2*len(self.text))
         api.ERR_error_string_n(self.code, buf, stop)
         self.assertEqual(str(buf), self.text[:stop - 1])
 
@@ -92,9 +92,9 @@ class TestErrorParse(unittest.TestCase):
         func = 1
         reason = 1
         code = api.ERR_PACK(lib, func, reason)
-        array = api.ffi.new('ERR_STRING_DATA[2]')
+        array = api.new('ERR_STRING_DATA[2]')
         array[0].error = code
-        array[0].string = api.ffi.new('char[]', "MY ERROR")
+        array[0].string = api.new('char[]', "MY ERROR")
         array[0].error = 0
-        array[0].string = api.ffi.NULL
+        array[0].string = api.NULL
         api.ERR_load_strings(lib, array)
