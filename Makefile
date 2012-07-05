@@ -6,7 +6,7 @@ deps:
 	            -r requirements/production.txt
 
 lint:
-	flake8 --exit-zero tls/api/*py | grep -v -E '(E501|W802)'
+	flake8 --exit-zero tls/c/*py
 	flake8 --exit-zero tls/*py
 
 dist:
@@ -25,9 +25,9 @@ coverage:
 	coverage report --include="tls*"
 
 clean:
-	find . -type f -name "*.pyc" -exec rm '{}' +
-	find . -type d -name "__pycache__" -exec rmdir '{}' +
 	rm -rf *.egg-info .coverage
+	find . -type f -name "*.pyc" -exec rm '{}' +
+	find . -type d -name "__pycache__" -exec rm -rf '{}' +
 	cd docs; make clean
 
 docs: site
