@@ -1,28 +1,22 @@
 from collections import namedtuple
 import atexit
-import inspect
 
 from cffi import FFI
 
-INCLUDES = set([
-    '#include "openssl/ssl.h"',
-    '#include "openssl/evp.h"',
-    '#include "openssl/err.h"',
-])
+__all__ = ['api']
 
-FUNCTIONS = [
-    "void OpenSSL_add_all_algorithms(void);",
-    "void OpenSSL_add_all_ciphers(void);",
-    "void OpenSSL_add_all_digests(void);",
-    "void EVP_cleanup(void);",
-    "int SSL_library_init(void);",
-    "long SSLeay(void);",
-    "const char* SSLeay_version(int);",
-]
 
 class API(object):
+    """OpenSSL API wrapper."""
 
     SSLVersion = namedtuple('SSLVersion', 'major minor fix patch status')
+
+    _modules = [
+        'ssleay',
+        'openssl',
+        'ssl',
+        'evp'
+    ]
 
     __instance = None
 
@@ -32,26 +26,45 @@ class API(object):
         return cls.__instance
 
     def __init__(self):
+        self.INCLUDES = []
+        self.FUNCTIONS = []
         self.ffi = FFI()
-        self._cdef()
+        self._import()
+        self._define()
         self._verify()
-        self._open()
+        self._populate()
+        self._initialise()
 
-    def _cdef(self):
-        "define functions"
-        for func in FUNCTIONS:
-            self.ffi.cdef(func)
+    def _import(self):
+        "import library definitions"
+        for name in self._modules:
+            module = __import__(__name__ + '.' + name, fromlist=['*'])
+            for include in getattr(module, 'INCLUDES', ()):
+                if include not in self.INCLUDES:
+                    self.INCLUDES.append(include)
+            for function in getattr(module, 'FUNCTIONS', ()):
+                if function not in self.FUNCTIONS:
+                    self.FUNCTIONS.append(function)
+
+    def _define(self):
+        "parse function definitions"
+        for function in self.FUNCTIONS:
+            self.ffi.cdef(function)
 
     def _verify(self):
         "load openssl, create function attributes"
-        self.openssl = self.ffi.verify("\n".join(INCLUDES), libraries=['ssl'])
+        includes = "\n".join(self.INCLUDES)
+        self.openssl = self.ffi.verify(includes, libraries=['ssl'])
+
+    def _populate(self):
+        "Attach function definitions to self"
         for decl in self.ffi._parser._declarations:
             if not decl.startswith('function '):
                 continue
             name = decl.split(None, 1)[1]
             setattr(self, name, getattr(self.openssl, name))
-    
-    def _open(self):
+
+    def _initialise(self):
         "initialise openssl, schedule cleanup at exit"
         self.OpenSSL_add_all_digests()
         self.OpenSSL_add_all_ciphers()
