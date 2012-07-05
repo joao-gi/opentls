@@ -1,6 +1,4 @@
 """ctypes wrapper for openssl"""
-from collections import namedtuple
-import atexit
 import ctypes
 import ctypes.util
 import inspect
