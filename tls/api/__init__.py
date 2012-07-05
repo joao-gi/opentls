@@ -4,7 +4,7 @@ import ctypes.util
 import inspect
 import warnings
 
-__all__ = ['bio', 'constant', 'digest', 'error', 'exceptions', 'nid',
+__all__ = ['bio', 'constant', 'digest', 'exceptions', 'nid',
             'objects', 'rand', 'ssl']
 
 libname = ctypes.util.find_library('ssl')

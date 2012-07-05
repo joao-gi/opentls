@@ -14,6 +14,8 @@ class API(object):
     _modules = [
         'ssleay',
         'openssl',
+        'err',
+        'bio',
         'ssl',
         'evp'
     ]
@@ -27,6 +29,7 @@ class API(object):
 
     def __init__(self):
         self.INCLUDES = []
+        self.TYPES = []
         self.FUNCTIONS = []
         self.ffi = FFI()
         self._import()
@@ -42,12 +45,17 @@ class API(object):
             for include in getattr(module, 'INCLUDES', ()):
                 if include not in self.INCLUDES:
                     self.INCLUDES.append(include)
+            for typedef in getattr(module, 'TYPES', ()):
+                if typedef not in self.TYPES:
+                    self.TYPES.append(typedef)
             for function in getattr(module, 'FUNCTIONS', ()):
                 if function not in self.FUNCTIONS:
                     self.FUNCTIONS.append(function)
 
     def _define(self):
         "parse function definitions"
+        for typedef in self.TYPES:
+            self.ffi.cdef(typedef)
         for function in self.FUNCTIONS:
             self.ffi.cdef(function)
 
@@ -68,6 +76,8 @@ class API(object):
         "initialise openssl, schedule cleanup at exit"
         self.OpenSSL_add_all_digests()
         self.OpenSSL_add_all_ciphers()
+        self.SSL_load_error_strings()
+        atexit.register(self.ERR_free_strings)
         atexit.register(self.EVP_cleanup)
 
     def version(self):
