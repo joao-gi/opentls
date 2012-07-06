@@ -17,7 +17,8 @@ class API(object):
         'err',
         'bio',
         'ssl',
-        'evp'
+        'evp',
+        'rand',
     ]
 
     __instance = None
