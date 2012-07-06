@@ -36,11 +36,10 @@ cryptogrpahic purposes.
 from __future__ import absolute_import
 
 from random import Random as _Random
-import ctypes
 import math
 import os
 
-from tls.api import rand as _api
+from tls.c import api
 
 __all__ = ['PseudoRandom', 'Random', 'betavariate', 'choice', 'expovariate',
            'gammavariate', 'gauss', 'getrandbits', 'getstate',
@@ -58,8 +57,6 @@ class Random(_Random):
     sufficiently seeded.
     """
 
-    _rand_bytes = _api.RAND_bytes
-
     def __init__(self, state=None):
         """Initialize an instance.
 
@@ -68,10 +65,15 @@ class Random(_Random):
         self.seed(state)
         self.gauss_next = None
 
+    def _rand_bytes(self, buff, blen):
+        return api.RAND_bytes(buff, blen)
+
     def random(self):
         """Get the next random number in the range [0.0, 1.0)."""
-        buff = (ctypes.c_ubyte * 7)()
-        self._rand_bytes(buff, len(buff))
+        buff = api.new('unsigned char[7]')
+        bptr = api.cast('unsigned char*', buff)
+        if (self._rand_bytes(bptr, len(buff)) <= 0):
+            raise EnvironmentError('PRNG seeded with insufficient entropy')
         # python2 version of following python3 code
         # >>> num = (int.from_bytes(buff, 'big') >> 3) * EPSILON
         num = 0
@@ -83,10 +85,12 @@ class Random(_Random):
 
     def getrandbits(self, bits):
         """getrandbits(k) -> x.  Generates a long int with k random bits."""
-        bytes = math.ceil(bits / 8)
+        bytes = int(math.ceil(bits / 8))
         shift = abs(8 - (bits % 8)) % 8
-        buff = (ctypes.c_ubyte * bytes)()
-        self._rand_bytes(buff, len(buff))
+        buff = api.new('unsigned char[]', bytes)
+        bptr = api.cast('unsigned char*', buff)
+        if (self._rand_bytes(bptr, len(buff)) <= 0):
+            raise EnvironmentError('PRNG seeded with insufficient entropy')
         num = self._seq_to_int(buff) >> shift
         return num
 
@@ -103,25 +107,23 @@ class Random(_Random):
         If *a* is an int, all bits are used.
         """
         if state is None:
-            if not _api.RAND_status():
-                data = (ctypes.c_ubyte * 256)()
-                while not _api.RAND_status():
-                    data[:] = os.urandom(256)
-                    _api.RAND_seed(data, len(data))
+            if not api.RAND_status():
+                while not api.RAND_status():
+                    data = api.new('unsigned char[]', os.urandom(256))
+                    api.RAND_seed(data, len(data))
             return
         elif isinstance(state, (str, bytes, bytearray)):
             if version > 1:
                 if isinstance(state, str):
                     state = state.encode()
-                data = (ctypes.c_ubyte * len(state))()
-                data[:] = state
+                data = api.new('unsigned char[]', state)
             else:
                 state = hash(state)
                 data = self._int_to_ubyte(state)
         else:
             data = self._int_to_ubyte(state)
         entropy = entropy if entropy is not None else 8 * len(data)
-        _api.RAND_add(data, len(data), entropy)
+        api.RAND_add(data, len(data), entropy)
 
     def _seq_to_int(self, seq):
         "Convert sequence of bytes to an int"
@@ -131,9 +133,9 @@ class Random(_Random):
         return num
 
     def _int_to_ubyte(self, num):
-        "Convert int to an array of ctypes.c_ubyte"
-        bytes = math.ceil(num.bit_length() / 8)
-        data = (ctypes.c_ubyte * bytes)()
+        "Convert int to an unsigned char[]"
+        bytes = int(math.ceil(num.bit_length() / 8))
+        data = api.new('unsigned char[]', bytes)
         for pos in range(bytes):
             data[pos] = num & 0xFF
             num = num >> 8
@@ -152,7 +154,9 @@ class PseudoRandom(Random):
     Also uses OpenSSL PRNG.
     """
 
-    _rand_bytes = _api.RAND_pseudo_bytes
+    def _rand_bytes(self, buff, blen):
+        return api.RAND_pseudo_bytes(buff, blen)
+
 
 
 _inst = Random()
