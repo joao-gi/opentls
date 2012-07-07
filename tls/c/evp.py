@@ -35,7 +35,7 @@ FUNCTIONS = [
     'const EVP_MD *EVP_get_digestbynid(int n);',
     'const EVP_MD *EVP_get_digestbyobj(const ASN1_OBJECT *o);',
     'const EVP_MD *EVP_md_null(void);',
-    'const EVP_MD *EVP_md2(void);',
+#   'const EVP_MD *EVP_md2(void);',
     'const EVP_MD *EVP_md4(void);',
     'const EVP_MD *EVP_md5(void);',
     'const EVP_MD *EVP_sha(void);',
