@@ -1,10 +1,9 @@
 """Test digest API"""
-from ctypes import byref, c_uint, pointer, c_ubyte
 from functools import partial
 import platform
 import unittest2 as unittest
 
-from tls.api import digest, nid
+from tls.c import api
 
 def expect_fail_system(system):
     "Decorate function with expected failure for OpenSSL on platform"
@@ -23,48 +22,64 @@ class DigestTests:
     data_long = b'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq'
 
     def _add_contexts(self):
-        self.ctx = digest.EVP_MD_CTX_create()
-        digest.EVP_DigestInit_ex(self.ctx, self.md, None)
-        self.ctx_two = digest.EVP_MD_CTX_create()
-        digest.EVP_DigestInit_ex(self.ctx_two, self.md, None)
+        self.ctx = api.EVP_MD_CTX_create()
+        api.EVP_DigestInit_ex(self.ctx, self.md, api.NULL)
+        self.ctx_two = api.EVP_MD_CTX_create()
+        api.EVP_DigestInit_ex(self.ctx_two, self.md, api.NULL)
 
     def _remove_contexts(self):
-        digest.EVP_MD_CTX_destroy(self.ctx)
-        digest.EVP_MD_CTX_destroy(self.ctx_two)
+        api.EVP_MD_CTX_destroy(self.ctx)
+        api.EVP_MD_CTX_destroy(self.ctx_two)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_short(self):
-        buf = (c_ubyte * digest.EVP_MAX_MD_SIZE)()
-        size = c_uint()
-        digest.EVP_DigestUpdate(self.ctx, self.data_short, len(self.data_short))
-        digest.EVP_DigestFinal_ex(self.ctx, buf, byref(size))
-        hash_value = ''.join('{0:02x}'.format(v) for v in buf[:size.value])
+        data = api.new('char[]', self.data_short)
+        buf = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
+        size = api.new('unsigned int')
+        api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_short))
+        api.EVP_DigestFinal_ex(self.ctx, buf, size)
+        hash_value = ''
+        for pos, val in enumerate(buf):
+            if pos >= size[0]:
+                break
+            hash_value += '{0:02x}'.format(val)
         self.assertEqual(hash_value, self.hash_short)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_long(self):
-        buf = (c_ubyte * digest.EVP_MAX_MD_SIZE)()
-        size = c_uint()
-        digest.EVP_DigestUpdate(self.ctx, self.data_long, len(self.data_long))
-        digest.EVP_DigestFinal_ex(self.ctx, buf, byref(size))
-        hash_value = ''.join('{0:02x}'.format(v) for v in buf[:size.value])
+        data = api.new('char[]', self.data_long)
+        buf = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
+        size = api.new('unsigned int')
+        api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_long))
+        api.EVP_DigestFinal_ex(self.ctx, buf, size)
+        hash_value = ''
+        for pos, val in enumerate(buf):
+            if pos >= size[0]:
+                break
+            hash_value += '{0:02x}'.format(val)
         self.assertEqual(hash_value, self.hash_long)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_copy(self):
-        buf = (c_ubyte * digest.EVP_MAX_MD_SIZE)()
-        size = c_uint()
-        digest.EVP_DigestUpdate(self.ctx, self.data_short, len(self.data_short))
+        data = api.new('char[]', self.data_short)
+        buf = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
+        size = api.new('unsigned int')
+        api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_short))
 
-        digest.EVP_MD_CTX_copy_ex(self.ctx_two, self.ctx)
-        digest.EVP_DigestFinal_ex(self.ctx_two, buf, byref(size))
-        hash_value = ''.join('{0:02x}'.format(v) for v in buf[:size.value])
+        api.EVP_MD_CTX_copy_ex(self.ctx_two, self.ctx)
+        api.EVP_DigestFinal_ex(self.ctx_two, buf, size)
+        hash_value = ''
+        for pos, val in enumerate(buf):
+            if pos >= size[0]:
+                break
+            hash_value += '{0:02x}'.format(val)
         self.assertEqual(hash_value, self.hash_short)
 
-        data = self.data_long[len(self.data_short):]
-        digest.EVP_DigestUpdate(self.ctx, data, len(data))
-        digest.EVP_DigestFinal_ex(self.ctx, buf, byref(size))
-        hash_value = ''.join('{0:02x}'.format(v) for v in buf[:size.value])
+        data = api.new('char[]', self.data_long[len(self.data_short):])
+        api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(data)-1)
+        api.EVP_DigestFinal_ex(self.ctx, buf, size)
+        hash_value = ''
+        for pos, val in enumerate(buf):
+            if pos >= size[0]:
+                break
+            hash_value += '{0:02x}'.format(val)
         self.assertEqual(hash_value, self.hash_long)
 
 
@@ -76,7 +91,7 @@ class TestSHA1(unittest.TestCase, DigestTests):
 
     @classmethod
     def setUpClass(cls):
-        cls.md = digest.EVP_sha1()
+        cls.md = api.EVP_sha1()
 
     def setUp(self):
         self._add_contexts()
@@ -93,7 +108,7 @@ class TestMD5(unittest.TestCase, DigestTests):
 
     @classmethod
     def setUpClass(cls):
-        cls.md = digest.EVP_md5()
+        cls.md = api.EVP_md5()
 
     def setUp(self):
         self._add_contexts()
@@ -110,7 +125,7 @@ class TestSHA256(unittest.TestCase, DigestTests):
 
     @classmethod
     def setUpClass(cls):
-        cls.md = digest.EVP_sha256()
+        cls.md = api.EVP_sha256()
 
     def setUp(self):
         self._add_contexts()
@@ -121,215 +136,173 @@ class TestSHA256(unittest.TestCase, DigestTests):
 
 class TestEVP(unittest.TestCase):
 
-    @unittest.skip('needs to be ported to cffi')
     def test_init(self):
-        ctx = digest.c_evp_md_ctx()
-        ctx_p = pointer(ctx)
-        self.assertTrue(ctx_p)
-        digest.EVP_MD_CTX_init(ctx_p)
-        digest.EVP_MD_CTX_cleanup(ctx_p)
+        ctx = api.new('EVP_MD_CTX')
+        self.assertTrue(ctx)
+        api.EVP_MD_CTX_init(ctx)
+        api.EVP_MD_CTX_cleanup(ctx)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_create(self):
-        ctx_p = digest.EVP_MD_CTX_create()
-        self.assertTrue(ctx_p)
-        digest.EVP_MD_CTX_destroy(ctx_p)
+        ctx = api.EVP_MD_CTX_create()
+        self.assertTrue(ctx)
+        api.EVP_MD_CTX_destroy(ctx)
 
     def _test_md_func(self, name, nid_name=None):
-        nid_name = name.upper() if nid_name is None else nid_name
-        getter = getattr(digest, 'EVP_{0}'.format(name.lower()))
-        num = getattr(nid, nid_name)
+        nid_name = 'NID_' + name.lower() if nid_name is None else nid_name
+        getter = getattr(api, 'EVP_{0}'.format(name.lower()))
+        num = getattr(api, nid_name)
         md = getter()
         self.assertTrue(md)
-        self.assertEqual(digest.EVP_MD_type(md), num)
+        self.assertEqual(api.EVP_MD_type(md), num)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_md_null_func(self):
-        self._test_md_func('md_null', 'undef')
+        self._test_md_func('md_null', 'NID_undef')
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
     def test_dsa_func(self):
         self._test_md_func('dsa_sha', 'DSS')
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
-    def test_dsa_func(self):
-        self._test_md_func('dsa_sha1', 'DSS1')
+    def test_dsa1_func(self):
+        self._test_md_func('dsa_sha1', 'NID_dsaWithSHA1')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_dss_func(self):
-        self._test_md_func('dss')
+        self._test_md_func('dss', 'NID_dsaWithSHA')
 
-    @unittest.skip('needs to be ported to cffi')
+    @unittest.skip('unpredictable support')
     def test_dss1_func(self):
-        self._test_md_func('dss1')
+        self._test_md_func('dss1', 'NID_dsaWithSHA1')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_ecdsa_func(self):
-        self._test_md_func('ecdsa')
+        self._test_md_func('ecdsa', 'NID_ecdsa_with_SHA1')
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
     def test_md2_func(self):
         self._test_md_func('md2')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_md4_func(self):
         self._test_md_func('md4')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_md5_func(self):
         self._test_md_func('md5')
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
     def test_mdc2_func(self):
         self._test_md_func('mdc2')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_ripemd160_func(self):
         self._test_md_func('ripemd160')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha_func(self):
         self._test_md_func('sha')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha1_func(self):
         self._test_md_func('sha1')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha224_func(self):
         self._test_md_func('sha224')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha256_func(self):
         self._test_md_func('sha256')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha384_func(self):
         self._test_md_func('sha384')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha512_func(self):
         self._test_md_func('sha512')
 
-    @unittest.skip('needs to be ported to cffi')
     def _test_md_name(self, name, nid_name=None):
-        nid_name = name.upper() if nid_name is None else nid_name
-        md_name = name.encode()
-        num = getattr(nid, nid_name)
-        md = digest.EVP_get_digestbyname(md_name)
+        nid_name = 'NID_' + name.lower() if nid_name is None else nid_name
+        md_name = name
+        num = getattr(api, nid_name)
+        md = api.EVP_get_digestbyname(md_name)
         self.assertTrue(md)
-        self.assertEqual(digest.EVP_MD_type(md), num)
+        self.assertEqual(api.EVP_MD_type(md), num)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_dsa_name(self):
-        self._test_md_name('DSA', 'DSS')
+        self._test_md_name('DSA', 'NID_dsa')
 
-    @unittest.skip('needs to be ported to cffi')
-    def test_dsa_name(self):
-        self._test_md_name('DSA-SHA1', 'DSS1')
+    def test_dsa_sha_name(self):
+        self._test_md_name('DSA-SHA', 'NID_dsaWithSHA')
 
-    @unittest.skip('needs to be ported to cffi')
+    @unittest.skip('unpredictable support')
+    def test_dsa_sha1_name(self):
+        self._test_md_name('DSA-SHA1', 'NID_dsaWithSHA1')
+
     def test_ecdsa_name(self):
-        self._test_md_name('ecdsa-with-SHA1', 'ECDSA')
+        self._test_md_name('ecdsa-with-SHA1', 'NID_ecdsa_with_SHA1')
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
     def test_md2_name(self):
         self._test_md_name('MD2')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_md4_name(self):
         self._test_md_name('MD4')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_md5_name(self):
         self._test_md_name('MD5')
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
     def test_mdc2_name(self):
         self._test_md_name('MDC2')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_ripemd160_name(self):
         self._test_md_name('RIPEMD160')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha_name(self):
         self._test_md_name('SHA')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha1_name(self):
         self._test_md_name('SHA1')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha224_name(self):
         self._test_md_name('SHA224')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha256_name(self):
         self._test_md_name('SHA256')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha384_name(self):
         self._test_md_name('SHA384')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha512_name(self):
         self._test_md_name('SHA512')
 
-    @unittest.skip('needs to be ported to cffi')
     def _test_md_nid(self, nid, name):
-        self.assertEqual(name, digest.OBJ_nid2sn(nid))
-        md = digest.EVP_get_digestbynid(nid)
+        self.assertEqual(name, str(api.OBJ_nid2sn(nid)))
+        md = api.EVP_get_digestbynid(nid)
         self.assertTrue(md)
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
     def test_md2_nid(self):
-        self._test_md_nid(nid.MD2, b'MD2')
+        self._test_md_nid(api.NID_md2, b'MD2')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_md4_nid(self):
-        self._test_md_nid(nid.MD4, b'MD4')
+        self._test_md_nid(api.NID_md4, b'MD4')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_md5_nid(self):
-        self._test_md_nid(nid.MD5, b'MD5')
+        self._test_md_nid(api.NID_md5, b'MD5')
 
-    @unittest.skip('needs to be ported to cffi')
     @unittest.skip('unpredictable support')
     def test_mdc2_nid(self):
-        self._test_md_nid(nid.MDC2, b'MDC2')
+        self._test_md_nid(api.NID_mdc2, b'MDC2')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_ripemd160_nid(self):
-        self._test_md_nid(nid.RIPEMD160, b'RIPEMD160')
+        self._test_md_nid(api.NID_ripemd160, b'RIPEMD160')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha_nid(self):
-        self._test_md_nid(nid.SHA, b'SHA')
+        self._test_md_nid(api.NID_sha, b'SHA')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha1_nid(self):
-        self._test_md_nid(nid.SHA1, b'SHA1')
+        self._test_md_nid(api.NID_sha1, b'SHA1')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha224_nid(self):
-        self._test_md_nid(nid.SHA224, b'SHA224')
+        self._test_md_nid(api.NID_sha224, b'SHA224')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha256_nid(self):
-        self._test_md_nid(nid.SHA256, b'SHA256')
+        self._test_md_nid(api.NID_sha256, b'SHA256')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha384_nid(self):
-        self._test_md_nid(nid.SHA384, b'SHA384')
+        self._test_md_nid(api.NID_sha384, b'SHA384')
 
-    @unittest.skip('needs to be ported to cffi')
     def test_sha512_nid(self):
-        self._test_md_nid(nid.SHA512, b'SHA512')
+        self._test_md_nid(api.NID_sha512, b'SHA512')

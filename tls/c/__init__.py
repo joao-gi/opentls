@@ -12,13 +12,15 @@ class API(object):
     SSLVersion = namedtuple('SSLVersion', 'major minor fix patch status')
 
     _modules = [
-        'ssleay',
-        'openssl',
-        'err',
         'bio',
-        'ssl',
+        'err',
         'evp',
+        'obj',
+        'openssl',
+        'nid',
         'rand',
+        'ssl',
+        'ssleay',
     ]
 
     __instance = None
@@ -68,7 +70,7 @@ class API(object):
     def _populate(self):
         "Attach function definitions to self"
         for decl in self.ffi._parser._declarations:
-            if not decl.startswith('function '):
+            if not decl.startswith(('function ', 'constant ')):
                 continue
             name = decl.split(None, 1)[1]
             setattr(self, name, getattr(self.openssl, name))
