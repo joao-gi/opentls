@@ -7,14 +7,9 @@ TYPES = [
     'static const int EVP_MAX_KEY_LENGTH;',
     'static const int EVP_MAX_IV_LENGTH;',
     'static const int EVP_MAX_BLOCK_LENGTH;',
+    'struct env_md_ctx_st { ...; };',
     'typedef ... ENGINE;',
     'typedef ... EVP_MD;',
-    '''struct env_md_ctx_st {
-        const EVP_MD *digest;
-        ENGINE *engine;
-        unsigned long flags;
-        void *md_data;
-    };''',
     'typedef struct env_md_ctx_st EVP_MD_CTX;',
 ]
 
