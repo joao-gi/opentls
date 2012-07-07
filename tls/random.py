@@ -134,7 +134,15 @@ class Random(_Random):
 
     def _int_to_ubyte(self, num):
         "Convert int to an unsigned char[]"
-        bytes = int(math.ceil(num.bit_length() / 8))
+        if hasattr(num, 'bit_length'):
+            bit_len = num.bit_length()
+        else:
+            value = num
+            bit_len = 0
+            while value:
+                value >>= 1
+                bit_len += 1
+        bytes = int(math.ceil(bit_len / 8.0))
         data = api.new('unsigned char[]', bytes)
         for pos in range(bytes):
             data[pos] = num & 0xFF
