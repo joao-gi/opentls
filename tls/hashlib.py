@@ -46,12 +46,10 @@ More condensed:
     >>> hashlib.sha224(b"Nobody inspects the spammish repetition").hexdigest()
     'a4337bc45a8fc544c03f52dc550cd6e1e87021bc896588bd79e901e2
 """
-import ctypes
 import functools
+import itertools
 
-import tls.api.constant
-import tls.api.digest
-import tls.api.objects
+from tls.c import api
 
 __all__ = ['algorithms_available', 'algorithms_guaranteed', 'new']
 
@@ -60,26 +58,26 @@ def __available_algorithms():
     "Create set of unique message digest algorithm names provided by OpenSSL"
 
     def add_to_names(obj, _):
-        if obj.contents.alias:
+        if obj.alias:
             return
-        name = obj.contents.name
+        name = obj.name
         try:
-            nid = tls.api.objects.OBJ_sn2nid(name)
+            nid = api.OBJ_sn2nid(name)
         except:
             try:
-                nid = tls.api.objects.OBJ_ln2nid(name)
+                nid = api.OBJ_ln2nid(name)
             except:
                 return
-        hashes.setdefault(nid, set()).add(name)
+        hashes.setdefault(nid, set()).add(bytes(name))
 
     algorithms = set()
     hashes = {}
-    TYPE = tls.api.constant.OBJ_NAME_TYPE_MD_METH
-    callback = tls.api.objects.c_do_all_callback(add_to_names)
-    tls.api.objects.OBJ_NAME_do_all(TYPE, callback, None)
+    TYPE = api.OBJ_NAME_TYPE_MD_METH
+    callback = api.callback('void(*)(const OBJ_NAME*, void *arg)', add_to_names)
+    api.OBJ_NAME_do_all(TYPE, callback, api.NULL)
     for nid in hashes:
         name = sorted(hashes[nid])[0]
-        algorithms.add(name.decode())
+        algorithms.add(name)
     return algorithms
 
 # there are no guarantees with openssl
@@ -92,62 +90,62 @@ class MessageDigest:
     of information.
     """
 
-    Buffer = (ctypes.c_ubyte * tls.api.digest.EVP_MAX_MD_SIZE)
-
     def __init__(self, digest, data=None):
         self._md = digest
-        self._context = tls.api.digest.c_evp_md_ctx()
-        self._pointer = ctypes.pointer(self._context)
-        tls.api.digest.EVP_DigestInit_ex(self._pointer, self._md, None)
+        self._context = api.new('EVP_MD_CTX')
+        api.EVP_DigestInit_ex(self._context, self._md, api.cast('ENGINE*', 0))
         if data:
             self.update(data)
 
     def __del__(self):
-        tls.api.digest.EVP_MD_CTX_cleanup(self._pointer)
+        api.EVP_MD_CTX_cleanup(self._context)
 
     @property
     def name(self):
-        nid = tls.api.digest.EVP_MD_CTX_type(self._pointer)
-        name = tls.api.objects.OBJ_nid2sn(nid)
-        return name.decode()
+        nid = api.EVP_MD_CTX_type(self._context)
+        name = api.OBJ_nid2sn(nid)
+        return bytes(name)
 
     @property
     def digest_size(self):
-        return tls.api.digest.EVP_MD_CTX_size(self._pointer)
+        return api.EVP_MD_CTX_size(self._context)
 
     @property
     def block_size(self):
-        return tls.api.digest.EVP_MD_CTX_block_size(self._pointer)
+        return api.EVP_MD_CTX_block_size(self._context)
 
     def update(self, data):
         "Update this hash object's state with the provided string."
-        tls.api.digest.EVP_DigestUpdate(self._pointer, data, len(data))
+        buff = api.new('char[]', data)
+        ptr = api.cast('void*', buff)
+        api.EVP_DigestUpdate(self._context, ptr, len(data))
 
     def digest(self):
         "Return the digest value as a string of binary data."
-        return bytes(self._digest())
+        buff, size = self._digest()
+        return ''.join(chr(c) for c in itertools.islice(buff, size))
 
     def hexdigest(self):
         "Return the digest value as a string of hexadecimal digits."
-        return ''.join('{0:02x}'.format(b) for b in self._digest())
+        buff, size = self._digest()
+        return ''.join('{0:02x}'.format(b) for b in itertools.islice(buff, size))
 
     def copy(self):
         "Return a copy of the hash object."
         new = MessageDigest(self._md)
-        tls.api.digest.EVP_MD_CTX_copy_ex(new._pointer, self._pointer)
+        api.EVP_MD_CTX_copy_ex(new._context, self._context)
         return new
 
     def _digest(self):
         "Return iterator for digest byte data."
-        buff = self.Buffer()
-        size = ctypes.c_uint()
-        context = tls.api.digest.c_evp_md_ctx()
-        pointer = ctypes.pointer(context)
-        tls.api.digest.EVP_DigestInit_ex(pointer, self._md, None)
-        tls.api.digest.EVP_MD_CTX_copy_ex(pointer, self._pointer)
-        tls.api.digest.EVP_DigestFinal_ex(pointer, buff, ctypes.byref(size))
-        tls.api.digest.EVP_MD_CTX_cleanup(pointer)
-        return buff[:size.value]
+        buff = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
+        size = api.new('unsigned int')
+        context = api.new('EVP_MD_CTX')
+        api.EVP_DigestInit_ex(context, self._md, api.cast('ENGINE*', 0))
+        api.EVP_MD_CTX_copy_ex(context, self._context)
+        api.EVP_DigestFinal_ex(context, buff, size)
+        api.EVP_MD_CTX_cleanup(context)
+        return buff, size[0]
 
 
 def new(name, data=None):
@@ -157,7 +155,7 @@ def new(name, data=None):
     optionally initialized with data (which must be bytes).
     """
     name = name.encode()
-    digest = tls.api.digest.EVP_get_digestbyname(name)
+    digest = api.EVP_get_digestbyname(name)
     return MessageDigest(digest, data)
 
 if 'MD5' in algorithms_available:
