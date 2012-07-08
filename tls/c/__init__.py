@@ -31,10 +31,12 @@ class API(object):
         return cls.__instance
 
     def __init__(self):
+        self.ffi = FFI()
         self.INCLUDES = []
         self.TYPES = []
         self.FUNCTIONS = []
-        self.ffi = FFI()
+        self.SETUP = []
+        self.TEARDOWN = []
         self._import()
         self._define()
         self._verify()
@@ -42,18 +44,21 @@ class API(object):
         self._initialise()
 
     def _import(self):
-        "import library definitions"
+        "import all library definitions"
         for name in self._modules:
             module = __import__(__name__ + '.' + name, fromlist=['*'])
-            for include in getattr(module, 'INCLUDES', ()):
-                if include not in self.INCLUDES:
-                    self.INCLUDES.append(include)
-            for typedef in getattr(module, 'TYPES', ()):
-                if typedef not in self.TYPES:
-                    self.TYPES.append(typedef)
-            for function in getattr(module, 'FUNCTIONS', ()):
-                if function not in self.FUNCTIONS:
-                    self.FUNCTIONS.append(function)
+            self._import_definitions(module, 'INCLUDES')
+            self._import_definitions(module, 'TYPES')
+            self._import_definitions(module, 'FUNCTIONS')
+            self._import_definitions(module, 'SETUP')
+            self._import_definitions(module, 'TEARDOWN')
+
+    def _import_definitions(self, module, name):
+        "import defintions named defintions from module"
+        container = getattr(self, name)
+        for definition in getattr(module, name, ()):
+            if definition not in container:
+                container.append(definition)
 
     def _define(self):
         "parse function definitions"
@@ -81,11 +86,10 @@ class API(object):
 
     def _initialise(self):
         "initialise openssl, schedule cleanup at exit"
-        self.OpenSSL_add_all_digests()
-        self.OpenSSL_add_all_ciphers()
-        self.SSL_load_error_strings()
-        atexit.register(self.ERR_free_strings)
-        atexit.register(self.EVP_cleanup)
+        for function in self.SETUP:
+            getattr(self, function)()
+        for function in self.TEARDOWN:
+            atexit.register(getattr(self, function))
 
     def version(self):
         "Return SSL version information"

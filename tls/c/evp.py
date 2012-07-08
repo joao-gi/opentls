@@ -2,6 +2,10 @@ INCLUDES = [
     '#include "openssl/evp.h"',
 ]
 
+TEARDOWN = [
+    'EVP_cleanup',
+]
+
 TYPES = [
     'static const int EVP_MAX_MD_SIZE;',
     'static const int EVP_MAX_KEY_LENGTH;',

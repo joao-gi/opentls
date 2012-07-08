@@ -3,6 +3,10 @@ INCLUDES = [
     '#include <openssl/ssl.h>',
 ]
 
+TEARDOWN = [
+    'ERR_free_strings',
+]
+
 TYPES = [
 'struct ERR_string_data_st { unsigned long error; const char *string; };',
 'typedef struct ERR_string_data_st ERR_STRING_DATA;',
