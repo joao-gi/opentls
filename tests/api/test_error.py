@@ -51,25 +51,25 @@ class TestErrorParse(unittest.TestCase):
 
     def test_error_string(self):
         value = api.ERR_error_string(self.code, api.NULL)
-        self.assertEqual(str(value), self.text)
+        self.assertEqual(bytes(value), self.text)
 
     def test_error_string_n(self):
         stop = len(self.text) - 1
         buf = api.new('char[]', 2*len(self.text))
         api.ERR_error_string_n(self.code, buf, stop)
-        self.assertEqual(str(buf), self.text[:stop - 1])
+        self.assertEqual(bytes(buf), self.text[:stop - 1])
 
     def test_lib_error_string(self):
         value = api.ERR_lib_error_string(self.code)
-        self.assertEqual(str(value), self.text.split(b':')[2])
+        self.assertEqual(bytes(value), self.text.split(b':')[2])
 
     def test_func_error_string(self):
         value = api.ERR_func_error_string(self.code)
-        self.assertEqual(str(value), self.text.split(b':')[3])
+        self.assertEqual(bytes(value), self.text.split(b':')[3])
 
     def test_reason_error_string(self):
         value = api.ERR_reason_error_string(self.code)
-        self.assertEqual(str(value), self.text.split(b':')[4])
+        self.assertEqual(bytes(value), self.text.split(b':')[4])
 
     def test_code_pack(self):
         code = api.ERR_PACK(0x20, 0x6D, 0x80)
