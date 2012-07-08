@@ -1,5 +1,6 @@
 """Test digest API"""
 from functools import partial
+from itertools import islice
 import platform
 import unittest2 as unittest
 
@@ -37,11 +38,7 @@ class DigestTests:
         size = api.new('unsigned int')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_short))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = ''
-        for pos, val in enumerate(buf):
-            if pos >= size[0]:
-                break
-            hash_value += '{0:02x}'.format(val)
+        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_short)
 
     def test_long(self):
@@ -50,11 +47,7 @@ class DigestTests:
         size = api.new('unsigned int')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_long))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = ''
-        for pos, val in enumerate(buf):
-            if pos >= size[0]:
-                break
-            hash_value += '{0:02x}'.format(val)
+        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_long)
 
     def test_copy(self):
@@ -65,21 +58,13 @@ class DigestTests:
 
         api.EVP_MD_CTX_copy_ex(self.ctx_two, self.ctx)
         api.EVP_DigestFinal_ex(self.ctx_two, buf, size)
-        hash_value = ''
-        for pos, val in enumerate(buf):
-            if pos >= size[0]:
-                break
-            hash_value += '{0:02x}'.format(val)
+        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_short)
 
         data = api.new('char[]', self.data_long[len(self.data_short):])
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(data)-1)
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = ''
-        for pos, val in enumerate(buf):
-            if pos >= size[0]:
-                break
-            hash_value += '{0:02x}'.format(val)
+        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_long)
 
 
