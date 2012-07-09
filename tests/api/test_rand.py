@@ -38,7 +38,7 @@ def cumulative_average(average=0.0, samples=0.0):
         cma = cma + (new - cma) / cnt
 
 
-class RandTests:
+class RandTests(object):
 
     def test_range(self):
         """Test extremes of valid range for random values has been generated.

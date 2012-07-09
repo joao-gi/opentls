@@ -86,7 +86,7 @@ class DigestError(ValueError):
     "Error occred when creating message digest"
 
 
-class MessageDigest:
+class MessageDigest(object):
     """A hash represents the object used to calculate a checksum of a string
     of information.
     """

@@ -5,7 +5,7 @@ import unittest2 as unittest
 from tls.api import bio, digest
 
 
-class BioFilter:
+class BioFilter(object):
 
     input = b"HELLO WORLD"
 

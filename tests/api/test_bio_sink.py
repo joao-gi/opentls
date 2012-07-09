@@ -8,7 +8,7 @@ from tests import expect_fail_before
 from tls.api import bio
 
 
-class BioWrite:
+class BioWrite(object):
 
     data = b"HELLO WORLD"
 
@@ -80,7 +80,7 @@ class BioWrite:
         self.assertTrue(bio.BIO_eof(self.bio))
 
 
-class BioRead:
+class BioRead(object):
 
     data = b"HELLO WORLD"
 

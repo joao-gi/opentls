@@ -17,7 +17,7 @@ def expect_fail_system(system):
     return noop
 
 
-class DigestTests:
+class DigestTests(object):
 
     data_short = b'abc'
     data_long = b'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq'
