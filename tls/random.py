@@ -50,6 +50,10 @@ __all__ = ['PseudoRandom', 'Random', 'betavariate', 'choice', 'expovariate',
 EPSILON = 1.1102230246251565E-16
 
 
+class RandomError(EnvironmentError):
+    "An error with random numbers occured"
+
+
 class Random(_Random):
     """Cryptographically strong pseudo-random numbers using OpenSSL.
 
@@ -72,8 +76,8 @@ class Random(_Random):
         """Get the next random number in the range [0.0, 1.0)."""
         buff = api.new('unsigned char[7]')
         bptr = api.cast('unsigned char*', buff)
-        if (self._rand_bytes(bptr, len(buff)) <= 0):
-            raise EnvironmentError('PRNG seeded with insufficient entropy')
+        if not self._rand_bytes(bptr, len(buff)):
+            raise RandomError('PRNG seeded with insufficient entropy')
         # python2 version of following python3 code
         # >>> num = (int.from_bytes(buff, 'big') >> 3) * EPSILON
         num = 0
@@ -89,8 +93,8 @@ class Random(_Random):
         shift = abs(8 - (bits % 8)) % 8
         buff = api.new('unsigned char[]', bytes)
         bptr = api.cast('unsigned char*', buff)
-        if (self._rand_bytes(bptr, len(buff)) <= 0):
-            raise EnvironmentError('PRNG seeded with insufficient entropy')
+        if not self._rand_bytes(bptr, len(buff)):
+            raise RandomError('PRNG seeded with insufficient entropy')
         num = self._seq_to_int(buff) >> shift
         return num
 
