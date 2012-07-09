@@ -61,14 +61,11 @@ def __available_algorithms():
         if obj.alias:
             return
         name = obj.name
-        try:
-            nid = api.OBJ_sn2nid(name)
-        except:
-            try:
-                nid = api.OBJ_ln2nid(name)
-            except:
-                return
-        hashes.setdefault(nid, set()).add(bytes(name))
+        nid = api.OBJ_sn2nid(name)
+        if nid == api.NID_undef:
+            nid = api.OBJ_ln2nid(name)
+        if nid != api.NID_undef:
+            hashes.setdefault(nid, set()).add(bytes(name))
 
     algorithms = set()
     hashes = {}
@@ -85,6 +82,10 @@ algorithms_guaranteed = set()
 algorithms_available = __available_algorithms()
 
 
+class DigestError(ValueError):
+    "Error occred when creating message digest"
+
+
 class MessageDigest:
     """A hash represents the object used to calculate a checksum of a string
     of information.
@@ -93,7 +94,8 @@ class MessageDigest:
     def __init__(self, digest, data=None):
         self._md = digest
         self._context = api.new('EVP_MD_CTX')
-        api.EVP_DigestInit_ex(self._context, self._md, api.cast('ENGINE*', 0))
+        if not api.EVP_DigestInit_ex(self._context, self._md, api.cast('ENGINE*', 0)):
+            raise DigestError('Failed to initialise message digest')
         if data:
             self.update(data)
 
@@ -104,6 +106,8 @@ class MessageDigest:
     def name(self):
         nid = api.EVP_MD_CTX_type(self._context)
         name = api.OBJ_nid2sn(nid)
+        if name == api.NULL:
+            raise DigestError('Failed to get digest name')
         return bytes(name)
 
     @property
@@ -118,7 +122,8 @@ class MessageDigest:
         "Update this hash object's state with the provided string."
         buff = api.new('char[]', data)
         ptr = api.cast('void*', buff)
-        api.EVP_DigestUpdate(self._context, ptr, len(data))
+        if not api.EVP_DigestUpdate(self._context, ptr, len(data)):
+            raise DigestError('Error updating message digest')
 
     def digest(self):
         "Return the digest value as a string of binary data."
@@ -133,7 +138,8 @@ class MessageDigest:
     def copy(self):
         "Return a copy of the hash object."
         new = MessageDigest(self._md)
-        api.EVP_MD_CTX_copy_ex(new._context, self._context)
+        if not api.EVP_MD_CTX_copy_ex(new._context, self._context):
+            raise DigestError('Failed to copy message digest')
         return new
 
     def _digest(self):
@@ -141,10 +147,14 @@ class MessageDigest:
         buff = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
         size = api.new('unsigned int')
         context = api.new('EVP_MD_CTX')
-        api.EVP_DigestInit_ex(context, self._md, api.cast('ENGINE*', 0))
-        api.EVP_MD_CTX_copy_ex(context, self._context)
-        api.EVP_DigestFinal_ex(context, buff, size)
-        api.EVP_MD_CTX_cleanup(context)
+        if not api.EVP_DigestInit_ex(context, self._md, api.cast('ENGINE*', 0)):
+            raise DigestError('Failed to initialise message digest')
+        if not api.EVP_MD_CTX_copy_ex(context, self._context):
+            raise DigestError('Failed to copy message digest')
+        if not api.EVP_DigestFinal_ex(context, buff, size):
+            raise DigestError('Failed to retrieve digest value')
+        if not api.EVP_MD_CTX_cleanup(context):
+            raise DigestError('Failed to cleanup message digest')
         return buff, size[0]
 
 
