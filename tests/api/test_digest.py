@@ -24,9 +24,9 @@ class DigestTests(object):
 
     def _add_contexts(self):
         self.ctx = api.EVP_MD_CTX_create()
-        api.EVP_DigestInit_ex(self.ctx, self.md, api.cast('ENGINE*', 0))
+        api.EVP_DigestInit_ex(self.ctx, self.md, api.NULL)
         self.ctx_two = api.EVP_MD_CTX_create()
-        api.EVP_DigestInit_ex(self.ctx_two, self.md, api.cast('ENGINE*', 0))
+        api.EVP_DigestInit_ex(self.ctx_two, self.md, api.NULL)
 
     def _remove_contexts(self):
         api.EVP_MD_CTX_destroy(self.ctx)

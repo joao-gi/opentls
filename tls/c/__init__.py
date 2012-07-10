@@ -84,7 +84,7 @@ class API(object):
         self.callback = self.ffi.callback
         self.cast = self.ffi.cast
         self.new = self.ffi.new
-        self.NULL = self.ffi.cast("void *", 0)
+        self.NULL = self.ffi.NULL
 
     def _initialise(self):
         "initialise openssl, schedule cleanup at exit"

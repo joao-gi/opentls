@@ -94,7 +94,7 @@ class MessageDigest(object):
     def __init__(self, digest, data=None):
         self._md = digest
         self._context = api.new('EVP_MD_CTX')
-        if not api.EVP_DigestInit_ex(self._context, self._md, api.cast('ENGINE*', 0)):
+        if not api.EVP_DigestInit_ex(self._context, self._md, api.NULL):
             raise DigestError('Failed to initialise message digest')
         if data:
             self.update(data)
@@ -147,7 +147,7 @@ class MessageDigest(object):
         buff = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
         size = api.new('unsigned int')
         context = api.new('EVP_MD_CTX')
-        if not api.EVP_DigestInit_ex(context, self._md, api.cast('ENGINE*', 0)):
+        if not api.EVP_DigestInit_ex(context, self._md, api.NULL):
             raise DigestError('Failed to initialise message digest')
         if not api.EVP_MD_CTX_copy_ex(context, self._context):
             raise DigestError('Failed to copy message digest')
