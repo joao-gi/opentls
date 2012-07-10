@@ -1,200 +1,182 @@
 """Test BIO Sinks"""
-import ctypes
 import os
 import tempfile
 import unittest2 as unittest
 
 from tests import expect_fail_before
-from tls.api import bio
+from tls.c import api
 
 
 class BioWrite(object):
 
-    data = b"HELLO WORLD"
+    data = api.new('char[]', b"HELLO WORLD")
 
     def setUp(self):
-        self.bio = bio.BIO_new(self.method)
+        self.bio = api.BIO_new(self.method)
 
     def tearDown(self):
-        bio.BIO_free(self.bio)
+        api.BIO_free(self.bio)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_write(self):
-        written = bio.BIO_write(self.bio, self.data, len(self.data))
+        written = api.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_puts(self):
-        put = bio.BIO_puts(self.bio, self.data)
-        self.assertEqual(bio.BIO_wpending(self.bio), 0)
-        self.assertEqual(put, len(self.data))
+        put = api.BIO_puts(self.bio, self.data)
+        self.assertEqual(api.BIO_wpending(self.bio), 0)
+        self.assertEqual(put, len(bytes(self.data)))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_flush(self):
-        bio.BIO_flush(self.bio)
+        api.BIO_flush(self.bio)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_wpending(self):
-        written = bio.BIO_write(self.bio, self.data, len(self.data))
-        self.assertEqual(bio.BIO_wpending(self.bio), 0)
+        written = api.BIO_write(self.bio, self.data, len(self.data))
+        self.assertEqual(api.BIO_wpending(self.bio), 0)
         self.assertEqual(written, len(self.data))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_ctrl_wpending(self):
-        written = bio.BIO_write(self.bio, self.data, len(self.data))
-        self.assertEqual(bio.BIO_ctrl_wpending(self.bio), 0)
+        written = api.BIO_write(self.bio, self.data, len(self.data))
+        self.assertEqual(api.BIO_ctrl_wpending(self.bio), 0)
         self.assertEqual(written, len(self.data))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_reset(self):
-        written = bio.BIO_write(self.bio, self.data, len(self.data))
-        self.assertFalse(bio.BIO_eof(self.bio))
+        written = api.BIO_write(self.bio, self.data, len(self.data))
+        self.assertFalse(api.BIO_eof(self.bio))
         self.assertEqual(written, len(self.data))
-        bio.BIO_reset(self.bio)
-        self.assertEqual(bio.BIO_tell(self.bio), 0)
+        api.BIO_reset(self.bio)
+        self.assertEqual(api.BIO_tell(self.bio), 0)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_tell(self):
-        start = bio.BIO_tell(self.bio)
+        start = api.BIO_tell(self.bio)
         self.assertEqual(start, 0)
-        written = bio.BIO_write(self.bio, self.data, len(self.data))
+        written = api.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
-        stop = bio.BIO_tell(self.bio)
+        stop = api.BIO_tell(self.bio)
         self.assertEqual(stop, len(self.data))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_seek(self):
-        written = bio.BIO_write(self.bio, self.data, len(self.data))
+        written = api.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
-        bio.BIO_seek(self.bio, 1)
-        stop = bio.BIO_tell(self.bio)
+        api.BIO_seek(self.bio, 1)
+        stop = api.BIO_tell(self.bio)
         self.assertEqual(stop, 1)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_eof(self):
-        bio.BIO_read(self.bio, bytes(1), 1)
-        self.assertTrue(bio.BIO_eof(self.bio))
-        written = bio.BIO_write(self.bio, self.data, len(self.data))
+        buf = api.new('char[]', 1)
+        api.BIO_read(self.bio, buf, 1)
+        self.assertTrue(api.BIO_eof(self.bio))
+        written = api.BIO_write(self.bio, self.data, len(self.data))
         self.assertEqual(written, len(self.data))
-        self.assertTrue(bio.BIO_flush(self.bio))
-        self.assertTrue(bio.BIO_eof(self.bio))
+        self.assertTrue(api.BIO_flush(self.bio))
+        self.assertTrue(api.BIO_eof(self.bio))
 
 
 class BioRead(object):
 
-    data = b"HELLO WORLD"
+    data = api.new('char[]', b"HELLO WORLD")
 
     def setUp(self):
-        self.bio = bio.BIO_new(self.method)
+        self.bio = api.BIO_new(self.method)
 
     def tearDown(self):
-        bio.BIO_free(self.bio)
+        api.BIO_free(self.bio)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_read_all(self):
-        buf = bytes(len(self.data))
-        read = bio.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(buf))
-        self.assertEqual(buf, self.data)
+        buf = api.new('char[]', len(self.data))
+        read = api.BIO_read(self.bio, buf, len(buf))
+        self.assertEqual(read, len(bytes(buf)))
+        self.assertEqual(bytes(buf), bytes(self.data))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_read_one(self):
         count = 0
-        buf = bytes(1)
-        read = bio.BIO_read(self.bio, buf, len(buf))
+        buf = api.new('char[]', 1)
+        read = api.BIO_read(self.bio, buf, len(buf))
         while read > 0:
             self.assertEqual(read, len(buf))
-            self.assertEqual(ord(buf), self.data[count])
-            read = bio.BIO_read(self.bio, buf, len(buf))
+            self.assertEqual(buf[0], self.data[count])
+            read = api.BIO_read(self.bio, buf, len(buf))
             count += 1
-        self.assertTrue(bio.BIO_eof(self.bio))
+        self.assertTrue(api.BIO_eof(self.bio))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_read_long(self):
-        buf = bytes(2 * len(self.data))
-        size = bio.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(size, len(self.data))
+        buf = api.new('char[]', 2 * len(self.data))
+        size = api.BIO_read(self.bio, buf, len(buf))
+        self.assertEqual(size, len(bytes(self.data)))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_gets(self):
-        buf = bytes(len(self.data))
-        got = bio.BIO_gets(self.bio, buf, len(buf))
+        buf = api.new('char[]', len(self.data))
+        got = api.BIO_gets(self.bio, buf, len(buf))
         self.assertEqual(got + 1, len(buf))
-        self.assertEqual(buf, self.data[:-1] + b'\x00')
+        self.assertEqual(bytes(buf), bytes(self.data))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_pending(self):
-        pending = bio.BIO_pending(self.bio)
-        self.assertEqual(pending, len(self.data))
+        pending = api.BIO_pending(self.bio)
+        self.assertEqual(pending, len(bytes(self.data)))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_ctrl_pending(self):
-        pending = bio.BIO_ctrl_pending(self.bio)
-        self.assertEqual(pending, len(self.data))
+        pending = api.BIO_ctrl_pending(self.bio)
+        self.assertEqual(pending, len(bytes(self.data)))
 
-    @unittest.skip('needs to be ported to cffi')
     def test_tell(self):
-        start = bio.BIO_tell(self.bio)
+        start = api.BIO_tell(self.bio)
         self.assertEqual(start, 0)
-        buf = bytes(1)
-        read = bio.BIO_read(self.bio, buf, len(buf))
+        buf = api.new('char[]', 1)
+        read = api.BIO_read(self.bio, buf, len(buf))
         self.assertEqual(read, len(buf))
-        end = bio.BIO_tell(self.bio)
+        end = api.BIO_tell(self.bio)
         self.assertNotEqual(start, end)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_seek(self):
-        bio.BIO_seek(self.bio, 1)
-        buf = bytes(len(self.data))
-        read = bio.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(buf) - 1)
-        self.assertEqual(buf[:read], self.data[1:1 + read])
+        api.BIO_seek(self.bio, 1)
+        buf = api.new('char[]', len(self.data))
+        read = api.BIO_read(self.bio, buf, len(buf))
+        self.assertEqual(read, len(bytes(self.data)) - 1)
+        self.assertEqual(bytes(buf), bytes(self.data)[1:])
 
-    @unittest.skip('needs to be ported to cffi')
     def test_eof(self):
-        buf = bytes(len(self.data) + 1)
-        read = bio.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(self.data))
-        self.assertTrue(bio.BIO_eof(self.bio))
+        buf = api.new('char[]', len(self.data) + 1)
+        read = api.BIO_read(self.bio, buf, len(buf))
+        self.assertEqual(read, len(bytes(self.data)))
+        self.assertTrue(api.BIO_eof(self.bio))
 
 
 # Mem buffers
 class TestBioMem(unittest.TestCase):
 
-    @unittest.skip('needs to be ported to cffi')
     def test_bio_new_mem(self):
         try:
-            method = bio.BIO_s_mem()
-            mem = bio.BIO_new(method)
+            method = api.BIO_s_mem()
+            mem = api.BIO_new(method)
         finally:
-            bio.BIO_free(mem)
+            api.BIO_free(mem)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_bio_new_mem_buf(self):
         try:
-            data = "Hello World"
-            mem = bio.BIO_new_mem_buf(data, -1)
+            data = api.new('char[]', b"Hello World")
+            mem = api.BIO_new_mem_buf(data, -1)
         finally:
-            bio.BIO_free(mem)
+            api.BIO_free(mem)
 
-    @unittest.skip('needs to be ported to cffi')
     def test_bio_read_write(self):
         try:
-            method = bio.BIO_s_mem()
-            mem = bio.BIO_new(method)
-            bio.BIO_write(mem, b"HELLO WORLD", 11)
-            buf = bytes(5)
-            bio.BIO_read(mem, buf, len(buf))
-            self.assertEqual(buf, b"HELLO")
-            bio.BIO_gets(mem, buf, len(buf))
-            self.assertEqual(buf, b" WOR\x00")
+            method = api.BIO_s_mem()
+            mem = api.BIO_new(method)
+            data = api.new('char[]', b"HELLO WORLD")
+            api.BIO_write(mem, data, 11)
+            buf = api.new('char[]', 5)
+            api.BIO_read(mem, buf, len(buf))
+            self.assertEqual(bytes(buf), b"HELLO")
+            api.BIO_gets(mem, buf, len(buf))
+            self.assertEqual(bytes(buf), b" WOR")
         finally:
-            bio.BIO_free(mem)
+            api.BIO_free(mem)
 
 
 class TestBioMemWrite(BioWrite, unittest.TestCase):
 
-    method = bio.BIO_s_mem()
+    @property
+    def method(self):
+        return api.BIO_s_mem()
 
     test_tell = unittest.expectedFailure(BioRead.test_tell)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
@@ -204,7 +186,7 @@ class TestBioMemWrite(BioWrite, unittest.TestCase):
 class TestBioMemRead(BioRead, unittest.TestCase):
 
     def setUp(self):
-        self.bio = bio.BIO_new_mem_buf(self.data, -1)
+        self.bio = api.BIO_new_mem_buf(self.data, -1)
 
     test_tell = unittest.expectedFailure(BioRead.test_tell)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
@@ -228,7 +210,7 @@ class TestBioFileWrite(BioWrite, unittest.TestCase):
 
     def setUp(self):
         name = self.name.encode()
-        self.bio = bio.BIO_new_file(name, b'w+')
+        self.bio = api.BIO_new_file(name, b'w+')
 
     test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
 
@@ -240,7 +222,7 @@ class TestBioFileRead(BioRead, unittest.TestCase):
         fd, cls.name = tempfile.mkstemp()
         os.close(fd)
         with open(cls.name, 'wb') as dest:
-            dest.write(cls.data)
+            dest.write(bytes(cls.data))
 
     @classmethod
     def tearDownClass(cls):
@@ -248,7 +230,7 @@ class TestBioFileRead(BioRead, unittest.TestCase):
 
     def setUp(self):
         name = self.name.encode()
-        self.bio = bio.BIO_new_file(name, b'r')
+        self.bio = api.BIO_new_file(name, b'r')
 
     test_pending = unittest.expectedFailure(BioRead.test_pending)
     test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)
@@ -257,7 +239,9 @@ class TestBioFileRead(BioRead, unittest.TestCase):
 # Null buffers
 class TestBioNullWrite(BioWrite, unittest.TestCase):
 
-    method = bio.BIO_s_null()
+    @property
+    def method(self):
+        return api.BIO_s_null()
 
     test_reset = unittest.expectedFailure(BioWrite.test_reset)
     test_seek = unittest.expectedFailure(BioWrite.test_seek)
@@ -268,7 +252,9 @@ class TestBioNullRead(BioRead, unittest.TestCase):
 
     data = b""
 
-    method = bio.BIO_s_null()
+    @property
+    def method(self):
+        return api.BIO_s_null()
 
     test_gets = unittest.expectedFailure(BioRead.test_gets)
     test_seek = unittest.expectedFailure(BioRead.test_seek)

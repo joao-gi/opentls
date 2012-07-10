@@ -21,6 +21,7 @@ class API(object):
         'rand',
         'ssl',
         'ssleay',
+        'stdio',
     ]
 
     __instance = None
