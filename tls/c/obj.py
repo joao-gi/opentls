@@ -12,7 +12,6 @@ TYPES = [
     'struct obj_name_st { int type; int alias; const char *name; const char *data; ...; };',
     'typedef ... ASN1_OBJECT;',
     'typedef struct obj_name_st OBJ_NAME;',
-    'typedef void (*obj_name_callback)(const OBJ_NAME*, void *arg);',
 ]
 
 FUNCTIONS = [
@@ -30,9 +29,6 @@ FUNCTIONS = [
     'int OBJ_create(const char *oid,const char *sn,const char *ln);',
     'void OBJ_cleanup(void);',
     'int OBJ_NAME_init(void);',
-    'void OBJ_NAME_do_all(int type, void *callback, void *arg);',
-    'void OBJ_NAME_do_all_sorted(int type, void *callback, void *arg);',
-# cffi doesn;t support callback functions are c arguments.
-#   'void OBJ_NAME_do_all(int type,void (*fn)(const OBJ_NAME *,void *arg), void *arg);',
-#   'void OBJ_NAME_do_all_sorted(int type,void (*fn)(const OBJ_NAME *,void *arg), void *arg);',
+    'void OBJ_NAME_do_all(int type,void (*fn)(const OBJ_NAME *,void *arg), void *arg);',
+    'void OBJ_NAME_do_all_sorted(int type,void (*fn)(const OBJ_NAME *,void *arg), void *arg);',
 ]

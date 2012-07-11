@@ -50,7 +50,7 @@ FUNCTIONS = [
     
     # BIO control functions
     'long BIO_ctrl(BIO *bp, int cmd, long larg, void *parg);',
-    'long BIO_callback_ctrl(BIO *b, int cmd, void *callback);',
+    'long BIO_callback_ctrl(BIO *b, int cmd, void (*fp)(struct bio_st *, int, const char *, int, long, long));',
     'char* BIO_ptr_ctrl(BIO *bp, int cmd, long larg);',
     'long BIO_int_ctrl(BIO *bp, int cmd, long larg, int iarg);',
     'int BIO_reset(BIO *b);',
@@ -64,11 +64,8 @@ FUNCTIONS = [
     'int BIO_wpending(BIO *b);',
     'size_t BIO_ctrl_pending(BIO *b);',
     'size_t BIO_ctrl_wpending(BIO *b);',
-    'int BIO_get_info_callback(BIO *b, void **cbp);',
-    'int BIO_set_info_callback(BIO *b, void *cb);',
-    #'int BIO_get_info_callback(BIO *b,bio_info_cb **cbp);',
-    #'int BIO_set_info_callback(BIO *b,bio_info_cb *cb);',
-    #'long BIO_callback_ctrl(BIO *b, int cmd, void (*fp)(struct bio_st *, int, const char *, int, long, long));',
+    'int BIO_get_info_callback(BIO *b,bio_info_cb **cbp);',
+    'int BIO_set_info_callback(BIO *b,bio_info_cb *cb);',
     
     # BIO IO functions
     'int BIO_read(BIO *b, void *buf, int len);',
