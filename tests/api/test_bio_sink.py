@@ -212,7 +212,7 @@ class TestBioFileWrite(BioWrite, unittest.TestCase):
         name = self.name.encode()
         self.bio = api.BIO_new_file(name, b'w+')
 
-    test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
+    test_eof = unittest.skipIf(api.version()[0:3] < (1, 0, 0), 'different behaviour between py2.6 and py2.7')(BioWrite.test_eof)
 
 
 class TestBioFileRead(BioRead, unittest.TestCase):
