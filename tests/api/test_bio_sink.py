@@ -281,8 +281,7 @@ class TestBioFdRead(BioRead, unittest.TestCase):
 
     test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)
     test_eof = unittest.expectedFailure(BioRead.test_eof)
-    # test_error_get = unittest.expectedFailure(BioRead.test_error_get)
-    test_gets = unittest.expectedFailure(BioRead.test_gets)
+    test_gets = expect_fail_before(1, 0, 0)(BioRead.test_gets)
     test_pending = unittest.expectedFailure(BioRead.test_pending)
     test_read_one = unittest.expectedFailure(BioRead.test_read_one)
 
