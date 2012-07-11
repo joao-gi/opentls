@@ -236,6 +236,57 @@ class TestBioFileRead(BioRead, unittest.TestCase):
     test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)
 
 
+# Fd
+class TestBioFd(unittest.TestCase):
+    pass
+
+
+class TestBioFdWrite(BioWrite, unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.fd, cls.name = tempfile.mkstemp()
+
+    @classmethod
+    def tearDownClass(cls):
+        os.close(cls.fd)
+        os.remove(cls.name)
+
+    def setUp(self):
+        self.bio = api.BIO_new_fd(self.fd, api.BIO_NOCLOSE)
+
+    test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
+    test_tell = unittest.expectedFailure(BioWrite.test_tell)
+
+
+class TestBioFdRead(BioRead, unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        fd, cls.name = tempfile.mkstemp()
+        os.close(fd)
+        with open(cls.name, 'wb') as dest:
+            dest.write(bytes(cls.data))
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(cls.name)
+
+    def setUp(self):
+        fd = os.open(self.name, os.O_RDONLY)
+        self.bio = api.BIO_new_fd(fd, api.BIO_CLOSE)
+
+    def tearDown(self):
+        del self.bio
+
+    test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)
+    test_eof = unittest.expectedFailure(BioRead.test_eof)
+    # test_error_get = unittest.expectedFailure(BioRead.test_error_get)
+    test_gets = unittest.expectedFailure(BioRead.test_gets)
+    test_pending = unittest.expectedFailure(BioRead.test_pending)
+    test_read_one = unittest.expectedFailure(BioRead.test_read_one)
+
+
 # Null buffers
 class TestBioNullWrite(BioWrite, unittest.TestCase):
 

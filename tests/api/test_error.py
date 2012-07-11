@@ -10,6 +10,8 @@ class TestErrorFetch(unittest.TestCase):
     last = 0x140943E8
 
     def setUp(self):
+        while api.ERR_get_error() != 0:
+            pass
         api.ERR_put_error(0x20, 0x6D, 0x80, api.NULL, 0)
         api.ERR_put_error(0x14, 0x94, 0x3E8, api.NULL, 0)
 

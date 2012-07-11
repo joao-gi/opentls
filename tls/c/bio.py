@@ -25,6 +25,8 @@ TYPES = [
     'static const int BIO_TYPE_DESCRIPTOR;',
     'static const int BIO_TYPE_FILTER;',
     'static const int BIO_TYPE_SOURCE_SINK;',
+    'static const int BIO_CLOSE;',
+    'static const int BIO_NOCLOSE;',
     'typedef ... BIO;',
     'typedef ... BIO_METHOD;',
     'typedef ... BUF_MEM;',
