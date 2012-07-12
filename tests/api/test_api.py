@@ -3,6 +3,8 @@ import unittest2 as unittest
 import tls.c
 from tls.c import api
 
+print api.version()
+
 
 class TestTlsApi(unittest.TestCase):
 
