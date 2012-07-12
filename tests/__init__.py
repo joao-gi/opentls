@@ -15,5 +15,5 @@ def expect_fail_with(major, minor, fix, comparison=operator.eq):
         return expect_failure
     return noop
 
-expect_fail_before = functools.partial(expect_fail_with, comparison=operator.le)
+expect_fail_before = functools.partial(expect_fail_with, comparison=operator.lt)
 expect_fail_after = functools.partial(expect_fail_with, comparison=operator.ge)
