@@ -255,7 +255,7 @@ class TestBioFdWrite(BioWrite, unittest.TestCase):
     def setUp(self):
         self.bio = api.BIO_new_fd(self.fd, api.BIO_NOCLOSE)
 
-    test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
+    test_eof = unittest.expectedFailure(BioWrite.test_eof)
     test_tell = unittest.expectedFailure(BioWrite.test_tell)
 
 
