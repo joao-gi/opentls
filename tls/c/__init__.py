@@ -13,6 +13,8 @@ class API(object):
 
     _modules = [
         'bio',
+        'bio_filter',
+        'bio_sink',
         'err',
         'evp',
         'obj',
