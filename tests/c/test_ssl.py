@@ -1,21 +1,20 @@
 """Test SSL methods"""
 import unittest2 as unittest
 
-from tests import expect_fail_after
 from tls.c import api
 
 
 class TestSSLMethod(unittest.TestCase):
 
-    @expect_fail_after(1, 0, 0)
+    @unittest.skip('deprecated in openssl 1.0.0')
     def test_ssl_v2(self):
         self.assertTrue(api.SSLv2_method())
 
-    @expect_fail_after(1, 0, 0)
+    @unittest.skip('deprecated in openssl 1.0.0')
     def test_ssl_v2_client(self):
         self.assertTrue(api.SSLv2_client_method())
 
-    @expect_fail_after(1, 0, 0)
+    @unittest.skip('deprecated in openssl 1.0.0')
     def test_ssl_v2_server(self):
         self.assertTrue(api.SSLv2_server_method())
 
