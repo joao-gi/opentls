@@ -1,4 +1,2 @@
-coverage
 flake8
 sphinx
-unittest2

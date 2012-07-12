@@ -3,6 +3,7 @@ SHELL := /bin/bash
 deps:
 	pip install --upgrade --use-mirrors \
 	            -r requirements/development.txt \
+	            -r requirements/testing.txt \
 	            -r requirements/production.txt
 
 lint:
