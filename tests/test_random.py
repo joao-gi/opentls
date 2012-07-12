@@ -1,7 +1,7 @@
 """Test Python random API implementation using OpenSSL"""
 import unittest2 as unittest
 
-from .api.test_rand import RandTests
+from .c.test_rand import RandTests
 from tls import random
 
 
