@@ -17,6 +17,8 @@ class API(object):
         'bio_sink',
         'err',
         'evp',
+        'evp_md',
+        'evp_cipher',
         'obj',
         'openssl',
         'nid',
