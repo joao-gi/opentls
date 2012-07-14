@@ -70,7 +70,8 @@ def __available_algorithms():
     algorithms = set()
     hashes = {}
     TYPE = api.OBJ_NAME_TYPE_MD_METH
-    callback = api.callback('void(*)(const OBJ_NAME*, void *arg)', add_to_names)
+    callback = api.callback('void(*)(const OBJ_NAME*, void *arg)',
+            add_to_names)
     api.OBJ_NAME_do_all(TYPE, callback, api.NULL)
     for nid in hashes:
         name = sorted(hashes[nid])[0]
@@ -133,7 +134,8 @@ class MessageDigest(object):
     def hexdigest(self):
         "Return the digest value as a string of hexadecimal digits."
         buff, size = self._digest()
-        return ''.join('{0:02x}'.format(b) for b in itertools.islice(buff, size))
+        return ''.join('{0:02x}'.format(b)
+                for b in itertools.islice(buff, size))
 
     def copy(self):
         "Return a copy of the hash object."

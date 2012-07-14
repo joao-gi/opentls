@@ -170,7 +170,6 @@ class PseudoRandom(Random):
         return api.RAND_pseudo_bytes(buff, blen)
 
 
-
 _inst = Random()
 seed = _inst.seed
 random = _inst.random
