@@ -1,9 +1,85 @@
 from collections import namedtuple
 import atexit
+import types
+import weakref
 
 from cffi import FFI
 
 __all__ = ['api']
+
+
+class CdataOwner(object):
+    """CData wrapper that adds coownership of cdata objects.
+
+    A reference to any object assigned to an attribute of the wrapped cdata
+    object is retained for as long as this object is alive. This is implemented
+    using a WeakKeyDictionary.
+
+    Any cdata attributes access through this wrapper will themselves be wrapped
+    before being returned.
+
+    NOTE: CDataOwner objects can not be passed directly to cffi foreign
+    functions. To access the wrapped cdata object, call the '__unwrap__()'
+    function.
+    """
+
+    __REFS__ = weakref.WeakKeyDictionary()
+
+    @staticmethod
+    def add_coownership(ffi):
+        """Add coownership to a cffi.FFI instance.
+
+        Coownership can be enabled by passing the new 'coown' keyword argument
+        to cffi.FFI().new().
+
+        Once initialisation is complete, the wrapping can be discarded by
+        calling '__unwrap__' on the wrapper object. This is safe to do because
+        coownership is referenced using the cdata object, not the wrapper.
+        """
+        orig_new = ffi.new
+
+        def new(ffi, cdecl, init=None, coown=False):
+            obj = orig_new(cdecl, init)
+            if coown:
+                obj = CdataOwner(obj)
+            return obj
+
+        ffi.new = types.MethodType(new, ffi, FFI)
+
+    def __init__(self, this, root=None):
+        root = self if root is None else root
+        self.__dict__['__this__'] = this
+        self.__dict__['__root__'] = root
+        self.__dict__['__refs__'] = self.__REFS__.setdefault(root, {})
+
+    def __getattr__(self, name):
+        cdata = getattr(self.__this__, name)
+        return CdataOwner(cdata, root=self.__root__)
+
+    def __setattr__(self, name, value):
+        setattr(self.__this__, name, value)
+        self.__refs__[name] = value
+
+    def __call__(self, *args):
+        return self.__this__.__call__(*args)
+
+    def __getitem__(self, key):
+        return self.__this__.__getitem__(key)
+
+    def __repr__(self):
+        return self.__this__.__repr__()
+
+    def __setitem__(self, key, value):
+        return self.__this__.__setitem__(key, value)
+
+    def __str__(self):
+        return self.__this__.__str__()
+
+    def __unicode__(self):
+        return self.__this__.__unicode__()
+
+    def __unwrap__(self):
+        return self.__this__
 
 
 class API(object):
@@ -89,6 +165,7 @@ class API(object):
         self.cast = self.ffi.cast
         self.new = self.ffi.new
         self.NULL = self.ffi.NULL
+        CdataOwner.add_coownership(self)
 
     def _initialise(self):
         "initialise openssl, schedule cleanup at exit"
