@@ -26,7 +26,7 @@ class CdataOwner(object):
     __REFS__ = weakref.WeakKeyDictionary()
 
     @staticmethod
-    def add_coownership(ffi):
+    def _add_coownership(ffi):
         """Add coownership to a cffi.FFI instance.
 
         Coownership can be enabled by passing the new 'coown' keyword argument
@@ -46,8 +46,13 @@ class CdataOwner(object):
 
         ffi.new = types.MethodType(new, ffi, FFI)
 
+    @classmethod
+    def _relate(cls, primary, dependant, name):
+        refs = cls.__REFS__.setdefault(primary, {})
+        refs[name] = dependant
+
     def __init__(self, this, root=None):
-        root = self if root is None else root
+        root = this if root is None else root
         self.__dict__['__this__'] = this
         self.__dict__['__root__'] = root
         self.__dict__['__refs__'] = self.__REFS__.setdefault(root, {})
@@ -78,7 +83,7 @@ class CdataOwner(object):
     def __unicode__(self):
         return self.__this__.__unicode__()
 
-    def __unwrap__(self):
+    def _unwrap(self):
         return self.__this__
 
 
@@ -160,12 +165,13 @@ class API(object):
                 continue
             name = decl.split(None, 1)[1]
             setattr(self, name, getattr(self.openssl, name))
+        self.NULL = self.ffi.NULL
         self.buffer = self.ffi.buffer
         self.callback = self.ffi.callback
         self.cast = self.ffi.cast
         self.new = self.ffi.new
-        self.NULL = self.ffi.NULL
-        CdataOwner.add_coownership(self)
+        self.relate = CdataOwner._relate
+        CdataOwner._add_coownership(self)
 
     def _initialise(self):
         "initialise openssl, schedule cleanup at exit"
