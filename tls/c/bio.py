@@ -3,6 +3,19 @@ INCLUDES = [
 ]
 
 TYPES = [
+    # BIO ctrl constants
+    'static const int BIO_CTRL_RESET;',
+    'static const int BIO_CTRL_EOF;',
+    'static const int BIO_CTRL_SET;',
+    'static const int BIO_CTRL_SET_CLOSE;',
+    'static const int BIO_CTRL_FLUSH;',
+    'static const int BIO_CTRL_DUP;',
+    'static const int BIO_CTRL_GET_CLOSE;',
+    'static const int BIO_CTRL_INFO;',
+    'static const int BIO_CTRL_GET;',
+    'static const int BIO_CTRL_PENDING;',
+    'static const int BIO_CTRL_WPENDING;',
+    # BIO type constants
     'static const int BIO_TYPE_NONE;',
     'static const int BIO_TYPE_PROXY_CLIENT;',
     'static const int BIO_TYPE_PROXY_SERVER;',
@@ -10,10 +23,46 @@ TYPES = [
     'static const int BIO_TYPE_BER;',
     'static const int BIO_TYPE_BIO;',
     'static const int BIO_TYPE_DESCRIPTOR;',
-    'typedef ... BIO;',
-    'typedef ... BIO_METHOD;',
     'typedef ... BUF_MEM;',
+    # BIO forward declaration
+    'typedef struct bio_st BIO;',
+    # BIO callbacks definition
     'typedef void bio_info_cb(BIO *b, int oper, const char *ptr, int arg1, long arg2, long arg3);',
+    # BIO_METHOD definition
+    '''
+    struct bio_method_st {
+        int type;
+        const char *name;
+        int (*bwrite)(BIO*, const char*, int);
+        int (*bread)(BIO*, char*, int);
+        int (*bputs)(BIO*, const char*);
+        int (*bgets)(BIO*, char*, int);
+        long (*ctrl)(BIO*, int, long, void*);
+        int (*create)(BIO*);
+        int (*destroy)(BIO*);
+        long (*callback_ctrl)(BIO*, int, bio_info_cb*);
+        ...;
+    };''',
+    'typedef struct bio_method_st BIO_METHOD;',
+    # BIO definition
+    '''
+    struct bio_st {
+        BIO_METHOD *method;
+        long (*callback)(struct bio_st*, int, const char*, int, long, long);
+        char *cb_arg;
+        int init;
+        int shutdown;
+        int flags;
+        int retry_reason;
+        int num;
+        void *ptr;
+        struct bio_st *next_bio;
+        struct bio_st *prev_bio;
+        int references;
+        unsigned long num_read;
+        unsigned long num_write;
+        ...;
+    };''',
 ]
 
 FUNCTIONS = [

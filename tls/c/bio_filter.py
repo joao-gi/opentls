@@ -3,13 +3,13 @@ INCLUDES = [
 ]
 
 TYPES = [
-    'static const int BIO_TYPE_FILTER;',
     'static const int BIO_TYPE_NULL_FILTER;',
     'static const int BIO_TYPE_SSL;',
     'static const int BIO_TYPE_MD;',
     'static const int BIO_TYPE_BUFFER;',
     'static const int BIO_TYPE_CIPHER;',
     'static const int BIO_TYPE_BASE64;',
+    'static const int BIO_TYPE_FILTER;',
 ]
 
 FUNCTIONS = [

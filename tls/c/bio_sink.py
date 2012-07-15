@@ -3,7 +3,6 @@ INCLUDES = [
 ]
 
 TYPES = [
-    'static const int BIO_TYPE_SOURCE_SINK;',
     'static const int BIO_TYPE_MEM;',
     'static const int BIO_TYPE_FILE;',
     'static const int BIO_TYPE_FD;',
@@ -13,6 +12,7 @@ TYPES = [
     'static const int BIO_TYPE_NULL;',
     'static const int BIO_CLOSE;',
     'static const int BIO_NOCLOSE;',
+    'static const int BIO_TYPE_SOURCE_SINK;',
 ]
 
 FUNCTIONS = [
