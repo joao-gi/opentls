@@ -15,6 +15,8 @@ TYPES = [
     'static const int BIO_CTRL_GET;',
     'static const int BIO_CTRL_PENDING;',
     'static const int BIO_CTRL_WPENDING;',
+    'static const int BIO_C_FILE_SEEK;',
+    'static const int BIO_C_FILE_TELL;',
     # BIO type constants
     'static const int BIO_TYPE_NONE;',
     'static const int BIO_TYPE_PROXY_CLIENT;',
