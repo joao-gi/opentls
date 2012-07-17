@@ -49,7 +49,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertTrue(self.fileobj.closed())
 
     def test_fileno(self):
-        self.fileobj.fileno()
+        self.assertRaises(IOError, self.fileobj.fileno)
 
     def test_flush(self):
         self.fileobj.flush()
@@ -111,7 +111,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertTrue(self.fileobj.closed())
 
     def test_fileno(self):
-        self.fileobj.fileno()
+        self.assertRaises(IOError, self.fileobj.fileno)
 
     def test_flush(self):
         self.fileobj.flush()
