@@ -20,6 +20,7 @@ For example, wrapping a StringIO object:
 """
 from __future__ import absolute_import
 
+import io
 import numbers
 
 from tls.c import api
@@ -191,4 +192,69 @@ class BIOSourceSink(BIOBase):
         return self.fileobj.tell()
 
 
+class BIOWrapper(object):
+
+    def __init__(self, bio):
+        self.bio = bio
+
+    # io.IOBase
+
+    def close(self):
+        raise IOError('unsupported operation')
+
+    def closed(self):
+        raise IOError('unsupported operation')
+
+    def fileno(self):
+        raise IOError('unsupported operation')
+
+    def flush(self):
+        raise IOError('unsupported operation')
+
+    def isatty(self):
+        raise IOError('unsupported operation')
+
+    def readable(self):
+        raise IOError('unsupported operation')
+
+    def readline(self):
+        raise IOError('unsupported operation')
+
+    def readlines(self):
+        raise IOError('unsupported operation')
+
+    def seek(self):
+        raise IOError('unsupported operation')
+
+    def seekable(self):
+        raise IOError('unsupported operation')
+
+    def tell(self):
+        raise IOError('unsupported operation')
+
+    def truncate(self):
+        raise IOError('unsupported operation')
+
+    def writable(self):
+        raise IOError('unsupported operation')
+
+    def writelines(self):
+        raise IOError('unsupported operation')
+
+    # io.RawIOBase
+
+    def read(self):
+        raise IOError('unsupported operation')
+
+    def readall(self):
+        raise IOError('unsupported operation')
+
+    def readinto(self):
+        raise IOError('unsupported operation')
+
+    def write(self):
+        raise IOError('unsupported operation')
+
+
+io.RawIOBase.register(BIOWrapper)
 wrap_io = BIOSourceSink.wrap_io

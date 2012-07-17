@@ -4,6 +4,7 @@ from StringIO import StringIO
 import unittest2 as unittest
 
 from .c.test_bio_sink import BioWrite, BioRead
+from tls.c import api
 from tls import io
 
 
@@ -27,3 +28,120 @@ class TestStringIORead(BioRead, unittest.TestCase):
     test_eof = unittest.expectedFailure(BioRead.test_eof)
     test_gets = unittest.expectedFailure(BioRead.test_gets)
     test_pending = unittest.expectedFailure(BioRead.test_pending)
+
+
+class TestWrapperWrite(unittest.TestCase):
+
+    def setUp(self):
+        self.bio = api.BIO_new(api.BIO_s_mem())
+        self.fileobj = io.BIOWrapper(self.bio)
+
+    def tearDown(self):
+        api.BIO_free(self.bio)
+
+    def test_close(self):
+        self.fileobj.close()
+
+    def test_closed(self):
+        self.fileobj.close()
+
+    def test_fileno(self):
+        self.fileobj.fileno()
+
+    def test_flush(self):
+        self.fileobj.flush()
+
+    def test_isatty(self):
+        self.fileobj.isatty()
+
+    def test_readable(self):
+        self.fileobj.readable()
+
+    def test_readline(self):
+        self.fileobj.readline()
+
+    def test_readlines(self):
+        self.fileobj.readlines()
+
+    def test_seek(self):
+        self.fileobj.seek()
+
+    def test_seekable(self):
+        self.fileobj.seekable()
+
+    def test_tell(self):
+        self.fileobj.tell()
+
+    def test_truncate(self):
+        self.fileobj.truncate()
+
+    def test_writable(self):
+        self.fileobj.writable()
+
+    def test_read(self):
+        self.fileobj.read()
+
+    def test_readall(self):
+        self.fileobj.readall()
+
+    def test_write(self):
+        self.fileobj.write()
+
+
+class TestWrapperRead(unittest.TestCase):
+
+    def setUp(self):
+        self.data = api.new('char[]', 'HELLO WORLD')
+        self.bio = api.BIO_new_mem_buf(self.data, len(bytes(self.data)))
+        self.fileobj = io.BIOWrapper(self.bio)
+
+    def tearDown(self):
+        api.BIO_free(self.bio)
+
+    def test_close(self):
+        self.fileobj.close()
+
+    def test_closed(self):
+        self.fileobj.close()
+
+    def test_fileno(self):
+        self.fileobj.fileno()
+
+    def test_flush(self):
+        self.fileobj.flush()
+
+    def test_isatty(self):
+        self.fileobj.isatty()
+
+    def test_readable(self):
+        self.fileobj.readable()
+
+    def test_readline(self):
+        self.fileobj.readline()
+
+    def test_readlines(self):
+        self.fileobj.readlines()
+
+    def test_seek(self):
+        self.fileobj.seek()
+
+    def test_seekable(self):
+        self.fileobj.seekable()
+
+    def test_tell(self):
+        self.fileobj.tell()
+
+    def test_truncate(self):
+        self.fileobj.truncate()
+
+    def test_writable(self):
+        self.fileobj.writable()
+
+    def test_read(self):
+        self.fileobj.read()
+
+    def test_readall(self):
+        self.fileobj.readall()
+
+    def test_write(self):
+        self.fileobj.write()
