@@ -58,7 +58,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.isatty)
 
     def test_readable(self):
-        self.fileobj.readable()
+        self.assertTrue(self.fileobj.readable())
 
     def test_readline(self):
         self.fileobj.readline()
@@ -120,7 +120,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.isatty)
 
     def test_readable(self):
-        self.fileobj.readable()
+        self.assertTrue(self.fileobj.readable())
 
     def test_readline(self):
         self.fileobj.readline()

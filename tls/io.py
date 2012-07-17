@@ -216,7 +216,7 @@ class BIOWrapper(object):
         raise IOError('unsupported operation')
 
     def readable(self):
-        raise IOError('unsupported operation')
+        return True
 
     def readline(self):
         raise IOError('unsupported operation')
