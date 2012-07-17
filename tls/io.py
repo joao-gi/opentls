@@ -258,7 +258,7 @@ class BIOWrapper(object):
         return offset
 
     def seekable(self):
-        raise IOError('unsupported operation')
+        return True
 
     def tell(self):
         raise IOError('unsupported operation')

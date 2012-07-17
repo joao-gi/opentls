@@ -70,7 +70,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertEquals(1, self.fileobj.seek(1))
 
     def test_seekable(self):
-        self.fileobj.seekable()
+        self.assertTrue(self.fileobj.seekable())
 
     def test_tell(self):
         self.fileobj.tell()
@@ -132,7 +132,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertEquals(1, self.fileobj.seek(1))
 
     def test_seekable(self):
-        self.fileobj.seekable()
+        self.assertTrue(self.fileobj.seekable())
 
     def test_tell(self):
         self.fileobj.tell()
