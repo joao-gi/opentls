@@ -37,13 +37,16 @@ class TestWrapperWrite(unittest.TestCase):
         self.fileobj = io.BIOWrapper(self.bio)
 
     def tearDown(self):
-        api.BIO_free(self.bio)
+        if self.fileobj._bio is not None:
+            api.BIO_free(self.bio)
 
     def test_close(self):
         self.fileobj.close()
 
     def test_closed(self):
+        self.assertFalse(self.fileobj.closed())
         self.fileobj.close()
+        self.assertTrue(self.fileobj.closed())
 
     def test_fileno(self):
         self.fileobj.fileno()
@@ -96,13 +99,16 @@ class TestWrapperRead(unittest.TestCase):
         self.fileobj = io.BIOWrapper(self.bio)
 
     def tearDown(self):
-        api.BIO_free(self.bio)
+        if self.fileobj._bio is not None:
+            api.BIO_free(self.bio)
 
     def test_close(self):
         self.fileobj.close()
 
     def test_closed(self):
+        self.assertFalse(self.fileobj.closed())
         self.fileobj.close()
+        self.assertTrue(self.fileobj.closed())
 
     def test_fileno(self):
         self.fileobj.fileno()

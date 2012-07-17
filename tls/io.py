@@ -195,15 +195,16 @@ class BIOSourceSink(BIOBase):
 class BIOWrapper(object):
 
     def __init__(self, bio):
-        self.bio = bio
+        self._bio = bio
 
     # io.IOBase
 
     def close(self):
-        raise IOError('unsupported operation')
+        api.BIO_free(self._bio)
+        self._bio = None
 
     def closed(self):
-        raise IOError('unsupported operation')
+        return self._bio is None
 
     def fileno(self):
         raise IOError('unsupported operation')
