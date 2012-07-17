@@ -219,7 +219,18 @@ class BIOWrapper(object):
         return True
 
     def readline(self):
-        raise IOError('unsupported operation')
+        segments = []
+        while True:
+            buf = api.new('char[]', 1024)
+            read = api.BIO_gets(self._bio, buf, len(buf))
+            if read == len(buf):
+                segments.append(bytes(buf))
+            elif read > 0:
+                segments.append(bytes(buf))
+                break
+            else:
+                raise IOError('unsupported operation')
+        return ''.join(segments)
 
     def readlines(self):
         raise IOError('unsupported operation')

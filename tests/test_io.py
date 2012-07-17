@@ -61,7 +61,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertTrue(self.fileobj.readable())
 
     def test_readline(self):
-        self.fileobj.readline()
+        self.assertRaises(IOError, self.fileobj.readline)
 
     def test_readlines(self):
         self.fileobj.readlines()
@@ -94,7 +94,7 @@ class TestWrapperWrite(unittest.TestCase):
 class TestWrapperRead(unittest.TestCase):
 
     def setUp(self):
-        self.data = api.new('char[]', 'HELLO WORLD')
+        self.data = api.new('char[]', 'HELLO\nWORLD\n')
         self.bio = api.BIO_new_mem_buf(self.data, len(bytes(self.data)))
         self.fileobj = io.BIOWrapper(self.bio)
 
@@ -123,7 +123,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertTrue(self.fileobj.readable())
 
     def test_readline(self):
-        self.fileobj.readline()
+        self.assertEqual('HELLO\n', self.fileobj.readline())
 
     def test_readlines(self):
         self.fileobj.readlines()
