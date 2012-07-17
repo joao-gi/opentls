@@ -55,7 +55,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.fileobj.flush()
 
     def test_isatty(self):
-        self.fileobj.isatty()
+        self.assertRaises(IOError, self.fileobj.isatty)
 
     def test_readable(self):
         self.fileobj.readable()
@@ -117,7 +117,7 @@ class TestWrapperRead(unittest.TestCase):
         self.fileobj.flush()
 
     def test_isatty(self):
-        self.fileobj.isatty()
+        self.assertRaises(IOError, self.fileobj.isatty)
 
     def test_readable(self):
         self.fileobj.readable()
