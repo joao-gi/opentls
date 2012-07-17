@@ -249,8 +249,13 @@ class BIOWrapper(object):
                 break
         return lines
 
-    def seek(self):
-        raise IOError('unsupported operation')
+    def seek(self, offset, whence=io.SEEK_SET):
+        if whence != io.SEEK_SET:
+            raise IOError('unsupported operation')
+        rval = api.BIO_seek(self._bio, offset)
+        if rval < 0:
+            raise IOError('unsupported operation')
+        return offset
 
     def seekable(self):
         raise IOError('unsupported operation')

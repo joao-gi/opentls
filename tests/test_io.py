@@ -67,7 +67,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.readlines)
 
     def test_seek(self):
-        self.fileobj.seek()
+        self.assertEquals(1, self.fileobj.seek(1))
 
     def test_seekable(self):
         self.fileobj.seekable()
@@ -129,7 +129,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertEqual(['HELLO\n', 'WORLD\n'], self.fileobj.readlines())
 
     def test_seek(self):
-        self.fileobj.seek()
+        self.assertEquals(1, self.fileobj.seek(1))
 
     def test_seekable(self):
         self.fileobj.seekable()
