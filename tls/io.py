@@ -210,7 +210,7 @@ class BIOWrapper(object):
         raise IOError('unsupported operation')
 
     def flush(self):
-        raise IOError('unsupported operation')
+        api.BIO_flush(self._bio)
 
     def isatty(self):
         raise IOError('unsupported operation')
