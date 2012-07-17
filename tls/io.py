@@ -22,6 +22,7 @@ from __future__ import absolute_import
 
 import io
 import numbers
+import sys
 
 from tls.c import api
 
@@ -218,13 +219,15 @@ class BIOWrapper(object):
     def readable(self):
         return True
 
-    def readline(self):
+    def readline(self, limit=-1):
+        limit = sys.maxint if limit < 0 else limit
         segments = []
         while True:
-            buf = api.new('char[]', 1024)
+            buf = api.new('char[]', min(limit, 1024))
             read = api.BIO_gets(self._bio, buf, len(buf))
             if read == len(buf):
                 segments.append(bytes(buf))
+                limit -= read
             elif read > 0:
                 segments.append(bytes(buf))
                 break
@@ -232,8 +235,19 @@ class BIOWrapper(object):
                 raise IOError('unsupported operation')
         return ''.join(segments)
 
-    def readlines(self):
-        raise IOError('unsupported operation')
+    def readlines(self, hint=-1):
+        hint = sys.maxint if hint < 0 else hint
+        lines = []
+        while hint > 0:
+            try:
+                line = self.readline()
+                lines.append(line)
+                hint -= len(line)
+            except IOError:
+                if len(lines) == 0:
+                    raise
+                break
+        return lines
 
     def seek(self):
         raise IOError('unsupported operation')
