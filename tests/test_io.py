@@ -81,6 +81,9 @@ class TestWrapperWrite(unittest.TestCase):
     def test_writable(self):
         self.assertTrue(self.fileobj.writable())
 
+    def test_writelines(self):
+        self.fileobj.writelines(['a', 'b', 'c'])
+
     def test_read(self):
         self.fileobj.read()
 
@@ -142,6 +145,9 @@ class TestWrapperRead(unittest.TestCase):
 
     def test_writable(self):
         self.assertTrue(self.fileobj.writable())
+
+    def test_writelines(self):
+        self.assertRaises(IOError, self.fileobj.writelines, ['a', 'b', 'c'])
 
     def test_read(self):
         self.fileobj.read()
