@@ -267,7 +267,7 @@ class BIOWrapper(object):
         raise IOError('unsupported operation')
 
     def writable(self):
-        raise IOError('unsupported operation')
+        return True
 
     def writelines(self):
         raise IOError('unsupported operation')

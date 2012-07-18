@@ -79,7 +79,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.truncate)
 
     def test_writable(self):
-        self.fileobj.writable()
+        self.assertTrue(self.fileobj.writable())
 
     def test_read(self):
         self.fileobj.read()
@@ -141,7 +141,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.truncate)
 
     def test_writable(self):
-        self.fileobj.writable()
+        self.assertTrue(self.fileobj.writable())
 
     def test_read(self):
         self.fileobj.read()
