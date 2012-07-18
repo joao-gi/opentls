@@ -73,7 +73,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertTrue(self.fileobj.seekable())
 
     def test_tell(self):
-        self.fileobj.tell()
+        self.assertGreaterEqual(0, self.fileobj.tell())
 
     def test_truncate(self):
         self.fileobj.truncate()
@@ -135,7 +135,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertTrue(self.fileobj.seekable())
 
     def test_tell(self):
-        self.fileobj.tell()
+        self.assertGreaterEqual(0, self.fileobj.tell())
 
     def test_truncate(self):
         self.fileobj.truncate()

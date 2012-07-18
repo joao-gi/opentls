@@ -261,7 +261,7 @@ class BIOWrapper(object):
         return True
 
     def tell(self):
-        raise IOError('unsupported operation')
+        return api.BIO_tell(self._bio)
 
     def truncate(self):
         raise IOError('unsupported operation')
