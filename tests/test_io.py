@@ -76,7 +76,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertGreaterEqual(0, self.fileobj.tell())
 
     def test_truncate(self):
-        self.fileobj.truncate()
+        self.assertRaises(IOError, self.fileobj.truncate)
 
     def test_writable(self):
         self.fileobj.writable()
@@ -138,7 +138,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertGreaterEqual(0, self.fileobj.tell())
 
     def test_truncate(self):
-        self.fileobj.truncate()
+        self.assertRaises(IOError, self.fileobj.truncate)
 
     def test_writable(self):
         self.fileobj.writable()
