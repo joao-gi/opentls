@@ -88,7 +88,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.read, 1)
 
     def test_readall(self):
-        self.fileobj.readall()
+        self.assertRaises(IOError, self.fileobj.readall)
 
     def test_readinto(self):
         self.fileobj.readall()
@@ -156,7 +156,7 @@ class TestWrapperRead(unittest.TestCase):
         self.assertEquals('H', self.fileobj.read(1))
 
     def test_readall(self):
-        self.fileobj.readall()
+        self.assertEquals('HELLO\nWORLD\n', self.fileobj.readall())
 
     def test_readinto(self):
         self.fileobj.readall()
