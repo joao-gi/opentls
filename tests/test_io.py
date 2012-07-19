@@ -85,9 +85,12 @@ class TestWrapperWrite(unittest.TestCase):
         self.fileobj.writelines(['a', 'b', 'c'])
 
     def test_read(self):
-        self.fileobj.read()
+        self.assertRaises(IOError, self.fileobj.read, 1)
 
     def test_readall(self):
+        self.fileobj.readall()
+
+    def test_readinto(self):
         self.fileobj.readall()
 
     def test_write(self):
@@ -150,9 +153,12 @@ class TestWrapperRead(unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.writelines, ['a', 'b', 'c'])
 
     def test_read(self):
-        self.fileobj.read()
+        self.assertEquals('H', self.fileobj.read(1))
 
     def test_readall(self):
+        self.fileobj.readall()
+
+    def test_readinto(self):
         self.fileobj.readall()
 
     def test_write(self):

@@ -281,8 +281,14 @@ class BIOWrapper(object):
 
     # io.RawIOBase
 
-    def read(self):
-        raise IOError('unsupported operation')
+    def read(self, n=-1):
+        if n < 0:
+            return self.readall()
+        data = api.new('char[]', n)
+        rval = api.BIO_read(self._bio, data, len(data))
+        if rval < 0:
+            raise IOError('unsopported operation')
+        return bytes(data)
 
     def readall(self):
         raise IOError('unsupported operation')
