@@ -229,7 +229,7 @@ class BIOWrapper(object):
                 segments.append(bytes(buf))
                 limit -= read
             elif read > 0:
-                segments.append(bytes(buf))
+                segments.append(bytes(api.cast('char[{0}]'.format(read), buf)))
                 break
             else:
                 raise IOError('unsupported operation')
@@ -295,11 +295,14 @@ class BIOWrapper(object):
         while True:
             data = api.new('char[]', 1024)
             rval = api.BIO_read(self._bio, data, len(data))
-            if rval < 0:
-                raise IOError('unsupported operation')
-            if rval == 0:
+            if rval == len(data):
+                segments.append(bytes(data))
+            elif rval > 0:
+                segments.append(bytes(api.cast('char[{0}]'.format(rval), data)))
+            elif rval == 0:
                 break
-            segments.append(bytes(api.cast('char[{0}]'.format(rval), data)))
+            else:
+                raise IOError('unsupported operation')
         return "".join(segments)
 
     def readinto(self):
