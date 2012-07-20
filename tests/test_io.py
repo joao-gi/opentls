@@ -94,7 +94,7 @@ class TestWrapperWrite(unittest.TestCase):
         self.fileobj.readall()
 
     def test_write(self):
-        self.fileobj.write()
+        self.fileobj.write('a')
 
 
 class TestWrapperRead(unittest.TestCase):
@@ -162,4 +162,4 @@ class TestWrapperRead(unittest.TestCase):
         self.fileobj.readall()
 
     def test_write(self):
-        self.fileobj.write()
+        self.assertRaises(IOErr,r self.fileobj.write, 'a')

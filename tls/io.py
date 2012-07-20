@@ -308,8 +308,12 @@ class BIOWrapper(object):
     def readinto(self):
         raise IOError('unsupported operation')
 
-    def write(self):
-        raise IOError('unsupported operation')
+    def write(self, b):
+        data = api.buffer('char[]', b)
+        writen = api.BIO_write(self, self._bio, data, len(data))
+        if writen < 0:
+            raise IOError('unsupported operation')
+        return writen
 
 
 io.RawIOBase.register(BIOWrapper)
