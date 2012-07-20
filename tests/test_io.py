@@ -30,11 +30,11 @@ class TestStringIORead(BioRead, unittest.TestCase):
     test_pending = unittest.expectedFailure(BioRead.test_pending)
 
 
-class TestWrapperWrite(unittest.TestCase):
+class TestChainWrite(unittest.TestCase):
 
     def setUp(self):
         self.bio = api.BIO_new(api.BIO_s_mem())
-        self.fileobj = io.BIOWrapper(self.bio)
+        self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
         if self.fileobj._bio is not None:
@@ -97,12 +97,12 @@ class TestWrapperWrite(unittest.TestCase):
         self.fileobj.write('a')
 
 
-class TestWrapperRead(unittest.TestCase):
+class TestChainRead(unittest.TestCase):
 
     def setUp(self):
         self.data = api.new('char[]', 'HELLO\nWORLD\n')
         self.bio = api.BIO_new_mem_buf(self.data, len(bytes(self.data)))
-        self.fileobj = io.BIOWrapper(self.bio)
+        self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
         if self.fileobj._bio is not None:

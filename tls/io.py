@@ -106,7 +106,7 @@ class BIOBase(object):
             return self.BIO_ERROR
 
 
-class BIOSourceSink(BIOBase):
+class BIOMethod(BIOBase):
     """Presents an OpenSSL BIO method for a file like object.
 
     The new BIO method is available as the method attribute on class instances.
@@ -193,7 +193,11 @@ class BIOSourceSink(BIOBase):
         return self.fileobj.tell()
 
 
-class BIOWrapper(object):
+class BIOChain(object):
+    """Implements an io.IOBase interface for OpenSSL BIO chains.
+
+    BIOChain instances can be used as file like objects in Python.
+    """
 
     def __init__(self, bio):
         self._bio = bio
@@ -318,5 +322,5 @@ class BIOWrapper(object):
         return writen
 
 
-io.RawIOBase.register(BIOWrapper)
-wrap_io = BIOSourceSink.wrap_io
+io.RawIOBase.register(BIOChain)
+wrap_io = BIOMethod.wrap_io
