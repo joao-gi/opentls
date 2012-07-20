@@ -202,10 +202,16 @@ class BIOChain(object):
     def __init__(self, bio):
         self._bio = bio
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
     # io.IOBase
 
     def close(self):
-        api.BIO_free(self._bio)
+        api.BIO_free_all(self._bio)
         self._bio = None
 
     def closed(self):

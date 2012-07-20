@@ -38,7 +38,7 @@ class TestChainWrite(unittest.TestCase):
 
     def tearDown(self):
         if self.fileobj._bio is not None:
-            api.BIO_free(self.bio)
+            api.BIO_free_all(self.bio)
 
     def test_close(self):
         self.fileobj.close()
@@ -46,6 +46,11 @@ class TestChainWrite(unittest.TestCase):
     def test_closed(self):
         self.assertFalse(self.fileobj.closed())
         self.fileobj.close()
+        self.assertTrue(self.fileobj.closed())
+
+    def test_contextmanager(self):
+        with self.fileobj:
+            pass
         self.assertTrue(self.fileobj.closed())
 
     def test_fileno(self):
@@ -106,7 +111,7 @@ class TestChainRead(unittest.TestCase):
 
     def tearDown(self):
         if self.fileobj._bio is not None:
-            api.BIO_free(self.bio)
+            api.BIO_free_all(self.bio)
 
     def test_close(self):
         self.fileobj.close()
@@ -114,6 +119,11 @@ class TestChainRead(unittest.TestCase):
     def test_closed(self):
         self.assertFalse(self.fileobj.closed())
         self.fileobj.close()
+        self.assertTrue(self.fileobj.closed())
+
+    def test_contextmanager(self):
+        with self.fileobj:
+            pass
         self.assertTrue(self.fileobj.closed())
 
     def test_fileno(self):
