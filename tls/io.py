@@ -125,13 +125,13 @@ class BIOMethod(BIOBase):
         allocated by OpenSSL.
         """
         wrapper = cls(fileobj)
-        bio = api.new('BIO')
+        bio = api.new('BIO*')
         api.BIO_set(bio, wrapper.method)
         api.relate(bio, wrapper, 'method')
         return bio
 
     def __init__(self, fileobj):
-        method = api.new('BIO_METHOD', coown=True)
+        method = api.new('BIO_METHOD*', coown=True)
         method.type = api.BIO_TYPE_SOURCE_SINK | 0xFF
         method.name = api.new('char[]', repr(fileobj).encode())
         method.bwrite = api.callback('int (*)(BIO*, const char*, int)',

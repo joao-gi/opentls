@@ -35,7 +35,7 @@ class DigestTests(object):
     def test_short(self):
         data = api.new('char[]', self.data_short)
         buf = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
-        size = api.new('unsigned int')
+        size = api.new('unsigned int*')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_short))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
         hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
@@ -44,7 +44,7 @@ class DigestTests(object):
     def test_long(self):
         data = api.new('char[]', self.data_long)
         buf = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
-        size = api.new('unsigned int')
+        size = api.new('unsigned int*')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_long))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
         hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
@@ -53,7 +53,7 @@ class DigestTests(object):
     def test_copy(self):
         data = api.new('char[]', self.data_short)
         buf = api.new('unsigned char[]', api.EVP_MAX_MD_SIZE)
-        size = api.new('unsigned int')
+        size = api.new('unsigned int*')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_short))
 
         api.EVP_MD_CTX_copy_ex(self.ctx_two, self.ctx)
@@ -122,7 +122,7 @@ class TestSHA256(unittest.TestCase, DigestTests):
 class TestEVP(unittest.TestCase):
 
     def test_init(self):
-        ctx = api.new('EVP_MD_CTX')
+        ctx = api.new('EVP_MD_CTX*')
         self.assertTrue(ctx)
         api.EVP_MD_CTX_init(ctx)
         api.EVP_MD_CTX_cleanup(ctx)
