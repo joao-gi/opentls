@@ -26,6 +26,13 @@ import sys
 
 from tls.c import api
 
+try:
+    from io import SEEK_SET, SEEK_CUR, SEEK_END
+except ImportError:
+    SEEK_SET = 0
+    SEEK_CUR = 1
+    SEEK_END = 2
+
 
 class BIOBase(object):
     """Base class for Python BIO objects."""
@@ -263,8 +270,8 @@ class BIOChain(object):
                 break
         return lines
 
-    def seek(self, offset, whence=io.SEEK_SET):
-        if whence != io.SEEK_SET:
+    def seek(self, offset, whence=SEEK_SET):
+        if whence != SEEK_SET:
             raise IOError('unsupported operation')
         rval = api.BIO_seek(self._bio, offset)
         if rval < 0:
