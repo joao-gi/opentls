@@ -307,7 +307,7 @@ class BIOWrapper(object):
                 raise IOError('unsupported operation')
         return "".join(segments)
 
-    def readinto(self):
+    def readinto(self, b):
         raise IOError('unsupported operation')
 
     def write(self, b):
