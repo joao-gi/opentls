@@ -273,11 +273,13 @@ class BIOWrapper(object):
         for line in lines:
             data = api.new('char[]', line)
             offset = 0
-            while (offset + 1) < len(data):
-                rval = api.BIO_puts(self._bio, data + offset)
-                if rval <= 0:
+            while offset < len(line):
+                ptr = data + offset
+                size = len(line) - offset
+                written = api.BIO_write(self._bio, ptr, size)
+                if written <= 0:
                     raise IOError('unsupported operation')
-                offset += rval
+                offset += written
 
     # io.RawIOBase
 
@@ -309,8 +311,8 @@ class BIOWrapper(object):
         raise IOError('unsupported operation')
 
     def write(self, b):
-        data = api.buffer('char[]', b)
-        writen = api.BIO_write(self, self._bio, data, len(data))
+        data = api.new('char[]', b)
+        writen = api.BIO_write(self._bio, data, len(data))
         if writen < 0:
             raise IOError('unsupported operation')
         return writen

@@ -162,4 +162,4 @@ class TestWrapperRead(unittest.TestCase):
         self.fileobj.readall()
 
     def test_write(self):
-        self.assertRaises(IOErr,r self.fileobj.write, 'a')
+        self.assertRaises(IOError, self.fileobj.write, 'a')
