@@ -208,6 +208,10 @@ class BIOChain(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
+    @property
+    def c_bio(self):
+        return self._bio
+
     # io.IOBase
 
     def close(self):

@@ -37,8 +37,11 @@ class TestChainWrite(unittest.TestCase):
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
-        if self.fileobj._bio is not None:
+        if self.fileobj.c_bio is not None:
             api.BIO_free_all(self.bio)
+
+    def test_bio_property(self):
+        self.assertIs(self.bio, self.fileobj.c_bio)
 
     def test_close(self):
         self.fileobj.close()
@@ -110,8 +113,11 @@ class TestChainRead(unittest.TestCase):
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
-        if self.fileobj._bio is not None:
+        if self.fileobj.c_bio is not None:
             api.BIO_free_all(self.bio)
+
+    def test_bio_property(self):
+        self.assertIs(self.bio, self.fileobj.c_bio)
 
     def test_close(self):
         self.fileobj.close()
