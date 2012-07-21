@@ -3,6 +3,10 @@ INCLUDES = [
     '#include <openssl/ssl.h>',
 ]
 
+SETUP = [
+    'SSL_load_error_strings',
+]
+
 TEARDOWN = [
     'ERR_free_strings',
 ]

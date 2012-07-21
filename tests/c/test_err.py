@@ -43,14 +43,6 @@ class TestErrorParse(unittest.TestCase):
     code = 0x2006D080
     text = b'error:2006D080:BIO routines:BIO_new_file:no such file'
 
-    @classmethod
-    def setUpClass(cls):
-        api.SSL_load_error_strings()
-
-    @classmethod
-    def tearDownClass(cls):
-        api.ERR_free_strings()
-
     def test_error_string(self):
         value = api.ERR_error_string(self.code, api.NULL)
         self.assertEqual(bytes(value), self.text)
