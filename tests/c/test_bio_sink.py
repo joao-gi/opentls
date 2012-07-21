@@ -212,7 +212,7 @@ class TestBioFileWrite(BioWrite, unittest.TestCase):
         name = self.name.encode()
         self.bio = api.BIO_new_file(name, b'w+')
 
-    test_eof = unittest.skipIf(api.version()[0:3] < (1, 0, 0), 'different behaviour between py2.6 and py2.7')(BioWrite.test_eof)
+    test_eof = expect_fail_before(1, 0, 0)(BioWrite.test_eof)
 
 
 class TestBioFileRead(BioRead, unittest.TestCase):
@@ -283,7 +283,7 @@ class TestBioFdRead(BioRead, unittest.TestCase):
     test_eof = unittest.expectedFailure(BioRead.test_eof)
     test_gets = expect_fail_before(1, 0, 0)(BioRead.test_gets)
     test_pending = unittest.expectedFailure(BioRead.test_pending)
-    test_read_one = unittest.expectedFailure(BioRead.test_read_one)
+    test_read_one = unittest.skip('inconsistent behaviour between py2.6 and py2.7')(BioRead.test_read_one)
 
 
 # Null buffers
