@@ -1,9 +1,12 @@
 """OpenTLS Tests"""
-import operator
 import functools
+import logging
+import operator
 import unittest2 as unittest
 
 import tls.c
+
+logging.basicConfig()
 
 def expect_fail_with(major, minor, fix, comparison=operator.eq):
     "Decorate function with expected failure compared to given OpenSSL versions"
