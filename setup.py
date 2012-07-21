@@ -43,6 +43,6 @@ setup(
         'Topic :: System :: Networking'
     ],
     install_requires=['cffi'],
-    tests_require=['unittest2'],
+    tests_require=['mock', 'unittest2'],
     test_suite="unittest2.collector"
 )
