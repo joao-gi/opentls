@@ -25,6 +25,7 @@ import numbers
 import sys
 
 from tls.c import api
+from tls import err
 
 try:
     from io import SEEK_SET, SEEK_CUR, SEEK_END
@@ -221,8 +222,10 @@ class BIOChain(object):
 
     # io.IOBase
 
+    @err.log_errors
     def close(self):
-        api.BIO_free_all(self._bio)
+        if self._bio is not None:
+            api.BIO_free_all(self._bio)
         self._bio = None
 
     def closed(self):
@@ -231,6 +234,7 @@ class BIOChain(object):
     def fileno(self):
         raise IOError('unsupported operation')
 
+    @err.log_errors
     def flush(self):
         api.BIO_flush(self._bio)
 
@@ -240,6 +244,7 @@ class BIOChain(object):
     def readable(self):
         return True
 
+    @err.log_errors
     def readline(self, limit=-1):
         limit = sys.maxint if limit < 0 else limit
         segments = []
@@ -256,6 +261,7 @@ class BIOChain(object):
                 raise IOError('unsupported operation')
         return ''.join(segments)
 
+    @err.log_errors
     def readlines(self, hint=-1):
         hint = sys.maxint if hint < 0 else hint
         lines = []
@@ -270,6 +276,7 @@ class BIOChain(object):
                 break
         return lines
 
+    @err.log_errors
     def seek(self, offset, whence=SEEK_SET):
         if whence != SEEK_SET:
             raise IOError('unsupported operation')
@@ -281,6 +288,7 @@ class BIOChain(object):
     def seekable(self):
         return True
 
+    @err.log_errors
     def tell(self):
         return api.BIO_tell(self._bio)
 
@@ -290,6 +298,7 @@ class BIOChain(object):
     def writable(self):
         return True
 
+    @err.log_errors
     def writelines(self, lines):
         for line in lines:
             data = api.new('char[]', line)
@@ -304,6 +313,7 @@ class BIOChain(object):
 
     # io.RawIOBase
 
+    @err.log_errors
     def read(self, n=-1):
         if n < 0:
             return self.readall()
@@ -313,6 +323,7 @@ class BIOChain(object):
             raise IOError('unsopported operation')
         return bytes(data)
 
+    @err.log_errors
     def readall(self):
         segments = []
         while True:
@@ -321,7 +332,8 @@ class BIOChain(object):
             if rval == len(data):
                 segments.append(bytes(data))
             elif rval > 0:
-                segments.append(bytes(api.cast('char[{0}]'.format(rval), data)))
+                ctype = 'char[{0}]'.format(rval)
+                segments.append(bytes(api.cast(ctype, data)))
             elif rval == 0:
                 break
             else:
@@ -331,6 +343,7 @@ class BIOChain(object):
     def readinto(self, b):
         raise IOError('unsupported operation')
 
+    @err.log_errors
     def write(self, b):
         data = api.new('char[]', b)
         writen = api.BIO_write(self._bio, data, len(data))
