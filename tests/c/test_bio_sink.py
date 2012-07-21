@@ -96,6 +96,7 @@ class BioRead(object):
             self.assertEqual(buf[0], self.data[count])
             read = api.BIO_read(self.bio, buf, len(buf))
             count += 1
+        self.assertEqual(count, max(0, len(self.data)-1))
 
     def test_read_long(self):
         buf = api.new('char[]', 2 * len(self.data))
