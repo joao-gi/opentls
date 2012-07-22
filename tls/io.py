@@ -35,6 +35,19 @@ except ImportError:
     SEEK_END = 2
 
 
+BIO_TYPES = {}
+
+
+def _populate_bio_types():
+    "Dynamically populate module with BIO type contants from tls.c.api"
+    for name, value in api.__dict__.iteritems():
+        if name.startswith('BIO_TYPE_'):
+            BIO_TYPES[value] = name
+            globals()[name] = value
+
+_populate_bio_types()
+
+
 class BIOBase(object):
     """Base class for Python BIO objects."""
 
