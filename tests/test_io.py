@@ -44,11 +44,18 @@ class TestChainWrite(unittest.TestCase):
 
     def setUp(self):
         self.bio = api.BIO_new(api.BIO_s_mem())
+        self.null = api.BIO_new(api.BIO_f_null())
+        api.BIO_push(self.bio, self.null)
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
         if self.fileobj.c_bio is not api.NULL:
             api.BIO_free_all(self.bio)
+
+    def test_getitem(self):
+        self.assertEqual(self.bio, self.fileobj[0])
+        self.assertEqual(self.null, self.fileobj[1])
+        self.assertRaises(IndexError, self.fileobj.__getitem__, 2)
 
     def test_bio_property(self):
         self.assertIs(self.bio, self.fileobj.c_bio)
@@ -120,11 +127,18 @@ class TestChainRead(unittest.TestCase):
     def setUp(self):
         self.data = api.new('char[]', 'HELLO\nWORLD\n')
         self.bio = api.BIO_new_mem_buf(self.data, len(bytes(self.data)))
+        self.null = api.BIO_new(api.BIO_f_null())
+        api.BIO_push(self.bio, self.null)
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
         if self.fileobj.c_bio is not api.NULL:
             api.BIO_free_all(self.bio)
+
+    def test_getitem(self):
+        self.assertEqual(self.bio, self.fileobj[0])
+        self.assertEqual(self.null, self.fileobj[1])
+        self.assertRaises(IndexError, self.fileobj.__getitem__, 2)
 
     def test_bio_property(self):
         self.assertIs(self.bio, self.fileobj.c_bio)

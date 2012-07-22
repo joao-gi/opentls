@@ -221,6 +221,15 @@ class BIOChain(object):
     BIOChain instances can be used as file like objects in Python.
     """
 
+    def _not_closed(method):
+
+        @functools.wraps(method)
+        def wrapper(self, *args, **kwargs):
+            if not self.closed():
+                return method(self, *args, **kwargs)
+            raise IOError('already closed')
+        return wrapper
+
     def __init__(self, bio):
         self._bio = bio
 
@@ -230,18 +239,19 @@ class BIOChain(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
+    def __getitem__(self, pos):
+        bio = self.c_bio
+        while pos > 0:
+            nxt = api.BIO_next(bio)
+            if api.cast('void*', nxt) == api.NULL:
+                raise IndexError("list index out of range")
+            bio = nxt
+            pos -= 1
+        return bio
+
     @property
     def c_bio(self):
         return self._bio
-
-    def _not_closed(method):
-
-        @functools.wraps(method)
-        def wrapper(self, *args, **kwargs):
-            if not self.closed():
-                return method(self, *args, **kwargs)
-            raise IOError('already closed')
-        return wrapper
 
     # io.IOBase
 
