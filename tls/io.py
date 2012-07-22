@@ -20,6 +20,7 @@ For example, wrapping a StringIO object:
 """
 from __future__ import absolute_import
 
+import functools
 import io
 import numbers
 import sys
@@ -233,20 +234,30 @@ class BIOChain(object):
     def c_bio(self):
         return self._bio
 
+    def _not_closed(method):
+
+        @functools.wraps(method)
+        def wrapper(self, *args, **kwargs):
+            if not self.closed():
+                return method(self, *args, **kwargs)
+            raise IOError('already closed')
+        return wrapper
+
     # io.IOBase
 
     @err.log_errors
     def close(self):
-        if self._bio is not None:
+        if self._bio is not api.NULL:
             api.BIO_free_all(self._bio)
-        self._bio = None
+        self._bio = api.NULL
 
     def closed(self):
-        return self._bio is None
+        return self._bio is api.NULL
 
     def fileno(self):
         raise IOError('unsupported operation')
 
+    @_not_closed
     @err.log_errors
     def flush(self):
         api.BIO_flush(self._bio)
@@ -254,9 +265,11 @@ class BIOChain(object):
     def isatty(self):
         raise IOError('unsupported operation')
 
+    @_not_closed
     def readable(self):
         return True
 
+    @_not_closed
     @err.log_errors
     def readline(self, limit=-1):
         limit = sys.maxint if limit < 0 else limit
@@ -274,6 +287,7 @@ class BIOChain(object):
                 raise IOError('unsupported operation')
         return ''.join(segments)
 
+    @_not_closed
     @err.log_errors
     def readlines(self, hint=-1):
         hint = sys.maxint if hint < 0 else hint
@@ -289,6 +303,7 @@ class BIOChain(object):
                 break
         return lines
 
+    @_not_closed
     @err.log_errors
     def seek(self, offset, whence=SEEK_SET):
         if whence != SEEK_SET:
@@ -298,9 +313,11 @@ class BIOChain(object):
             raise IOError('unsupported operation')
         return offset
 
+    @_not_closed
     def seekable(self):
         return True
 
+    @_not_closed
     @err.log_errors
     def tell(self):
         return api.BIO_tell(self._bio)
@@ -308,9 +325,11 @@ class BIOChain(object):
     def truncate(self):
         raise IOError('unsupported operation')
 
+    @_not_closed
     def writable(self):
         return True
 
+    @_not_closed
     @err.log_errors
     def writelines(self, lines):
         for line in lines:
@@ -326,6 +345,7 @@ class BIOChain(object):
 
     # io.RawIOBase
 
+    @_not_closed
     @err.log_errors
     def read(self, n=-1):
         if n < 0:
@@ -336,6 +356,7 @@ class BIOChain(object):
             raise IOError('unsopported operation')
         return bytes(data)
 
+    @_not_closed
     @err.log_errors
     def readall(self):
         segments = []
@@ -356,6 +377,7 @@ class BIOChain(object):
     def readinto(self, b):
         raise IOError('unsupported operation')
 
+    @_not_closed
     @err.log_errors
     def write(self, b):
         data = api.new('char[]', b)
