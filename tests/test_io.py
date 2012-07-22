@@ -55,6 +55,11 @@ class TestChainWrite(unittest.TestCase):
     def test_getitem(self):
         self.assertEqual(self.bio, self.fileobj[0])
         self.assertEqual(self.null, self.fileobj[1])
+
+    def test_getitem_negative(self):
+        self.assertRaises(IndexError, self.fileobj.__getitem__, -1)
+
+    def test_getitem_large(self):
         self.assertRaises(IndexError, self.fileobj.__getitem__, 2)
 
     def test_bio_property(self):
@@ -138,6 +143,11 @@ class TestChainRead(unittest.TestCase):
     def test_getitem(self):
         self.assertEqual(self.bio, self.fileobj[0])
         self.assertEqual(self.null, self.fileobj[1])
+
+    def test_getitem_negative(self):
+        self.assertRaises(IndexError, self.fileobj.__getitem__, -1)
+
+    def test_getitem_large(self):
         self.assertRaises(IndexError, self.fileobj.__getitem__, 2)
 
     def test_bio_property(self):

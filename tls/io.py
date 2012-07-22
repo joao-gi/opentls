@@ -240,6 +240,8 @@ class BIOChain(object):
         self.close()
 
     def __getitem__(self, pos):
+        if pos < 0:
+            raise IndexError("list index out of range")
         bio = self.c_bio
         while pos > 0:
             nxt = api.BIO_next(bio)
