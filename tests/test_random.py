@@ -36,7 +36,7 @@ class TestRandomApi(unittest.TestCase):
 
     def test_getrandbits(self):
         num = random.getrandbits(8)
-        self.assertGreater(num, 0)
+        self.assertGreaterEqual(num, 0)
         self.assertLess(num, 256)
 
     def test_randint(self):
