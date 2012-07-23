@@ -5,17 +5,7 @@ from tls.c import api
 from tls import io
 
 
-class TestChainWrite(unittest.TestCase):
-
-    def setUp(self):
-        self.bio = api.BIO_new(api.BIO_s_mem())
-        self.null = api.BIO_new(api.BIO_f_null())
-        api.BIO_push(self.bio, self.null)
-        self.fileobj = io.BIOChain(self.bio)
-
-    def tearDown(self):
-        if self.fileobj.c_bio is not api.NULL:
-            api.BIO_free_all(self.bio)
+class ChainTest(object):
 
     def test_getitem(self):
         self.assertEqual(self.bio, self.fileobj[0])
@@ -55,12 +45,6 @@ class TestChainWrite(unittest.TestCase):
     def test_readable(self):
         self.assertTrue(self.fileobj.readable())
 
-    def test_readline(self):
-        self.assertRaises(IOError, self.fileobj.readline)
-
-    def test_readlines(self):
-        self.assertRaises(IOError, self.fileobj.readlines)
-
     def test_seek(self):
         self.assertEquals(1, self.fileobj.seek(1))
 
@@ -75,6 +59,25 @@ class TestChainWrite(unittest.TestCase):
 
     def test_writable(self):
         self.assertTrue(self.fileobj.writable())
+
+
+class TestChainWrite(ChainTest, unittest.TestCase):
+
+    def setUp(self):
+        self.bio = api.BIO_new(api.BIO_s_mem())
+        self.null = api.BIO_new(api.BIO_f_null())
+        api.BIO_push(self.bio, self.null)
+        self.fileobj = io.BIOChain(self.bio)
+
+    def tearDown(self):
+        if self.fileobj.c_bio is not api.NULL:
+            api.BIO_free_all(self.bio)
+
+    def test_readline(self):
+        self.assertRaises(IOError, self.fileobj.readline)
+
+    def test_readlines(self):
+        self.assertRaises(IOError, self.fileobj.readlines)
 
     def test_writelines(self):
         self.fileobj.writelines(['a', 'b', 'c'])
@@ -92,7 +95,7 @@ class TestChainWrite(unittest.TestCase):
         self.fileobj.write('a')
 
 
-class TestChainRead(unittest.TestCase):
+class TestChainRead(ChainTest, unittest.TestCase):
 
     def setUp(self):
         self.data = api.new('char[]', 'HELLO\nWORLD\n')
@@ -105,64 +108,11 @@ class TestChainRead(unittest.TestCase):
         if self.fileobj.c_bio is not api.NULL:
             api.BIO_free_all(self.bio)
 
-    def test_getitem(self):
-        self.assertEqual(self.bio, self.fileobj[0])
-        self.assertEqual(self.null, self.fileobj[1])
-
-    def test_getitem_negative(self):
-        self.assertRaises(IndexError, self.fileobj.__getitem__, -1)
-
-    def test_getitem_large(self):
-        self.assertRaises(IndexError, self.fileobj.__getitem__, 2)
-
-    def test_bio_property(self):
-        self.assertIs(self.bio, self.fileobj.c_bio)
-
-    def test_close(self):
-        self.fileobj.close()
-
-    def test_closed(self):
-        self.assertFalse(self.fileobj.closed())
-        self.fileobj.close()
-        self.assertTrue(self.fileobj.closed())
-
-    def test_contextmanager(self):
-        with self.fileobj:
-            pass
-        self.assertTrue(self.fileobj.closed())
-
-    def test_fileno(self):
-        self.assertRaises(IOError, self.fileobj.fileno)
-
-    def test_flush(self):
-        self.fileobj.flush()
-
-    def test_isatty(self):
-        self.assertRaises(IOError, self.fileobj.isatty)
-
-    def test_readable(self):
-        self.assertTrue(self.fileobj.readable())
-
     def test_readline(self):
         self.assertEqual('HELLO\n', self.fileobj.readline())
 
     def test_readlines(self):
         self.assertEqual(['HELLO\n', 'WORLD\n'], self.fileobj.readlines())
-
-    def test_seek(self):
-        self.assertEquals(1, self.fileobj.seek(1))
-
-    def test_seekable(self):
-        self.assertTrue(self.fileobj.seekable())
-
-    def test_tell(self):
-        self.assertGreaterEqual(0, self.fileobj.tell())
-
-    def test_truncate(self):
-        self.assertRaises(IOError, self.fileobj.truncate)
-
-    def test_writable(self):
-        self.assertTrue(self.fileobj.writable())
 
     def test_writelines(self):
         self.assertRaises(IOError, self.fileobj.writelines, ['a', 'b', 'c'])
