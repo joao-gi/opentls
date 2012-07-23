@@ -8,6 +8,7 @@ deps:
 
 lint:
 	flake8 --exit-zero tls/c/*py
+	flake8 --exit-zero tls/io/*py
 	flake8 --exit-zero tls/*py
 
 dist:
