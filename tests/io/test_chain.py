@@ -8,14 +8,22 @@ from tls import io
 class ChainTest(object):
 
     def test_getitem(self):
-        self.assertEqual(self.bio, self.fileobj[0])
-        self.assertEqual(self.null, self.fileobj[1])
+        self.assertEqual(self.null, self.fileobj[0])
+        self.assertEqual(self.mem, self.fileobj[1])
+        self.assertNotEqual(self.fileobj[0], self.fileobj[1])
 
     def test_getitem_negative(self):
         self.assertRaises(IndexError, self.fileobj.__getitem__, -1)
 
     def test_getitem_large(self):
         self.assertRaises(IndexError, self.fileobj.__getitem__, 2)
+
+    def test_pop_push(self):
+        self.assertEqual(self.null, self.fileobj.pop())
+        self.assertEqual(self.mem, self.fileobj.pop())
+        self.assertEqual(self.mem, self.fileobj.pop())
+        self.fileobj.push(self.null)
+        self.assertEqual(self.bio, self.fileobj.c_bio)
 
     def test_bio_property(self):
         self.assertIs(self.bio, self.fileobj.c_bio)
@@ -64,9 +72,9 @@ class ChainTest(object):
 class TestChainWrite(ChainTest, unittest.TestCase):
 
     def setUp(self):
-        self.bio = api.BIO_new(api.BIO_s_mem())
         self.null = api.BIO_new(api.BIO_f_null())
-        api.BIO_push(self.bio, self.null)
+        self.mem = api.BIO_new(api.BIO_s_mem())
+        self.bio = api.BIO_push(self.null, self.mem)
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
@@ -99,9 +107,9 @@ class TestChainRead(ChainTest, unittest.TestCase):
 
     def setUp(self):
         self.data = api.new('char[]', 'HELLO\nWORLD\n')
-        self.bio = api.BIO_new_mem_buf(self.data, len(bytes(self.data)))
         self.null = api.BIO_new(api.BIO_f_null())
-        api.BIO_push(self.bio, self.null)
+        self.mem = api.BIO_new_mem_buf(self.data, len(bytes(self.data)))
+        self.bio = api.BIO_push(self.null, self.mem)
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):

@@ -50,6 +50,16 @@ class BIOChain(object):
             pos -= 1
         return bio
 
+    def pop(self):
+        bio = self._bio
+        nxt = api.BIO_pop(bio)
+        if api.cast('void*', nxt) != api.NULL:
+            self._bio = nxt
+        return bio
+
+    def push(self, bio):
+        self._bio = api.BIO_push(bio, self._bio)
+
     @property
     def c_bio(self):
         return self._bio
