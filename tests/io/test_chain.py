@@ -105,10 +105,12 @@ class TestChainWrite(ChainTest, unittest.TestCase):
 
 class TestChainRead(ChainTest, unittest.TestCase):
 
+    DATA = b'HELLO\nWORLD\n'
+
     def setUp(self):
-        self.data = api.new('char[]', 'HELLO\nWORLD\n')
+        self.buff = api.new('char[]', self.DATA)
         self.null = api.BIO_new(api.BIO_f_null())
-        self.mem = api.BIO_new_mem_buf(self.data, len(bytes(self.data)))
+        self.mem = api.BIO_new_mem_buf(self.buff, len(self.DATA))
         self.bio = api.BIO_push(self.null, self.mem)
         self.fileobj = io.BIOChain(self.bio)
 
