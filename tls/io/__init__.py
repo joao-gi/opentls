@@ -22,6 +22,7 @@ from tls.io._base import BIOBase
 from tls.io._chain import BIOChain
 from tls.io._method import BIOMethod
 from tls.io._sinks import BIOMemBuffer
+from tls.io._sinks import BIONull
 
 from tls.io._types import *
 

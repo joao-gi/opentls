@@ -19,3 +19,11 @@ class BIOMemBuffer(BIOChain):
 
     def writable(self):
         return not hasattr(self, '_buffer')
+
+
+class BIONull(BIOChain):
+    """Specialise BIOChain for NULL sinks and sources."""
+
+    def __init__(self):
+        bio = api.BIO_new(api.BIO_s_null())
+        super(BIONull, self).__init__(bio)

@@ -8,8 +8,8 @@ from tls import io
 class ChainTest(object):
 
     def test_getitem(self):
-        self.assertEqual(self.null, self.fileobj[0])
-        self.assertEqual(self.mem, self.fileobj[1])
+        self.assertEqual(self.filter, self.fileobj[0])
+        self.assertEqual(self.sink, self.fileobj[1])
         self.assertNotEqual(self.fileobj[0], self.fileobj[1])
 
     def test_getitem_negative(self):
@@ -19,14 +19,17 @@ class ChainTest(object):
         self.assertRaises(IndexError, self.fileobj.__getitem__, 2)
 
     def test_pop_push(self):
-        self.assertEqual(self.null, self.fileobj.pop())
-        self.assertEqual(self.mem, self.fileobj.pop())
-        self.assertEqual(self.mem, self.fileobj.pop())
-        self.fileobj.push(self.null)
+        self.assertEqual(self.filter, self.fileobj.pop())
+        self.assertEqual(self.sink, self.fileobj.pop())
+        self.assertEqual(self.sink, self.fileobj.pop())
+        self.fileobj.push(self.filter)
         self.assertEqual(self.bio, self.fileobj.c_bio)
 
     def test_bio_types_property(self):
-        types = [io.BIO_TYPE_MEM, io.BIO_TYPE_NULL_FILTER]
+        types = [
+            api.BIO_method_type(self.sink),
+            api.BIO_method_type(self.filter)
+        ]
         self.assertEqual(types, self.fileobj.bio_types)
 
     def test_bio_property(self):
@@ -76,9 +79,9 @@ class ChainTest(object):
 class TestChainWrite(ChainTest, unittest.TestCase):
 
     def setUp(self):
-        self.null = api.BIO_new(api.BIO_f_null())
-        self.mem = api.BIO_new(api.BIO_s_mem())
-        self.bio = api.BIO_push(self.null, self.mem)
+        self.filter = api.BIO_new(api.BIO_f_null())
+        self.sink = api.BIO_new(api.BIO_s_mem())
+        self.bio = api.BIO_push(self.filter, self.sink)
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
@@ -113,9 +116,9 @@ class TestChainRead(ChainTest, unittest.TestCase):
 
     def setUp(self):
         self.buff = api.new('char[]', self.DATA)
-        self.null = api.BIO_new(api.BIO_f_null())
-        self.mem = api.BIO_new_mem_buf(self.buff, len(self.DATA))
-        self.bio = api.BIO_push(self.null, self.mem)
+        self.filter = api.BIO_new(api.BIO_f_null())
+        self.sink = api.BIO_new_mem_buf(self.buff, len(self.DATA))
+        self.bio = api.BIO_push(self.filter, self.sink)
         self.fileobj = io.BIOChain(self.bio)
 
     def tearDown(self):
