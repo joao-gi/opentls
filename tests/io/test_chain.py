@@ -25,6 +25,10 @@ class ChainTest(object):
         self.fileobj.push(self.null)
         self.assertEqual(self.bio, self.fileobj.c_bio)
 
+    def test_bio_types_property(self):
+        types = [io.BIO_TYPE_MEM, io.BIO_TYPE_NULL_FILTER]
+        self.assertEqual(types, self.fileobj.bio_types)
+
     def test_bio_property(self):
         self.assertIs(self.bio, self.fileobj.c_bio)
 

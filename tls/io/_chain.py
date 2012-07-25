@@ -61,6 +61,15 @@ class BIOChain(object):
         self._bio = api.BIO_push(bio, self._bio)
 
     @property
+    def bio_types(self):
+        types = []
+        bio = self._bio
+        while api.cast('void*', bio) != api.NULL:
+            types.insert(0, api.BIO_method_type(bio))
+            bio = api.BIO_next(bio)
+        return types
+
+    @property
     def c_bio(self):
         return self._bio
 
