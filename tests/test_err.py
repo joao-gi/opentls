@@ -56,6 +56,11 @@ class TestErrorFetch(unittest.TestCase):
         self.assertEqual(0, self.count_errors_on_stack())
 
     @mock.patch('tls.err.logger')
+    def test_clear_errors_no_logging(self, logger):
+        err.log_errors(level=None)
+        self.assertEqual(0, logger.log.call_count)
+
+    @mock.patch('tls.err.logger')
     def test_errors_on_exception(self, logger):
         @err.log_errors
         def func():
