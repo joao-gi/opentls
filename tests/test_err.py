@@ -29,11 +29,27 @@ class TestErrorFetch(unittest.TestCase):
         return count
 
     @mock.patch('tls.err.logger')
-    def test_clear_errors(self, logger):
+    def test_return_errors(self, logger):
+        messages = err.log_errors()
+        self.assertEqual(messages, [self.first, self.last])
+
+    @mock.patch('tls.err.logger')
+    def test_clear_errors_as_error(self, logger):
         err.log_errors()
         calls = [
             mock.call(logging.ERROR, self.first),
             mock.call(logging.ERROR, self.last),
+        ]
+        logger.log.assert_has_calls(calls)
+        self.assertEqual(2, logger.log.call_count)
+        self.assertEqual(0, self.count_errors_on_stack())
+
+    @mock.patch('tls.err.logger')
+    def test_clear_errors_as_debug(self, logger):
+        err.log_errors(level=logging.DEBUG)
+        calls = [
+            mock.call(logging.DEBUG, self.first),
+            mock.call(logging.DEBUG, self.last),
         ]
         logger.log.assert_has_calls(calls)
         self.assertEqual(2, logger.log.call_count)

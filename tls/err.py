@@ -16,7 +16,7 @@ from tls.c import api
 logger = logging.getLogger(__name__)
 
 
-def log_errors(func=None):
+def log_errors(func=None, level=logging.ERROR):
     """Decorate function to log all openssl errors when function exits.
 
     If the function returns normally errors are logged with level ERROR.
@@ -26,17 +26,18 @@ def log_errors(func=None):
 
     def clear_errors(level=logging.ERROR):
         "Log all openssl errors at supplied log level"
-        count = 0
+        messages = []
         errcode = api.ERR_get_error()
         while errcode != 0:
-            count += 1
             cstring = api.ERR_error_string(errcode, api.NULL)
-            logger.log(level, bytes(cstring))
+            errmsg = bytes(cstring)
+            logger.log(level, errmsg)
+            messages.append(errmsg)
             errcode = api.ERR_get_error()
-        return count
+        return messages
 
     if func is None:
-        return clear_errors()
+        return clear_errors(level)
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
