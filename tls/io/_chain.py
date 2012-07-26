@@ -212,7 +212,7 @@ class BIOChain(object):
     def write(self, b):
         data = api.new('char[]', b)
         writen = api.BIO_write(self._bio, data, len(data))
-        if writen < 0:
+        if writen <= 0:
             raise IOError('unsupported operation')
         return writen
 
