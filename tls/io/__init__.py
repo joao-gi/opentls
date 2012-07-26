@@ -21,6 +21,7 @@ For example, wrapping a StringIO object:
 from tls.io._base import BIOBase
 from tls.io._chain import BIOChain
 from tls.io._method import BIOMethod
+from tls.io._sinks import BIOFile
 from tls.io._sinks import BIOMemBuffer
 from tls.io._sinks import BIONull
 

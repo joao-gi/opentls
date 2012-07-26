@@ -1,6 +1,53 @@
 """Types specialisations of BIOChain"""
 from tls.io import BIOChain
 from tls.c import api
+from tls import err
+
+
+class BIOFile(BIOChain):
+    """Specialise BIOChain for file BIOs.
+
+    Files may be opened in one of the following modes:
+
+     'r'  Open for reading.
+          The stream is positioned at the beginning of the file.
+     'r+' Open for reading and writing.
+          The stream is positioned at the beginning of the file.
+     'w'  Truncate to zero length or create text file for writing.
+          The stream is positioned at the beginning of the file.
+     'w+' Open for reading and writing.
+          The stream is positioned at the beginning of the file.
+     'a'  Open for writing. The file is created if it does not exist.
+          The stream is positioned at the end of the file.
+     'a+' Open for reading and writing.
+          The stream is positioned at the end of the file.
+
+    If the mode is not recognised ValueError will be raised. IOError will be
+    raised if there was an issue opening the file.
+    """
+
+    MODES = set(['r', 'r+', 'w', 'w+', 'a', 'a+'])
+
+    def __init__(self, filename, mode='r'):
+        if mode not in self.MODES:
+            msg = "mode string must begin with one of "
+            msg += " ".join("'{0}'".format(m) for m in sorted(self.MODES))
+            msg += " not '{0}'".format(mode)
+            raise ValueError(msg)
+        self._mode = mode
+        mode = api.new('char[]', mode)
+        filename = api.new('char[]', filename)
+        bio = api.BIO_new_file(filename, mode)
+        if api.cast('void*', bio) == api.NULL:
+            messages = err.log_errors()
+            raise IOError(messages[0])
+        super(BIOFile, self).__init__(bio)
+
+    def readable(self):
+        return self._mode.startswith('r') or self._mode.endswith('+')
+
+    def writable(self):
+        return self._mode.startswith('w') or self._mode.endswith('+')
 
 
 class BIOMemBuffer(BIOChain):
