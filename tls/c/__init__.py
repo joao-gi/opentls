@@ -103,6 +103,7 @@ class API(object):
         'obj',
         'openssl',
         'nid',
+        'pkcs5',
         'rand',
         'ssl',
         'ssleay',
