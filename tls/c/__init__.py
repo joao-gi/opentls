@@ -93,6 +93,7 @@ class API(object):
     SSLVersion = namedtuple('SSLVersion', 'major minor fix patch status')
 
     _modules = [
+        'asn1',
         'bio',
         'bio_filter',
         'bio_sink',
