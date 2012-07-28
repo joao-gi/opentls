@@ -1,20 +1,8 @@
 """Test digest API"""
-from functools import partial
 from itertools import islice
-import platform
 import unittest2 as unittest
 
 from tls.c import api
-
-def expect_fail_system(system):
-    "Decorate function with expected failure for OpenSSL on platform"
-    def expect_failure(func):
-        return unittest.expectedFailure(func)
-    def noop(func):
-        return func
-    if platform.system() == system:
-        return expect_failure
-    return noop
 
 
 class DigestTests(object):
