@@ -10,13 +10,13 @@ class DigestTests(object):
     data_short = b'abc'
     data_long = b'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq'
 
-    def _add_contexts(self):
+    def setUp(self):
         self.ctx = api.EVP_MD_CTX_create()
-        api.EVP_DigestInit_ex(self.ctx, self.md, api.NULL)
+        api.EVP_DigestInit_ex(self.ctx, self.digest, api.NULL)
         self.ctx_two = api.EVP_MD_CTX_create()
-        api.EVP_DigestInit_ex(self.ctx_two, self.md, api.NULL)
+        api.EVP_DigestInit_ex(self.ctx_two, self.digest, api.NULL)
 
-    def _remove_contexts(self):
+    def tearDown(self):
         api.EVP_MD_CTX_destroy(self.ctx)
         api.EVP_MD_CTX_destroy(self.ctx_two)
 
@@ -56,55 +56,37 @@ class DigestTests(object):
         self.assertEqual(hash_value, self.hash_long)
 
 
-class TestSHA1(unittest.TestCase, DigestTests):
+class TestSHA1(DigestTests, unittest.TestCase):
     "Test data source from http://www.nsrl.nist.gov/testdata/"
 
     hash_short = "a9993e364706816aba3e25717850c26c9cd0d89d"
     hash_long = "84983e441c3bd26ebaae4aa1f95129e5e54670f1"
 
-    @classmethod
-    def setUpClass(cls):
-        cls.md = api.EVP_sha1()
-
-    def setUp(self):
-        self._add_contexts()
-
-    def tearDown(self):
-        self._remove_contexts()
+    @property
+    def digest(cls):
+        return api.EVP_sha1()
 
 
-class TestMD5(unittest.TestCase, DigestTests):
+class TestMD5(DigestTests, unittest.TestCase):
     "Test data source from http://www.nsrl.nist.gov/testdata/"
 
     hash_short = "900150983cd24fb0d6963f7d28e17f72"
     hash_long = "8215ef0796a20bcaaae116d3876c664a"
 
-    @classmethod
-    def setUpClass(cls):
-        cls.md = api.EVP_md5()
-
-    def setUp(self):
-        self._add_contexts()
-
-    def tearDown(self):
-        self._remove_contexts()
+    @property
+    def digest(self):
+        return api.EVP_md5()
 
 
-class TestSHA256(unittest.TestCase, DigestTests):
+class TestSHA256(DigestTests, unittest.TestCase):
     "Test data source from http://www.nsrl.nist.gov/testdata/"
 
     hash_short = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
     hash_long = "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
 
-    @classmethod
-    def setUpClass(cls):
-        cls.md = api.EVP_sha256()
-
-    def setUp(self):
-        self._add_contexts()
-
-    def tearDown(self):
-        self._remove_contexts()
+    @property
+    def digest(self):
+        return api.EVP_sha256()
 
 
 class TestEVP(unittest.TestCase):
