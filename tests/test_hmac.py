@@ -1,9 +1,31 @@
 """Test Python hmac API implementation using OpenSSL"""
+import hashlib
 import unittest2 as unittest
 
 from .c.test_hmac import Vector001, Vector002, Vector003
 
-from tls.hmac import new
+import tls.hashlib
+from tls.hmac import new, HMAC
+
+
+class TestHMAC(unittest.TestCase):
+
+    def test_closed(self):
+        hmac = HMAC('', '')
+        hmac.digest()
+        self.assertRaises(ValueError, hmac.update, '')
+
+    def test_init_str(self):
+        hmac = HMAC('', '', 'sha1')
+        self.assertEqual(hmac.digest_size, 20)
+
+    def test_init_pep(self):
+        hmac = HMAC('', '', hashlib.sha1)
+        self.assertEqual(hmac.digest_size, 20)
+
+    def test_init_partial(self):
+        hmac = HMAC('', '', tls.hashlib.sha1)
+        self.assertEqual(hmac.digest_size, 20)
 
 
 class HMACTests(object):

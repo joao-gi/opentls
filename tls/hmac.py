@@ -35,7 +35,7 @@ class HMAC(object):
         if digestmod is None:
             self._md = api.EVP_md5()
         else:
-            self._set_md(digestmod)
+            self._md = self._get_md(digestmod)
         self._ctx = api.new('HMAC_CTX*')
         self._key = api.new('char[]', key)
         self._digest = None
@@ -45,24 +45,29 @@ class HMAC(object):
             self.update(msg)
 
     def __del__(self):
-        if self._ctx is not None:
+        if hasattr(self, '_ctx') and self._ctx is not None:
             api.HMAC_CTX_cleanup(self._ctx)
             self._ctx = None
 
-    def _set_md(self, digestmod):
+    def _get_md(self, digestmod):
+        md = api.NULL
         if isinstance(digestmod, bytes):
-            self._md = api.EVP_get_digestbyname(digestmod)
-        if self._md == api.NULL:
+            md = api.EVP_get_digestbyname(digestmod)
+        if md == api.NULL:
             name = getattr(digestmod, '__name__', '')
-            self._md = api.EVP_get_digestbyname(name)
-        if self._md == api.NULL:
+            md = api.EVP_get_digestbyname(name)
+        if md == api.NULL:
+            name = getattr(digestmod, '__name__', '').replace('openssl_', '')
+            md = api.EVP_get_digestbyname(name)
+        if md == api.NULL:
             for name in getattr(digestmod, 'args', []):
-                self._md = api.EVP_get_digestbyname(name)
-                if self._md != api.NULL:
+                md = api.EVP_get_digestbyname(name)
+                if md != api.NULL:
                     break
-        if self._md == api.NULL:
+        if md == api.NULL:
             msg = 'Unknown message digest {0}'.format(repr(digestmod))
             raise ValueError(msg)
+        return md
 
     @property
     def digest_size(self):
