@@ -129,7 +129,7 @@ class MessageDigest(object):
     def digest(self):
         "Return the digest value as a string of binary data."
         buff, size = self._digest()
-        return ''.join(chr(c) for c in itertools.islice(buff, size))
+        return bytes(api.buffer(buff, size))
 
     def hexdigest(self):
         "Return the digest value as a string of hexadecimal digits."
