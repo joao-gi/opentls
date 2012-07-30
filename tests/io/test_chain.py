@@ -126,19 +126,19 @@ class TestChainRead(ChainTest, unittest.TestCase):
             api.BIO_free_all(self.bio)
 
     def test_readline(self):
-        self.assertEqual('HELLO\n', self.fileobj.readline())
+        self.assertEqual(b'HELLO\n', self.fileobj.readline())
 
     def test_readlines(self):
-        self.assertEqual(['HELLO\n', 'WORLD\n'], self.fileobj.readlines())
+        self.assertEqual([b'HELLO\n', b'WORLD\n'], self.fileobj.readlines())
 
     def test_writelines(self):
         self.assertRaises(IOError, self.fileobj.writelines, ['a', 'b', 'c'])
 
     def test_read(self):
-        self.assertEquals('H', self.fileobj.read(1))
+        self.assertEquals(b'H', self.fileobj.read(1))
 
     def test_readall(self):
-        self.assertEquals('HELLO\nWORLD\n', self.fileobj.readall())
+        self.assertEquals(b'HELLO\nWORLD\n', self.fileobj.readall())
 
     def test_readinto(self):
         self.assertRaises(IOError, self.fileobj.readinto, bytearray(1))

@@ -7,7 +7,7 @@ from tls.c import api
 
 class BioFilter(object):
 
-    input = api.new('char[]', "HELLO WORLD")
+    input = api.new('char[]', b"HELLO WORLD")
 
     def setUp(self):
         self.sink = api.BIO_new(api.BIO_s_mem())
@@ -72,13 +72,13 @@ class HashFilter(BioFilter):
         BioFilter.test_filter(self)
         buf = api.new('char[]', api.EVP_MD_size(self.md))
         api.BIO_gets(self.filter, buf, len(buf))
-        hash_value = ''.join('{0:02x}'.format(ord(v)) for v in bytes(buf))
+        hash_value = b''.join(b'{0:02x}'.format(ord(v)) for v in bytes(buf))
         self.assertEqual(hash_value, self.hash)
 
 
 class TestMD5Filter(HashFilter, unittest.TestCase):
 
-    hash = '8215ef0796a20bcaaae116d3876c664a'
+    hash = b'8215ef0796a20bcaaae116d3876c664a'
 
     @property
     def md(self):
@@ -87,7 +87,7 @@ class TestMD5Filter(HashFilter, unittest.TestCase):
 
 class TestSHA1Filter(HashFilter, unittest.TestCase):
 
-    hash = '84983e441c3bd26ebaae4aa1f95129e5e54670f1'
+    hash = b'84983e441c3bd26ebaae4aa1f95129e5e54670f1'
 
     @property
     def md(self):
@@ -96,7 +96,7 @@ class TestSHA1Filter(HashFilter, unittest.TestCase):
 
 class TestSHA256Filter(HashFilter, unittest.TestCase):
 
-    hash = '248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1'
+    hash = b'248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1'
 
     @property
     def md(self):

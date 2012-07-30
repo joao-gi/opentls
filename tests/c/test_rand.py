@@ -115,7 +115,7 @@ class TestPRNG(unittest.TestCase, RandTests):
     @classmethod
     def setUpClass(cls):
         if not api.RAND_status():
-            api.RAND_load_file("/dev/urandom", 1024)
+            api.RAND_load_file(b"/dev/urandom", 1024)
         api.RAND_pseudo_bytes(api.cast('unsigned char*', cls.data), cls.samples)
 
     def setUp(self):

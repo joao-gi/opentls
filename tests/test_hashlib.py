@@ -9,20 +9,20 @@ class MD5Tests(unittest.TestCase):
 
     data_short = b'abc'
     digest_short = b'\x90\x01P\x98<\xd2O\xb0\xd6\x96?}(\xe1\x7fr'
-    hexdigest_short = '900150983cd24fb0d6963f7d28e17f72'
+    hexdigest_short = b'900150983cd24fb0d6963f7d28e17f72'
 
     data_long = b'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq'
     digest_long = b'\x82\x15\xef\x07\x96\xa2\x0b\xca\xaa\xe1\x16\xd3\x87lfJ'
-    hexdigest_long = '8215ef0796a20bcaaae116d3876c664a'
+    hexdigest_long = b'8215ef0796a20bcaaae116d3876c664a'
 
     def setUp(self):
-        self.digest = hashlib.new('MD5')
+        self.digest = hashlib.new(b'MD5')
 
     def tearDown(self):
         del self.digest
 
     def test_name(self):
-        self.assertEqual('MD5', self.digest.name)
+        self.assertEqual(b'MD5', self.digest.name)
 
     def test_digest_size(self):
         self.assertEqual(16, self.digest.digest_size)
@@ -31,7 +31,7 @@ class MD5Tests(unittest.TestCase):
         self.assertEqual(64, self.digest.block_size)
 
     def test_init(self):
-        self.digest = hashlib.new('MD5', self.data_short)
+        self.digest = hashlib.new(b'MD5', self.data_short)
         self.assertEqual(self.digest_short, self.digest.digest())
 
     def test_digest(self):
@@ -62,22 +62,22 @@ class TestAlgorithms(unittest.TestCase):
 
     def test_available(self):
         self.assertGreater(len(hashlib.algorithms_available), 0)
-        self.assertIn('MD5', hashlib.algorithms_available)
+        self.assertIn(b'MD5', hashlib.algorithms_available)
 
     def test_md5(self):
-        self.assertTrue(hasattr(hashlib, 'md5'))
+        self.assertTrue(hasattr(hashlib, b'md5'))
 
     def test_sha1(self):
-        self.assertTrue(hasattr(hashlib, 'sha1'))
+        self.assertTrue(hasattr(hashlib, b'sha1'))
 
     def test_sha224(self):
-        self.assertTrue(hasattr(hashlib, 'sha224'))
+        self.assertTrue(hasattr(hashlib, b'sha224'))
 
     def test_sha256(self):
-        self.assertTrue(hasattr(hashlib, 'sha256'))
+        self.assertTrue(hasattr(hashlib, b'sha256'))
 
     def test_sha384(self):
-        self.assertTrue(hasattr(hashlib, 'sha384'))
+        self.assertTrue(hasattr(hashlib, b'sha384'))
 
     def test_sha512(self):
-        self.assertTrue(hasattr(hashlib, 'sha512'))
+        self.assertTrue(hasattr(hashlib, b'sha512'))

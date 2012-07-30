@@ -26,7 +26,7 @@ class DigestTests(object):
         size = api.new('unsigned int*')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_short))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_short)
 
     def test_long(self):
@@ -35,7 +35,7 @@ class DigestTests(object):
         size = api.new('unsigned int*')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_long))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_long)
 
     def test_copy(self):
@@ -46,21 +46,21 @@ class DigestTests(object):
 
         api.EVP_MD_CTX_copy_ex(self.ctx_two, self.ctx)
         api.EVP_DigestFinal_ex(self.ctx_two, buf, size)
-        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_short)
 
         data = api.new('char[]', self.data_long[len(self.data_short):])
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(data)-1)
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = ''.join('{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_long)
 
 
 class TestSHA1(DigestTests, unittest.TestCase):
     "Test data source from http://www.nsrl.nist.gov/testdata/"
 
-    hash_short = "a9993e364706816aba3e25717850c26c9cd0d89d"
-    hash_long = "84983e441c3bd26ebaae4aa1f95129e5e54670f1"
+    hash_short = b"a9993e364706816aba3e25717850c26c9cd0d89d"
+    hash_long = b"84983e441c3bd26ebaae4aa1f95129e5e54670f1"
 
     @property
     def digest(cls):
@@ -70,8 +70,8 @@ class TestSHA1(DigestTests, unittest.TestCase):
 class TestMD5(DigestTests, unittest.TestCase):
     "Test data source from http://www.nsrl.nist.gov/testdata/"
 
-    hash_short = "900150983cd24fb0d6963f7d28e17f72"
-    hash_long = "8215ef0796a20bcaaae116d3876c664a"
+    hash_short = b"900150983cd24fb0d6963f7d28e17f72"
+    hash_long = b"8215ef0796a20bcaaae116d3876c664a"
 
     @property
     def digest(self):
@@ -81,8 +81,8 @@ class TestMD5(DigestTests, unittest.TestCase):
 class TestSHA256(DigestTests, unittest.TestCase):
     "Test data source from http://www.nsrl.nist.gov/testdata/"
 
-    hash_short = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
-    hash_long = "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+    hash_short = b"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    hash_long = b"248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
 
     @property
     def digest(self):

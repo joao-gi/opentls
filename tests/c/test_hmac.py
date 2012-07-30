@@ -58,20 +58,20 @@ class HMACTests(object):
 
 class Vector001(object):
 
-    key = '\x0b' * 16
-    data = 'Hi There'
+    key = b'\x0b' * 16
+    data = b'Hi There'
 
 
 class Vector002(object):
 
-    key = 'Jefe'
-    data = 'what do ya want for nothing?'
+    key = b'Jefe'
+    data = b'what do ya want for nothing?'
 
 
 class Vector003(object):
 
-    key = '\xAA' * 16
-    data = '\xDD' * 50
+    key = b'\xAA' * 16
+    data = b'\xDD' * 50
 
 
 # MD5 TESTS
@@ -86,17 +86,17 @@ class MD5Test(object):
 
 class TestMd5001(HMACTests, MD5Test, Vector001, unittest.TestCase):
 
-    digest = '\x92\x94\x72\x7a\x36\x38\xbb\x1c\x13\xf4\x8e\xf8\x15\x8b\xfc\x9d'
+    digest = b'\x92\x94rz68\xbb\x1c\x13\xf4\x8e\xf8\x15\x8b\xfc\x9d'
 
 
 class TestMd5002(HMACTests, MD5Test, Vector002, unittest.TestCase):
 
-    digest = '\x75\x0c\x78\x3e\x6a\xb0\xb5\x03\xea\xa8\x6e\x31\x0a\x5d\xb7\x38'
+    digest = b'u\x0cx>j\xb0\xb5\x03\xea\xa8n1\n]\xb78'
 
 
 class TestMd5003(HMACTests, MD5Test, Vector003, unittest.TestCase):
 
-    digest = '\x56\xbe\x34\x52\x1d\x14\x4c\x88\xdb\xb8\xc7\x33\xf0\xe8\xb3\xf6'
+    digest = 'V\xbe4R\x1d\x14L\x88\xdb\xb8\xc73\xf0\xe8\xb3\xf6'
 
 
 # SHA1 TESTS
@@ -110,14 +110,14 @@ class SHA1Test(object):
 
 class TestSha1001(HMACTests, SHA1Test, Vector001, unittest.TestCase):
 
-    digest = 'g[\x0b:\x1bM\xdfN\x12Hr\xdal/c+\xfe\xd9W\xe9'
+    digest = b'g[\x0b:\x1bM\xdfN\x12Hr\xdal/c+\xfe\xd9W\xe9'
 
 
 class TestSha1002(HMACTests, SHA1Test, Vector002, unittest.TestCase):
 
-    digest = '\xef\xfc\xdfj\xe5\xeb/\xa2\xd2t\x16\xd5\xf1\x84\xdf\x9c%\x9a|y'
+    digest = b'\xef\xfc\xdfj\xe5\xeb/\xa2\xd2t\x16\xd5\xf1\x84\xdf\x9c%\x9a|y'
 
 
 class TestSha1003(HMACTests, SHA1Test, Vector003, unittest.TestCase):
 
-    digest = '\xd70YM\x16~5\xd5\x95o\xd8\x00=\r\xb3\xd3\xf4m\xc7\xbb'
+    digest = b'\xd70YM\x16~5\xd5\x95o\xd8\x00=\r\xb3\xd3\xf4m\xc7\xbb'

@@ -88,7 +88,7 @@ class TestErrorParse(unittest.TestCase):
         code = api.ERR_PACK(lib, func, reason)
         array = api.new('ERR_STRING_DATA[2]')
         array[0].error = code
-        array[0].string = api.new('char[]', "MY ERROR")
+        array[0].string = api.new('char[]', b"MY ERROR")
         array[0].error = 0
         array[0].string = api.NULL
         api.ERR_load_strings(lib, array)
