@@ -38,7 +38,6 @@ class HMAC(object):
             self._md = self._get_md(digestmod)
         self._ctx = api.new('HMAC_CTX*')
         self._key = api.new('char[]', key)
-        self._digest = None
         api.HMAC_Init_ex(self._ctx,
                 api.cast('void*', self._key), len(key), self._md, api.NULL)
         if msg is not None:
@@ -88,7 +87,7 @@ class HMAC(object):
         it's no longer possible to call update(). The digest value can continue
         to be retrieved.
         """
-        if self._digest is not None:
+        if hasattr(self, '_digest'):
             return self._digest
         if self._ctx is None:
             raise ValueError('HMAC already closed')
