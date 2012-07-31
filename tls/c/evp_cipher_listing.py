@@ -23,4 +23,12 @@ FUNCTIONS = [
     'EVP_CIPHER *EVP_des_ede_cbc(void);',
     'EVP_CIPHER *EVP_des_ede3_cbc(void);',
     'EVP_CIPHER *EVP_desx_cbc(void);',
+    'EVP_CIPHER *EVP_rc4(void);',
+    'EVP_CIPHER *EVP_rc4_40(void);',
+    'EVP_CIPHER *EVP_rc2_ecb(void);',
+    'EVP_CIPHER *EVP_rc2_cbc(void);',
+    'EVP_CIPHER *EVP_rc2_40_cbc(void);',
+    'EVP_CIPHER *EVP_rc2_64_cbc(void);',
+    'EVP_CIPHER *EVP_rc2_cfb64(void);',
+    'EVP_CIPHER *EVP_rc2_ofb(void);',
 ]
