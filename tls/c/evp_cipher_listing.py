@@ -39,4 +39,8 @@ FUNCTIONS = [
     'EVP_CIPHER *EVP_cast5_cbc(void);',
     'EVP_CIPHER *EVP_cast5_cfb64(void);',
     'EVP_CIPHER *EVP_cast5_ofb(void);',
+    'EVP_CIPHER *EVP_rc5_32_12_16_ecb(void);',
+    'EVP_CIPHER *EVP_rc5_32_12_16_cbc(void);',
+    'EVP_CIPHER *EVP_rc5_32_12_16_cfb64(void);',
+    'EVP_CIPHER *EVP_rc5_32_12_16_ofb(void);',
 ]
