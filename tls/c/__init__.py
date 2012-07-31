@@ -101,6 +101,7 @@ class API(object):
         'evp',
         'evp_md',
         'evp_cipher',
+        'evp_cipher_listing',
         'hmac',
         'obj',
         'openssl',
