@@ -380,3 +380,111 @@ class Test_AES_CFB_256_v4(CipherTests, unittest.TestCase):
     iv = b"DF10132415E54B92A13ED0A8267AE2F9"
     plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
     ciphertext = b"75a385741ab9cef82031623d55b1e471"
+
+
+class Test_AES_OFB_128_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-OFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"3b3fd92eb72dad20333449f8e83cfb4a"
+
+
+class Test_AES_OFB_128_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-OFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"50FE67CC996D32B6DA0937E99BAFEC60"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"7789508d16918f03f53c52dac54ed825"
+
+
+class Test_AES_OFB_128_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-OFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"D9A4DADA0892239F6B8B3D7680E15674"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"9740051e9c5fecf64344f7a82260edcc"
+
+
+class Test_AES_OFB_128_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-OFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"A78819583F0308E7A6BF36B1386ABF23"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"304c6528f659c77866a510d9c1d6ae5e"
+
+
+class Test_AES_OFB_192_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-OFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"cdc80d6fddf18cab34c25909c99a4174"
+
+
+class Test_AES_OFB_192_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-OFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"A609B38DF3B1133DDDFF2718BA09565E"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"fcc28b8d4c63837c09e81700c1100401"
+
+
+class Test_AES_OFB_192_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-OFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"52EF01DA52602FE0975F78AC84BF8A50"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"8d9a9aeac0f6596f559c6d4daf59a5f2"
+
+
+class Test_AES_OFB_192_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-OFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"BD5286AC63AABD7EB067AC54B553F71D"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"6d9f200857ca6c3e9cac524bd9acc92a"
+
+
+class Test_AES_OFB_256_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-OFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"dc7e84bfda79164b7ecd8486985d3860"
+
+
+class Test_AES_OFB_256_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-OFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"B7BF3A5DF43989DD97F0FA97EBCE2F4A"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"4febdc6740d20b3ac88f6ad82a4fb08d"
+
+
+class Test_AES_OFB_256_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-OFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"E1C656305ED1A7A6563805746FE03EDC"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"71ab47a086e86eedf39d1c5bba97c408"
+
+
+class Test_AES_OFB_256_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-OFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"41635BE625B48AFC1666DD42A09D96E7"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"0126141d67f37be8538f5a8be740e484"
