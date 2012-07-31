@@ -27,9 +27,10 @@ coverage:
 	coverage report --include="tls*"
 
 clean:
-	rm -rf *.egg-info .coverage
+	python setup.py clean --all
 	find . -type f -name "*.pyc" -exec rm '{}' +
 	find . -type d -name "__pycache__" -exec rm -rf '{}' +
+	rm -rf *.egg-info .coverage
 	cd docs; make clean
 
 docs: site
