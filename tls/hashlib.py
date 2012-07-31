@@ -50,37 +50,14 @@ import functools
 import itertools
 
 from tls.c import api
+from tls.util import all_obj_type_names as __available_algorithms
 
 __all__ = ['algorithms_available', 'algorithms_guaranteed', 'new']
 
 
-def __available_algorithms():
-    "Create set of unique message digest algorithm names provided by OpenSSL"
-
-    def add_to_names(obj, _):
-        if obj.alias:
-            return
-        name = obj.name
-        nid = api.OBJ_sn2nid(name)
-        if nid == api.NID_undef:
-            nid = api.OBJ_ln2nid(name)
-        if nid != api.NID_undef:
-            hashes.setdefault(nid, set()).add(bytes(name))
-
-    algorithms = set()
-    hashes = {}
-    TYPE = api.OBJ_NAME_TYPE_MD_METH
-    callback = api.callback('void(*)(const OBJ_NAME*, void *arg)',
-            add_to_names)
-    api.OBJ_NAME_do_all(TYPE, callback, api.NULL)
-    for nid in hashes:
-        name = sorted(hashes[nid])[0]
-        algorithms.add(name)
-    return algorithms
-
 # there are no guarantees with openssl
 algorithms_guaranteed = set()
-algorithms_available = __available_algorithms()
+algorithms_available = __available_algorithms(api.OBJ_NAME_TYPE_MD_METH)
 
 
 class DigestError(ValueError):
