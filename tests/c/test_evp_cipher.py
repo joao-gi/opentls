@@ -164,3 +164,111 @@ class Test_AES_ECB_256_v4(CipherTests, unittest.TestCase):
     iv = None
     plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
     ciphertext = b"23304b7a39f9f3ff067d8d8f9e24ecc7"
+
+
+class Test_AES_CBC_128_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CBC"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"7649abac8119b246cee98e9b12e9197d"
+
+
+class Test_AES_CBC_128_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CBC"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"7649ABAC8119B246CEE98E9B12E9197D"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"5086cb9b507219ee95db113a917678b2"
+
+
+class Test_AES_CBC_128_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CBC"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"5086CB9B507219EE95DB113A917678B2"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"73bed6b8e3c1743b7116e69e22229516"
+
+
+class Test_AES_CBC_128_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CBC"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"73BED6B8E3C1743B7116E69E22229516"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"3ff1caa1681fac09120eca307586e1a7"
+
+
+class Test_AES_CBC_192_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CBC"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"4f021db243bc633d7178183a9fa071e8"
+
+
+class Test_AES_CBC_192_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CBC"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"4F021DB243BC633D7178183A9FA071E8"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"b4d9ada9ad7dedf4e5e738763f69145a"
+
+
+class Test_AES_CBC_192_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CBC"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"B4D9ADA9AD7DEDF4E5E738763F69145A"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"571b242012fb7ae07fa9baac3df102e0"
+
+
+class Test_AES_CBC_192_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CBC"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"571B242012FB7AE07FA9BAAC3DF102E0"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"08b0e27988598881d920a9e64f5615cd"
+
+
+class Test_AES_CBC_256_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CBC"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"f58c4c04d6e5f1ba779eabfb5f7bfbd6"
+
+
+class Test_AES_CBC_256_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CBC"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"F58C4C04D6E5F1BA779EABFB5F7BFBD6"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"9cfc4e967edb808d679f777bc6702c7d"
+
+
+class Test_AES_CBC_256_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CBC"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"9CFC4E967EDB808D679F777BC6702C7D"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"39f23369a9d9bacfa530e26304231461"
+
+
+class Test_AES_CBC_256_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CBC"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"39F23369A9D9BACFA530E26304231461"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"b2eb05e2c39be9fcda6c19078c6a9d1b"
