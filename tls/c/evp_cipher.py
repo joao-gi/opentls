@@ -3,8 +3,9 @@ INCLUDES = [
 ]
 
 TYPES = [
+    'struct evp_cipher_ctx_st { ...; };',
     'typedef ... EVP_CIPHER;',
-    'typedef ... EVP_CIPHER_CTX;',
+    'typedef struct evp_cipher_ctx_st EVP_CIPHER_CTX;',
 ]
 
 FUNCTIONS = [
