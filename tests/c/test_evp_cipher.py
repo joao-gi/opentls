@@ -47,15 +47,15 @@ class CipherTests(object):
     def test_multiple_updates(self):
         numbers = self.hexstr_to_numbers(self.plaintext)
         ciphertext = api.new('unsigned char[]', self.hexstr_to_numbers(self.ciphertext))
-        output = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
+        outbuf = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
         outlen = api.new('int*')
-        for num in numbers[:-1]:
+        output = b''
+        for num in numbers:
             plaintext = api.new('unsigned char[]', [num])
-            api.EVP_EncryptUpdate(self.ctx, output, outlen, plaintext, len(plaintext))
-            self.assertEqual(outlen[0], 0)
-        plaintext = api.new('unsigned char[]', numbers[-1:])
-        api.EVP_EncryptUpdate(self.ctx, output, outlen, plaintext, len(plaintext))
-        self.assertEqual(api.buffer(ciphertext), api.buffer(output, outlen[0]))
+            api.EVP_EncryptUpdate(self.ctx, outbuf, outlen, plaintext, len(plaintext))
+            if outlen[0] > 0:
+                output += bytes(api.buffer(outbuf, outlen[0]))
+        self.assertEqual(bytes(api.buffer(ciphertext)), output)
 
 
 class Test_AES_ECB_128_v1(CipherTests, unittest.TestCase):
@@ -272,3 +272,111 @@ class Test_AES_CBC_256_v4(CipherTests, unittest.TestCase):
     iv = b"39F23369A9D9BACFA530E26304231461"
     plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
     ciphertext = b"b2eb05e2c39be9fcda6c19078c6a9d1b"
+
+
+class Test_AES_CFB_128_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"000102030405060708090a0b0c0d0e0f"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"3b3fd92eb72dad20333449f8e83cfb4a"
+
+
+class Test_AES_CFB_128_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"3B3FD92EB72DAD20333449F8E83CFB4A"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"c8a64537a0b3a93fcde3cdad9f1ce58b"
+
+
+class Test_AES_CFB_128_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"C8A64537A0B3A93FCDE3CDAD9F1CE58B"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"26751f67a3cbb140b1808cf187a4f4df"
+
+
+class Test_AES_CFB_128_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-128-CFB"
+    key = b"2b7e151628aed2a6abf7158809cf4f3c"
+    iv = b"26751F67A3CBB140B1808CF187A4F4DF"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"c04b05357c5d1c0eeac4c66f9ff7f2e6"
+
+
+class Test_AES_CFB_192_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"cdc80d6fddf18cab34c25909c99a4174"
+
+
+class Test_AES_CFB_192_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"CDC80D6FDDF18CAB34C25909C99A4174"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"67ce7f7f81173621961a2b70171d3d7a"
+
+
+class Test_AES_CFB_192_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"67CE7F7F81173621961A2B70171D3D7A"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"2e1e8a1dd59b88b1c8e60fed1efac4c9"
+
+
+class Test_AES_CFB_192_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-192-CFB"
+    key = b"8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+    iv = b"2E1E8A1DD59B88B1C8E60FED1EFAC4C9"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"c05f9f9ca9834fa042ae8fba584b09ff"
+
+
+class Test_AES_CFB_256_v1(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"000102030405060708090A0B0C0D0E0F"
+    plaintext = b"6bc1bee22e409f96e93d7e117393172a"
+    ciphertext = b"DC7E84BFDA79164B7ECD8486985D3860"
+
+
+class Test_AES_CFB_256_v2(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"DC7E84BFDA79164B7ECD8486985D3860"
+    plaintext = b"ae2d8a571e03ac9c9eb76fac45af8e51"
+    ciphertext = b"39ffed143b28b1c832113c6331e5407b"
+
+
+class Test_AES_CFB_256_v3(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"39FFED143B28B1C832113C6331E5407B"
+    plaintext = b"30c81c46a35ce411e5fbc1191a0a52ef"
+    ciphertext = b"df10132415e54b92a13ed0a8267ae2f9"
+
+
+class Test_AES_CFB_256_v4(CipherTests, unittest.TestCase):
+
+    algorithm = b"AES-256-CFB"
+    key = b"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+    iv = b"DF10132415E54B92A13ED0A8267AE2F9"
+    plaintext = b"f69f2445df4f9b17ad2b417be66c3710"
+    ciphertext = b"75a385741ab9cef82031623d55b1e471"
