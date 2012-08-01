@@ -24,27 +24,46 @@ class CipherTests(object):
 
     def setUp(self):
         cipher = api.EVP_get_cipherbyname(self.algorithm)
+        self.ctx = api.new('EVP_CIPHER_CTX*')
+        api.EVP_CIPHER_CTX_init(self.ctx)
+        api.EVP_CipherInit_ex(self.ctx, cipher, api.NULL, api.NULL, api.NULL, 0)
+
+    def tearDown(self):
+        if hasattr(self, 'ctx'):
+            api.EVP_CIPHER_CTX_cleanup(self.ctx)
+            del self.ctx
+
+    def set_mode(self, enc):
+        mode = 1 if enc else 0
         key = api.new('unsigned char[]', self.hexstr_to_numbers(self.key))
         iv = api.NULL
         if self.iv is not None:
             iv = api.new('unsigned char[]', self.hexstr_to_numbers(self.iv))
-        self.ctx = api.new('EVP_CIPHER_CTX*')
-        api.EVP_CIPHER_CTX_init(self.ctx)
-        api.EVP_EncryptInit_ex(self.ctx, cipher, api.NULL, key, iv)
+        api.EVP_CipherInit_ex(self.ctx, api.NULL, api.NULL, key, iv, mode)
+        if not enc:
+            api.EVP_CIPHER_CTX_set_padding(self.ctx, 0)
 
-    def tearDown(self):
-        api.EVP_CIPHER_CTX_cleanup(self.ctx)
-
-    def test_single_update(self):
+    def test_single_encrypt(self):
+        self.set_mode(enc=True)
         plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
         ciphertext = api.new('unsigned char[]', self.hexstr_to_numbers(self.ciphertext))
         output = api.new('unsigned char[]', len(plaintext)
                 + api.EVP_CIPHER_CTX_block_size(self.ctx) - 1)
         outlen = api.new('int*')
-        api.EVP_EncryptUpdate(self.ctx, output, outlen, plaintext, len(plaintext))
+        api.EVP_CipherUpdate(self.ctx, output, outlen, plaintext, len(plaintext))
         self.assertEqual(api.buffer(ciphertext), api.buffer(output, outlen[0]))
 
-    def test_multiple_updates(self):
+    def test_single_decrypt(self):
+        self.set_mode(enc=False)
+        plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
+        ciphertext = api.new('unsigned char[]', self.hexstr_to_numbers(self.ciphertext))
+        output = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
+        outlen = api.new('int*')
+        api.EVP_CipherUpdate(self.ctx, output, outlen, ciphertext, len(ciphertext))
+        self.assertEqual(api.buffer(plaintext), api.buffer(output, outlen[0]))
+
+    def test_multiple_encrypt(self):
+        self.set_mode(enc=True)
         numbers = self.hexstr_to_numbers(self.plaintext)
         ciphertext = api.new('unsigned char[]', self.hexstr_to_numbers(self.ciphertext))
         outbuf = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
@@ -52,10 +71,24 @@ class CipherTests(object):
         output = b''
         for num in numbers:
             plaintext = api.new('unsigned char[]', [num])
-            api.EVP_EncryptUpdate(self.ctx, outbuf, outlen, plaintext, len(plaintext))
+            api.EVP_CipherUpdate(self.ctx, outbuf, outlen, plaintext, len(plaintext))
             if outlen[0] > 0:
                 output += bytes(api.buffer(outbuf, outlen[0]))
         self.assertEqual(bytes(api.buffer(ciphertext)), output)
+
+    def test_multiple_decrypt(self):
+        self.set_mode(enc=False)
+        numbers = self.hexstr_to_numbers(self.ciphertext)
+        plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
+        outbuf = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
+        outlen = api.new('int*')
+        output = b''
+        for num in numbers:
+            ciphertext = api.new('unsigned char[]', [num])
+            api.EVP_CipherUpdate(self.ctx, outbuf, outlen, ciphertext, len(ciphertext))
+            if outlen[0] > 0:
+                output += bytes(api.buffer(outbuf, outlen[0]))
+        self.assertEqual(bytes(api.buffer(plaintext)), output)
 
 
 class Test_AES_ECB_128_v1(CipherTests, unittest.TestCase):
