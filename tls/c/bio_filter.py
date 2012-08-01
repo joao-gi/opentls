@@ -31,7 +31,10 @@ FUNCTIONS = [
     'long BIO_set_buffer_size(BIO *b, long size);',
     'long BIO_set_buffer_read_data(BIO *b, void *buf, long num);',
     # BIO cipher
-    # TODO
+    'BIO_METHOD *   BIO_f_cipher(void);',
+    'void BIO_set_cipher(BIO *b,const EVP_CIPHER *cipher, unsigned char *key, unsigned char *iv, int enc);',
+    'int BIO_get_cipher_status(BIO *b);',
+    'int BIO_get_cipher_ctx(BIO *b, EVP_CIPHER_CTX **pctx);',
     # BIO base64
     'BIO_METHOD *BIO_f_base64(void);',
     # BIO zlib
