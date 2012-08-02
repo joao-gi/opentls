@@ -29,9 +29,9 @@ class CipherTests(object):
         api.EVP_CipherInit_ex(self.ctx, cipher, api.NULL, api.NULL, api.NULL, 0)
 
     def tearDown(self):
-        if hasattr(self, 'ctx'):
+        if self.ctx != api.NULL:
             api.EVP_CIPHER_CTX_cleanup(self.ctx)
-            del self.ctx
+        self.ctx = api.NULL
 
     def set_mode(self, enc):
         mode = 1 if enc else 0
@@ -52,15 +52,20 @@ class CipherTests(object):
         outlen = api.new('int*')
         api.EVP_CipherUpdate(self.ctx, output, outlen, plaintext, len(plaintext))
         self.assertEqual(api.buffer(ciphertext), api.buffer(output, outlen[0]))
+        rval = api.EVP_CipherFinal_ex(self.ctx, output, outlen)
+        self.assertEqual(rval, 1)
 
     def test_single_decrypt(self):
         self.set_mode(enc=False)
         plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
         ciphertext = api.new('unsigned char[]', self.hexstr_to_numbers(self.ciphertext))
-        output = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
+        output = api.new('unsigned char[]', len(ciphertext)
+                + api.EVP_CIPHER_CTX_block_size(self.ctx) - 1)
         outlen = api.new('int*')
         api.EVP_CipherUpdate(self.ctx, output, outlen, ciphertext, len(ciphertext))
         self.assertEqual(api.buffer(plaintext), api.buffer(output, outlen[0]))
+        rval = api.EVP_CipherFinal_ex(self.ctx, output, outlen)
+        self.assertEqual(rval, 1)
 
     def test_multiple_encrypt(self):
         self.set_mode(enc=True)
@@ -75,6 +80,8 @@ class CipherTests(object):
             if outlen[0] > 0:
                 output += bytes(api.buffer(outbuf, outlen[0]))
         self.assertEqual(bytes(api.buffer(ciphertext)), output)
+        rval = api.EVP_CipherFinal_ex(self.ctx, outbuf, outlen)
+        self.assertEqual(rval, 1)
 
 #   def test_multiple_decrypt(self):
 #       self.set_mode(enc=False)
