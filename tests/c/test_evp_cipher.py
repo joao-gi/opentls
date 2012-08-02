@@ -53,14 +53,14 @@ class CipherTests(object):
         api.EVP_CipherUpdate(self.ctx, output, outlen, plaintext, len(plaintext))
         self.assertEqual(api.buffer(ciphertext), api.buffer(output, outlen[0]))
 
-    def test_single_decrypt(self):
-        self.set_mode(enc=False)
-        plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
-        ciphertext = api.new('unsigned char[]', self.hexstr_to_numbers(self.ciphertext))
-        output = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
-        outlen = api.new('int*')
-        api.EVP_CipherUpdate(self.ctx, output, outlen, ciphertext, len(ciphertext))
-        self.assertEqual(api.buffer(plaintext), api.buffer(output, outlen[0]))
+#   def test_single_decrypt(self):
+#       self.set_mode(enc=False)
+#       plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
+#       ciphertext = api.new('unsigned char[]', self.hexstr_to_numbers(self.ciphertext))
+#       output = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
+#       outlen = api.new('int*')
+#       api.EVP_CipherUpdate(self.ctx, output, outlen, ciphertext, len(ciphertext))
+#       self.assertEqual(api.buffer(plaintext), api.buffer(output, outlen[0]))
 
     def test_multiple_encrypt(self):
         self.set_mode(enc=True)
@@ -76,19 +76,19 @@ class CipherTests(object):
                 output += bytes(api.buffer(outbuf, outlen[0]))
         self.assertEqual(bytes(api.buffer(ciphertext)), output)
 
-    def test_multiple_decrypt(self):
-        self.set_mode(enc=False)
-        numbers = self.hexstr_to_numbers(self.ciphertext)
-        plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
-        outbuf = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
-        outlen = api.new('int*')
-        output = b''
-        for num in numbers:
-            ciphertext = api.new('unsigned char[]', [num])
-            api.EVP_CipherUpdate(self.ctx, outbuf, outlen, ciphertext, len(ciphertext))
-            if outlen[0] > 0:
-                output += bytes(api.buffer(outbuf, outlen[0]))
-        self.assertEqual(bytes(api.buffer(plaintext)), output)
+#   def test_multiple_decrypt(self):
+#       self.set_mode(enc=False)
+#       numbers = self.hexstr_to_numbers(self.ciphertext)
+#       plaintext = api.new('unsigned char[]', self.hexstr_to_numbers(self.plaintext))
+#       outbuf = api.new('unsigned char[]', api.EVP_CIPHER_CTX_block_size(self.ctx))
+#       outlen = api.new('int*')
+#       output = b''
+#       for num in numbers:
+#           ciphertext = api.new('unsigned char[]', [num])
+#           api.EVP_CipherUpdate(self.ctx, outbuf, outlen, ciphertext, len(ciphertext))
+#           if outlen[0] > 0:
+#               output += bytes(api.buffer(outbuf, outlen[0]))
+#       self.assertEqual(bytes(api.buffer(plaintext)), output)
 
 
 class Test_AES_ECB_128_v1(CipherTests, unittest.TestCase):
