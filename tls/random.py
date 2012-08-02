@@ -98,6 +98,12 @@ class Random(_Random):
         num = self._seq_to_int(buff) >> shift
         return num
 
+    def getrandbytes(self, length):
+        "getrandbytes(k) -> 's'. Generate a byte string with k random bytes."
+        buff = api.new('unsigned char[]', length)
+        self._rand_bytes(buff, length)
+        return bytes(api.buffer(buff))
+
     def seed(self, state, version=2, entropy=None):
         """Initialize internal state from hashable object.
 
@@ -192,3 +198,4 @@ weibullvariate = _inst.weibullvariate
 getstate = _inst.getstate
 setstate = _inst.setstate
 getrandbits = _inst.getrandbits
+getrandbytes = _inst.getrandbytes

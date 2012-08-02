@@ -39,6 +39,10 @@ class TestRandomApi(unittest.TestCase):
         self.assertGreaterEqual(num, 0)
         self.assertLess(num, 256)
 
+    def test_getrandbytes(self):
+        string = random.getrandbytes(8)
+        self.assertEqual(8, len(string))
+
     def test_randint(self):
         num = random.randint(0, 255)
         self.assertGreaterEqual(num, 0)
