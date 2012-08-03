@@ -1,7 +1,10 @@
 """Test Python hashlib API implementation using OpenSSL"""
 from functools import partial
-import unittest2 as unittest
 
+import unittest2 as unittest
+import mock
+
+from tls.c import api
 from tls import hashlib
 
 
@@ -19,7 +22,8 @@ class MD5Tests(unittest.TestCase):
         self.digest = hashlib.new(b'MD5')
 
     def tearDown(self):
-        del self.digest
+        if hasattr(self, 'digest'):
+            del self.digest
 
     def test_name(self):
         self.assertEqual(b'MD5', self.digest.name)
@@ -53,6 +57,13 @@ class MD5Tests(unittest.TestCase):
         new.update(self.data_long[len(self.data_short):])
         self.assertEqual(self.digest_long, new.digest())
         self.assertEqual(self.digest_short, self.digest.digest())
+
+    def test_weakref(self):
+        EVP_MD_CTX_cleanup = api.EVP_MD_CTX_cleanup
+        with mock.patch('tls.c.api.EVP_MD_CTX_cleanup') as cleanup_mock:
+            cleanup_mock.side_effect = EVP_MD_CTX_cleanup
+            del self.digest
+            self.assertEqual(cleanup_mock.call_count, 1)
 
 
 class TestAlgorithms(unittest.TestCase):

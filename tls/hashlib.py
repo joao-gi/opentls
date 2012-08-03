@@ -48,6 +48,7 @@ More condensed:
 """
 import functools
 import itertools
+import weakref
 
 from tls.c import api
 from tls.util import all_obj_type_names as __available_algorithms
@@ -70,15 +71,16 @@ class MessageDigest(object):
     """
 
     def __init__(self, digest, data=None):
+        context = api.new('EVP_MD_CTX*')
+        cleanup = lambda _: api.EVP_MD_CTX_cleanup(context)
+        self._context = context
         self._md = digest
-        self._context = api.new('EVP_MD_CTX*')
-        if not api.EVP_DigestInit_ex(self._context, self._md, api.NULL):
+        if api.EVP_DigestInit_ex(self._context, self._md, api.NULL):
+            self._weakref = weakref.ref(self, cleanup)
+        else:
             raise DigestError('Failed to initialise message digest')
         if data:
             self.update(data)
-
-    def __del__(self):
-        api.EVP_MD_CTX_cleanup(self._context)
 
     @property
     def name(self):
