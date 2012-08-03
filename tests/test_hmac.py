@@ -1,11 +1,14 @@
 """Test Python hmac API implementation using OpenSSL"""
 import hashlib
+
 import unittest2 as unittest
+import mock
 
 from .c.test_hmac import Vector001, Vector002, Vector003
 
-import tls.hashlib
+from tls.c import api
 from tls.hmac import new, HMAC
+import tls.hashlib
 
 
 class TestHMAC(unittest.TestCase):
@@ -26,6 +29,14 @@ class TestHMAC(unittest.TestCase):
     def test_init_partial(self):
         hmac = HMAC(b'', None, tls.hashlib.sha1)
         self.assertEqual(hmac.digest_size, 20)
+
+    def test_weakref(self):
+        HMAC_CTX_cleanup = api.HMAC_CTX_cleanup
+        with mock.patch('tls.c.api.HMAC_CTX_cleanup') as cleanup_mock:
+            cleanup_mock.side_effect = HMAC_CTX_cleanup
+            hmac = HMAC(b'')
+            del hmac
+            self.assertEqual(cleanup_mock.call_count, 1)
 
 
 class HMACTests(object):

@@ -2,6 +2,8 @@
 
 Implements the HMAC algorithm as described by RFC 2104.
 """
+import weakref
+
 from tls.c import api
 
 
@@ -36,17 +38,15 @@ class HMAC(object):
             self._md = api.EVP_md5()
         else:
             self._md = self._get_md(digestmod)
-        self._ctx = api.new('HMAC_CTX*')
+        ctx = api.new('HMAC_CTX*')
         self._key = api.new('char[]', key)
-        api.HMAC_Init_ex(self._ctx,
-                api.cast('void*', self._key), len(key), self._md, api.NULL)
+        api.HMAC_Init_ex(ctx, api.cast('void*', self._key),
+                len(key), self._md, api.NULL)
+        cleanup = lambda _: api.HMAC_CTX_cleanup(ctx)
+        self._weakref = weakref.ref(self, cleanup)
+        self._ctx = ctx
         if msg is not None:
             self.update(msg)
-
-    def __del__(self):
-        if hasattr(self, '_ctx') and self._ctx is not None:
-            api.HMAC_CTX_cleanup(self._ctx)
-            self._ctx = None
 
     def _get_md(self, digestmod):
         md = api.NULL
@@ -95,7 +95,7 @@ class HMAC(object):
         size = api.new('unsigned int*')
         api.HMAC_Final(self._ctx, buff, size)
         self._digest = bytes(api.buffer(buff, size[0]))
-        self.__del__()
+        self._ctx = None
         return self._digest
 
     def hexdigest(self):
