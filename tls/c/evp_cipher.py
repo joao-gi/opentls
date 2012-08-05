@@ -3,6 +3,11 @@ INCLUDES = [
 ]
 
 TYPES = [
+    'static const int EVP_CIPH_ECB_MODE;',
+    'static const int EVP_CIPH_CBC_MODE;',
+    'static const int EVP_CIPH_CFB_MODE;',
+    'static const int EVP_CIPH_OFB_MODE;',
+    'static const int EVP_CIPH_STREAM_CIPHER;',
     'struct evp_cipher_ctx_st { ...; };',
     'typedef ... EVP_CIPHER;',
     'typedef struct evp_cipher_ctx_st EVP_CIPHER_CTX;',
