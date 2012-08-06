@@ -54,8 +54,7 @@ class Cipher(object):
             raise ValueError(msg)
         self._cipher = cipher
         # allocate cipher context memory
-        ctx = api.new('EVP_CIPHER_CTX*')
-        api.EVP_CIPHER_CTX_init(ctx)
+        self._ctx = api.new('EVP_CIPHER_CTX*')
         # create bio chain (cipher, buffer, mem)
         bio = api.BIO_new(api.BIO_s_mem())
         bio = api.BIO_push(api.BIO_new(api.BIO_f_buffer()), bio)
@@ -64,13 +63,9 @@ class Cipher(object):
         self._weakrefs.append(weakref.ref(self, cleanup))
         self._bio = bio
         # initialise cipher context
-        api.BIO_get_cipher_ctx(bio, api.cast('EVP_CIPHER_CTX**', ctx))
-        # api.EVP_CIPHER_CTX_init(ctx);
-        api.EVP_CipherInit_ex(ctx, cipher, api.NULL, api.NULL, api.NULL,
+        api.BIO_get_cipher_ctx(bio, api.cast('EVP_CIPHER_CTX**', self._ctx))
+        api.EVP_CipherInit_ex(self._ctx, cipher, api.NULL, api.NULL, api.NULL,
                 1 if encrypt else 0)
-        cleanup = lambda _: api.EVP_CIPHER_CTX_cleanup(ctx)
-        self._weakrefs.append(weakref.ref(self, cleanup))
-        self._ctx = ctx
 
     @property
     def block_size(self):

@@ -59,10 +59,10 @@ class TestAesEncryptObject(unittest.TestCase):
     def test_invalid_name(self):
         self.assertRaises(ValueError, cipherlib.Cipher, self.ENCRYPT, 'UNDEF')
 
-    def test_weakref(self):
-        EVP_CIPHER_CTX_cleanup = api.EVP_CIPHER_CTX_cleanup
-        with mock.patch('tls.c.api.EVP_CIPHER_CTX_cleanup') as cleanup_mock:
-            cleanup_mock.side_effect = EVP_CIPHER_CTX_cleanup
+    def test_weakref_bio(self):
+        BIO_free_all_cleanup = api.BIO_free_all
+        with mock.patch('tls.c.api.BIO_free_all') as cleanup_mock:
+            cleanup_mock.side_effect = BIO_free_all_cleanup
             del self.cipher
             self.assertEqual(cleanup_mock.call_count, 1)
 
@@ -108,13 +108,6 @@ class TestRc4DecryptObject(unittest.TestCase):
 
     def test_invalid_name(self):
         self.assertRaises(ValueError, cipherlib.Cipher, self.ENCRYPT, 'UNDEF')
-
-    def test_weakref_evp(self):
-        EVP_CIPHER_CTX_cleanup = api.EVP_CIPHER_CTX_cleanup
-        with mock.patch('tls.c.api.EVP_CIPHER_CTX_cleanup') as cleanup_mock:
-            cleanup_mock.side_effect = EVP_CIPHER_CTX_cleanup
-            del self.cipher
-            self.assertEqual(cleanup_mock.call_count, 1)
 
     def test_weakref_bio(self):
         BIO_free_all_cleanup = api.BIO_free_all
