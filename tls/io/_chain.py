@@ -29,8 +29,9 @@ class BIOChain(object):
             raise IOError('already closed')
         return wrapper
 
-    def __init__(self, bio):
+    def __init__(self, bio, bufsize=1024):
         self._bio = bio
+        self._bufsize = bufsize
 
     def __enter__(self):
         return self
@@ -104,17 +105,16 @@ class BIOChain(object):
     def readline(self, limit=-1):
         limit = sys.maxint if limit < 0 else limit
         segments = []
-        while True:
-            buf = api.new('char[]', min(limit, 1024))
+        while limit > 0:
+            size = api.BIO_pending(self._bio)
+            buf = api.new('char[]', min(limit, size if size > 1 else self._bufsize))
             read = api.BIO_gets(self._bio, buf, len(buf))
-            if read == len(buf):
-                segments.append(bytes(buf))
-                limit -= read
-            elif read > 0:
-                segments.append(bytes(api.cast('char[{0}]'.format(read), buf)))
-                break
-            else:
+            if read <= 0:
                 raise IOError('unsupported operation')
+            segments.append(bytes(api.buffer(buf, read)))
+            limit -= read
+            if segments[-1][-1] == '\n':
+                break
         return ''.join(segments)
 
     @_not_closed
@@ -181,9 +181,9 @@ class BIOChain(object):
         if n < 0:
             return self.readall()
         data = api.new('char[]', n)
-        rval = api.BIO_read(self._bio, data, len(data))
-        if rval < 0:
-            raise IOError('unsopported operation')
+        read = api.BIO_read(self._bio, data, len(data))
+        if read < 0:
+            raise IOError('unsupported operation')
         return bytes(data)
 
     @_not_closed
@@ -191,17 +191,14 @@ class BIOChain(object):
     def readall(self):
         segments = []
         while True:
-            data = api.new('char[]', 1024)
-            rval = api.BIO_read(self._bio, data, len(data))
-            if rval == len(data):
-                segments.append(bytes(data))
-            elif rval > 0:
-                ctype = 'char[{0}]'.format(rval)
-                segments.append(bytes(api.cast(ctype, data)))
-            elif rval == 0:
-                break
-            else:
+            size = api.BIO_pending(self._bio)
+            data = api.new('char[]', size if size > 1 else self._bufsize)
+            read = api.BIO_read(self._bio, data, len(data))
+            if read < 0:
                 raise IOError('unsupported operation')
+            if read == 0:
+                break
+            segments.append(bytes(api.buffer(data, read)))
         return "".join(segments)
 
     def readinto(self, b):
