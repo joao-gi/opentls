@@ -25,6 +25,12 @@ TYPES = [
     'static const int BIO_TYPE_BER;',
     'static const int BIO_TYPE_BIO;',
     'static const int BIO_TYPE_DESCRIPTOR;',
+    # BIO flags
+    'static const int BIO_FLAGS_READ;',
+    'static const int BIO_FLAGS_WRITE;',
+    'static const int BIO_FLAGS_IO_SPECIAL;',
+    'static const int BIO_FLAGS_RWS;',
+    'static const int BIO_FLAGS_SHOULD_RETRY;',
     'typedef ... BUF_MEM;',
     # BIO forward declaration
     'typedef struct bio_st BIO;',
@@ -103,4 +109,10 @@ FUNCTIONS = [
     'int BIO_gets(BIO *b, char *buf, int size);',
     'int BIO_write(BIO *b, const void *buf, int len);',
     'int BIO_puts(BIO *b, const char *buf);',
+    # BIO should functions
+    'int BIO_should_read(BIO *b);',
+    'int BIO_should_write(BIO *b);',
+    'int BIO_should_io_special(BIO *b);',
+    'int BIO_retry_type(BIO *b);',
+    'int BIO_should_retry(BIO *b);',
 ]

@@ -109,7 +109,7 @@ class BIOChain(object):
             size = api.BIO_pending(self._bio)
             buf = api.new('char[]', min(limit, size if size > 1 else self._bufsize))
             read = api.BIO_gets(self._bio, buf, len(buf))
-            if read <= 0:
+            if read <= 0 and not api.BIO_should_retry(self._bio):
                 raise IOError('unsupported operation')
             segments.append(bytes(api.buffer(buf, read)))
             limit -= read
@@ -169,7 +169,7 @@ class BIOChain(object):
                 ptr = data + offset
                 size = len(line) - offset
                 written = api.BIO_write(self._bio, ptr, size)
-                if written <= 0:
+                if written <= 0 and not api.BIO_should_retry(self._bio):
                     raise IOError('unsupported operation')
                 offset += written
 
@@ -209,7 +209,7 @@ class BIOChain(object):
     def write(self, b):
         data = api.new('char[]', b)
         writen = api.BIO_write(self._bio, data, len(data))
-        if writen <= 0:
+        if writen <= 0 and not api.BIO_should_retry(self._bio):
             raise IOError('unsupported operation')
         return writen
 
