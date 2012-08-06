@@ -41,19 +41,36 @@ class Cipher(object):
     """
 
     def __init__(self, encrypt=True, algorithm='AES-128-CBC'):
+        # initialise attributes to empty
+        self._bio = api.NULL
+        self._cipher = api.NULL
         self._ctx = api.NULL
-        self._cipher = api.EVP_get_cipherbyname(algorithm)
         self._encrypting = bool(encrypt)
-        if self._cipher == api.NULL:
+        self._weakrefs = []
+        # create cipher object from cipher name
+        cipher = api.EVP_get_cipherbyname(algorithm)
+        if cipher == api.NULL:
             msg = "Unknown cipher name '{0}'".format(algorithm)
             raise ValueError(msg)
+        self._cipher = cipher
+        # allocate cipher context memory
         ctx = api.new('EVP_CIPHER_CTX*')
         api.EVP_CIPHER_CTX_init(ctx)
+        # create bio chain (cipher, buffer, mem)
+        bio = api.BIO_new(api.BIO_s_mem())
+        bio = api.BIO_push(api.BIO_new(api.BIO_f_buffer()), bio)
+        bio = api.BIO_push(api.BIO_new(api.BIO_f_cipher()), bio)
+        cleanup = lambda _: api.BIO_free_all(bio)
+        self._weakrefs.append(weakref.ref(self, cleanup))
+        self._bio = bio
+        # initialise cipher context
+        api.BIO_get_cipher_ctx(bio, api.cast('EVP_CIPHER_CTX**', ctx))
+        # api.EVP_CIPHER_CTX_init(ctx);
+        api.EVP_CipherInit_ex(ctx, cipher, api.NULL, api.NULL, api.NULL,
+                1 if encrypt else 0)
         cleanup = lambda _: api.EVP_CIPHER_CTX_cleanup(ctx)
-        self._weakref = weakref.ref(self, cleanup)
+        self._weakrefs.append(weakref.ref(self, cleanup))
         self._ctx = ctx
-        api.EVP_CipherInit_ex(self._ctx, self._cipher,
-                api.NULL, api.NULL, api.NULL, 1 if encrypt else 0)
 
     @property
     def block_size(self):
