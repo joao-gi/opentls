@@ -46,6 +46,7 @@ class Cipher(object):
         self._cipher = api.NULL
         self._ctx = api.NULL
         self._encrypting = bool(encrypt)
+        self._initialised = False
         self._weakrefs = []
         # create cipher object from cipher name
         cipher = api.EVP_get_cipherbyname(algorithm)
@@ -53,8 +54,8 @@ class Cipher(object):
             msg = "Unknown cipher name '{0}'".format(algorithm)
             raise ValueError(msg)
         self._cipher = cipher
-        # allocate cipher context memory
-        self._ctx = api.new('EVP_CIPHER_CTX*')
+        # allocate cipher context pointer
+        self._ctxptr = api.new('EVP_CIPHER_CTX*[]', 1)
         # create bio chain (cipher, buffer, mem)
         bio = api.BIO_new(api.BIO_s_mem())
         bio = api.BIO_push(api.BIO_new(api.BIO_f_buffer()), bio)
@@ -63,7 +64,8 @@ class Cipher(object):
         self._weakrefs.append(weakref.ref(self, cleanup))
         self._bio = bio
         # initialise cipher context
-        api.BIO_get_cipher_ctx(bio, api.cast('EVP_CIPHER_CTX**', self._ctx))
+        api.BIO_get_cipher_ctx(bio, self._ctxptr)
+        self._ctx = self._ctxptr[0]
         if not api.EVP_CipherInit_ex(self._ctx,
                 cipher, api.NULL, api.NULL, api.NULL, 1 if encrypt else 0):
             raise ValueError("Unable to initialise cipher")
@@ -130,3 +132,18 @@ class Cipher(object):
         if not api.EVP_CipherInit_ex(self._ctx,
                 api.NULL, api.NULL, c_key, c_iv, -1):
             raise ValueError("Unable to initialise cipher")
+        self._initialised = True
+
+    def update(self, data):
+        if self._ctx == api.NULL:
+            raise ValueError("Cipher object failed to be initialised")
+        if not self._initialised:
+            raise ValueError("Must call initialise() before update()")
+        c_data = api.new('char[]', data)
+        written = api.BIO_write(self._bio, c_data, len(data))
+        if written <= 0 and not api.BIO_should_retry(self._bio):
+            if self.encrypting:
+                msg = 'Unable to encrypt data'
+            else:
+                msg = 'Unable to decrypt data'
+            raise IOError(msg)

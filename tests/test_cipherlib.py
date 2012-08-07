@@ -60,6 +60,13 @@ class CipherObject(object):
         self.assertRaises(ValueError, self.cipher.initialise,
                 self.KEY, self.IVECTOR + '\FF')
 
+    def test_update(self):
+        self.cipher.initialise(self.KEY, self.IVECTOR)
+        self.cipher.update('\x00' * self.LEN_BLOCK)
+
+    def test_invalid_update(self):
+        self.assertRaises(ValueError, self.cipher.update, '\x00' * self.LEN_BLOCK)
+
     def test_weakref_bio(self):
         BIO_free_all_cleanup = api.BIO_free_all
         with mock.patch('tls.c.api.BIO_free_all') as cleanup_mock:
