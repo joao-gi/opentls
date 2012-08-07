@@ -88,3 +88,20 @@ class TestRc4DecryptObject(CipherObject, unittest.TestCase):
     def test_key_len_set(self):
         self.cipher_key_len = 8
         # self.assertEqual(8, self.cipher.key_len)
+
+
+class TestDesEncryptObject(CipherObject, unittest.TestCase):
+
+    ALGORITHM = 'DES-ECB'
+    ENCRYPT = True
+    IVECTOR = ''
+    KEY = '\x00' * 8
+    LEN_BLOCK = 8
+    LEN_IV = 0
+    LEN_KEY = 8
+    MODE = cipherlib.EVP_CIPH_ECB_MODE
+
+    def test_key_len_set(self):
+        def change_key_len(length):
+            self.cipher.key_len = length
+        self.assertRaises(ValueError, change_key_len, 16)
