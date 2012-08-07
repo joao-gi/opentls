@@ -64,8 +64,9 @@ class Cipher(object):
         self._bio = bio
         # initialise cipher context
         api.BIO_get_cipher_ctx(bio, api.cast('EVP_CIPHER_CTX**', self._ctx))
-        api.EVP_CipherInit_ex(self._ctx, cipher, api.NULL, api.NULL, api.NULL,
-                1 if encrypt else 0)
+        if not api.EVP_CipherInit_ex(self._ctx,
+                cipher, api.NULL, api.NULL, api.NULL, 1 if encrypt else 0):
+            raise ValueError("Unable to initialise cipher")
 
     @property
     def block_size(self):
@@ -112,3 +113,20 @@ class Cipher(object):
         if self._cipher == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
         return bytes(api.OBJ_nid2sn(api.EVP_CIPHER_nid(self._cipher)))
+
+    def initialise(self, key, ivector):
+        if self._ctx == api.NULL:
+            raise ValueError("Cipher object failed to be initialised")
+        if len(key) != self.key_len:
+            msg = "Key must be {0} bytes. Received {1}".format(
+                    self.key_len, len(key))
+            raise ValueError(msg)
+        c_key = api.new('char[]', key) if bool(key) else api.NULL
+        if len(ivector) != self.ivector_len:
+            msg = "IVector must be {0} bytes. Received{1}".format(
+                    self.ivector_len, len(ivector))
+            raise ValueError(msg)
+        c_iv = api.new('char[]', ivector) if bool(ivector) else api.NULL
+        if not api.EVP_CipherInit_ex(self._ctx,
+                api.NULL, api.NULL, c_key, c_iv, -1):
+            raise ValueError("Unable to initialise cipher")

@@ -49,6 +49,17 @@ class CipherObject(object):
     def test_invalid_name(self):
         self.assertRaises(ValueError, cipherlib.Cipher, self.ENCRYPT, 'UNDEF')
 
+    def test_initialise(self):
+        self.cipher.initialise(self.KEY, self.IVECTOR)
+
+    def test_initialise_invalid_key(self):
+        self.assertRaises(ValueError, self.cipher.initialise,
+                self.KEY + '\FF', self.IVECTOR)
+
+    def test_initialise_invalid_ivector(self):
+        self.assertRaises(ValueError, self.cipher.initialise,
+                self.KEY, self.IVECTOR + '\FF')
+
     def test_weakref_bio(self):
         BIO_free_all_cleanup = api.BIO_free_all
         with mock.patch('tls.c.api.BIO_free_all') as cleanup_mock:
