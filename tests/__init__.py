@@ -4,7 +4,11 @@ import logging
 import operator
 import unittest2 as unittest
 
+import cffi
+
 import tls.c
+
+cffi.verifier.cleanup_tmpdir()
 
 logging.basicConfig()
 
