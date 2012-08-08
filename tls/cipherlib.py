@@ -45,6 +45,7 @@ class Cipher(object):
         self._bio = api.NULL
         self._cipher = api.NULL
         self._ctx = api.NULL
+        self._sink = api.NULL
         self._encrypting = bool(encrypt)
         self._initialised = False
         self._weakrefs = []
@@ -57,8 +58,8 @@ class Cipher(object):
         # allocate cipher context pointer
         self._ctxptr = api.new('EVP_CIPHER_CTX*[]', 1)
         # create bio chain (cipher, buffer, mem)
-        bio = api.BIO_new(api.BIO_s_mem())
-        bio = api.BIO_push(api.BIO_new(api.BIO_f_buffer()), bio)
+        self._sink = api.BIO_new(api.BIO_s_mem())
+        bio = api.BIO_push(api.BIO_new(api.BIO_f_buffer()), self._sink)
         bio = api.BIO_push(api.BIO_new(api.BIO_f_cipher()), bio)
         cleanup = lambda _: api.BIO_free_all(bio)
         self._weakrefs.append(weakref.ref(self, cleanup))
@@ -154,3 +155,25 @@ class Cipher(object):
         if not self._initialised:
             raise ValueError("Must call initialise() before finish()")
         api.BIO_flush(self._bio)
+
+    def ciphertext(self):
+        if self._bio == api.NULL:
+            raise ValueError("Cipher object failed to be initialised")
+        if not self.encrypting:
+            raise ValueError("Cipher does not encyrpt")
+        size = api.BIO_pending(self._sink)
+        c_data = api.new('unsigned char[]', size)
+        read = api.BIO_read(self._sink, c_data, size)
+        assert size == read
+        return bytes(api.buffer(c_data, read))
+
+    def plaintext(self):
+        if self._bio == api.NULL:
+            raise ValueError("Cipher object failed to be initialised")
+        if not self.decrypting:
+            raise ValueError("Cipher does not decrypt")
+        size = api.BIO_pending(self._sink)
+        c_data = api.new('unsigned char[]', size)
+        read = api.BIO_read(self._sink, c_data, size)
+        assert size == read
+        return bytes(api.buffer(c_data, read))

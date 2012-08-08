@@ -64,12 +64,46 @@ class CipherObject(object):
         self.cipher.initialise(self.KEY, self.IVECTOR)
         self.cipher.update('\x00' * self.LEN_BLOCK)
 
+    def test_update_invalid(self):
+        self.assertRaises(ValueError, self.cipher.update, '\x00' * self.LEN_BLOCK)
+
     def test_finish(self):
         self.cipher.initialise(self.KEY, self.IVECTOR)
         self.cipher.finish()
 
-    def test_invalid_update(self):
-        self.assertRaises(ValueError, self.cipher.update, '\x00' * self.LEN_BLOCK)
+    def test_ciphertext(self):
+        if not self.ENCRYPT:
+            return
+        self.cipher.initialise(self.KEY, self.IVECTOR)
+        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.finish()
+        ciphertext = self.cipher.ciphertext()
+        self.assertEqual(len(ciphertext), self.LEN_BLOCK*2)
+
+    def test_ciphertext_invalid(self):
+        if self.ENCRYPT:
+            return
+        self.cipher.initialise(self.KEY, self.IVECTOR)
+        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.finish()
+        self.assertRaises(ValueError, self.cipher.ciphertext)
+
+    def test_plaintext(self):
+        if self.ENCRYPT:
+            return
+        self.cipher.initialise(self.KEY, self.IVECTOR)
+        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.finish()
+        plaintext = self.cipher.plaintext()
+        self.assertEqual(len(plaintext), self.LEN_BLOCK)
+
+    def test_plaintext_invalid(self):
+        if not self.ENCRYPT:
+            return
+        self.cipher.initialise(self.KEY, self.IVECTOR)
+        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.finish()
+        self.assertRaises(ValueError, self.cipher.plaintext)
 
     def test_weakref_bio(self):
         BIO_free_all_cleanup = api.BIO_free_all
