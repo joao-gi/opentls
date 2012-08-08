@@ -174,23 +174,29 @@ class CipherTests(object):
             chars.append(int(hexstr[pos:pos+2], 16))
         return "".join(chr(c) for c in chars)
 
-    def setUp(self):
-        self.cipher = cipherlib.Cipher(True, self.algorithm)
+    @classmethod
+    def setUpClass(self):
         self.key = self.hexstr_to_bytestr(self.key)
         if self.iv is not None:
             self.iv = self.hexstr_to_bytestr(self.iv)
         self.plaintext = self.hexstr_to_bytestr(self.plaintext)
         self.ciphertext = self.hexstr_to_bytestr(self.ciphertext)
 
-    def tearDown(self):
-        del self.cipher
-
-    def test_encrypt(self):
-        self.cipher.initialise(self.key, self.iv)
-        self.cipher.update(self.plaintext)
-        self.cipher.finish()
-        result = self.cipher.ciphertext()
+    def test_encrypt_decrypt(self):
+        # encrypt
+        cipher = cipherlib.Cipher(True, self.algorithm)
+        cipher.initialise(self.key, self.iv)
+        cipher.update(self.plaintext)
+        cipher.finish()
+        result = cipher.ciphertext()
         self.assertEqual(result[:len(self.ciphertext)], self.ciphertext)
+        # decrypt
+        cipher = cipherlib.Cipher(False, self.algorithm)
+        cipher.initialise(self.key, self.iv)
+        cipher.update(result)
+        cipher.finish()
+        result = cipher.plaintext()
+        self.assertEqual(result[:len(self.plaintext)], self.plaintext)
 
 
 class Test_AES_ECB_128_v1(CipherTests, unittest.TestCase):

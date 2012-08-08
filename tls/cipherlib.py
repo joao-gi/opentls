@@ -173,7 +173,9 @@ class Cipher(object):
         if not self.decrypting:
             raise ValueError("Cipher does not decrypt")
         size = api.BIO_pending(self._sink)
+        if size <= 0:
+            return ""
         c_data = api.new('unsigned char[]', size)
         read = api.BIO_read(self._sink, c_data, size)
-        assert size == read
+        assert size == read, "Expect to read {0}, got {1}".format(size, read)
         return bytes(api.buffer(c_data, read))
