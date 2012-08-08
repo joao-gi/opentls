@@ -64,6 +64,10 @@ class CipherObject(object):
         self.cipher.initialise(self.KEY, self.IVECTOR)
         self.cipher.update('\x00' * self.LEN_BLOCK)
 
+    def test_finish(self):
+        self.cipher.initialise(self.KEY, self.IVECTOR)
+        self.cipher.finish()
+
     def test_invalid_update(self):
         self.assertRaises(ValueError, self.cipher.update, '\x00' * self.LEN_BLOCK)
 

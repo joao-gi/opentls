@@ -147,3 +147,10 @@ class Cipher(object):
             else:
                 msg = 'Unable to decrypt data'
             raise IOError(msg)
+
+    def finish(self):
+        if self._ctx == api.NULL:
+            raise ValueError("Cipher object failed to be initialised")
+        if not self._initialised:
+            raise ValueError("Must call initialise() before finish()")
+        api.BIO_flush(self._bio)
