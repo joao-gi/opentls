@@ -125,7 +125,7 @@ class Cipher(object):
                     self.key_len, len(key))
             raise ValueError(msg)
         c_key = api.new('char[]', key) if bool(key) else api.NULL
-        if len(ivector) != self.ivector_len:
+        if (len(ivector) if ivector is not None else 0) != self.ivector_len:
             msg = "IVector must be {0} bytes. Received{1}".format(
                     self.ivector_len, len(ivector))
             raise ValueError(msg)
