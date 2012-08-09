@@ -24,10 +24,9 @@ be 16 zero bytes.
     >>> c.initialise(b'montypythonfunny', '\x00' * c.ivector_len)
     >>> c.update(b'Nobody expects the spanish inquisition')
     >>> c.finish()
-    >>> c.ciphertext()
-    b'\xac\xaf\xb7\xa8\xe5\xd8\x02/\x19:q\x1a\xd7\x15\x08/\x0fp\x9f\x192\xda=\xb4\xb6\xe4\nz\x9b\xf4av\x9bW\xaa\x8c\xfcVe`\xce\xa0-\xa9\xb0\x8bV\x8f'
+    >>> c.ciphertext()[:8]
+    b'\xac\xaf\xb7\xa8\xe5\xd8\x02/\x19:q\x1a\xd7\x15\x08/'
 """
-from collections import namedtuple
 import weakref
 
 from tls import err
