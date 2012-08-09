@@ -3,6 +3,29 @@
 The available symmertric cipher algorithms on your platform are available from
 the algorithms_available attribute. The algorithms_guaranteed lists cipher
 algorithms that are guaranteed to be available on all platforms.
+
+Cipher objects have these methods:
+ - initialise(key, ivector): Prepares the cipher with a cipher key and optional
+                             ivector. The ivector may be None if not required.
+ - update(data):             Pass more data to the cipher for encryption or
+                             decryption.
+ - finish():                 Complete the decryption or encryption process and
+                             close the cipher. The cipher object may be
+                             initialised again for further use.
+ - ciphertext():             Retrieve the encrypted cipher text.
+ - plaintext():              Retrieve the decrypted plain text.
+
+For example, to encrypt 'Nobody expects the spanish inquisition' using 128 bit
+AES in CBC mode. The key used will be b'montypythonfunny' and the ivector will
+be 16 zero bytes.
+
+    >>> from tls import cipherlib
+    >>> c = cipherlib.Cipher(encrypt=True, algorithm='AES-128-CBC')
+    >>> c.initialise(b'montypythonfunny', '\x00' * c.ivector_len)
+    >>> c.update(b'Nobody expects the spanish inquisition')
+    >>> c.finish()
+    >>> c.ciphertext()
+    b'\xac\xaf\xb7\xa8\xe5\xd8\x02/\x19:q\x1a\xd7\x15\x08/\x0fp\x9f\x192\xda=\xb4\xb6\xe4\nz\x9b\xf4av\x9bW\xaa\x8c\xfcVe`\xce\xa0-\xa9\xb0\x8bV\x8f'
 """
 from collections import namedtuple
 import weakref
@@ -38,6 +61,10 @@ EVP_CIPH_STREAM_CIPHER = api.EVP_CIPH_STREAM_CIPHER
 
 class Cipher(object):
     """A cipher object is used to encrypt plaintext or decrypt ciphertext.
+
+    By default the cipher will encrypt using 128bit AES in CBC mode. Passing
+    the encrypt argument as False will cause the cipher to decrypt. The
+    algorithm agrument may be any string from the set of available algorithms.
     """
 
     def __init__(self, encrypt=True, algorithm='AES-128-CBC'):
@@ -118,6 +145,13 @@ class Cipher(object):
         return bytes(api.OBJ_nid2sn(api.EVP_CIPHER_nid(self._cipher)))
 
     def initialise(self, key, ivector):
+        """Initialise this cipher's state with a key and optional ivector
+
+        The key must be a byte string of the same length as this cipher's
+        key_len property. If the ivector is required, it must also be a byte
+        string of ivector_len length. If not required it may be an empty string
+        or None.
+        """
         if self._ctx == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
         if len(key) != self.key_len:
@@ -136,6 +170,11 @@ class Cipher(object):
         self._initialised = True
 
     def update(self, data):
+        """Add data to the cipher for encryption or decryption.
+
+        The data may not be immediately available until a complete block has
+        been written or the cipher object is closed by calling finish().
+        """
         if self._ctx == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
         if not self._initialised:
@@ -150,6 +189,11 @@ class Cipher(object):
             raise IOError(msg)
 
     def finish(self):
+        """Complete the encryption or decryption process.
+
+        No more data may be encrypted or decrypted by this cipher object. The
+        cipher may however be reused by calling initialise() again.
+        """
         if self._ctx == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
         if not self._initialised:
@@ -157,6 +201,11 @@ class Cipher(object):
         api.BIO_flush(self._bio)
 
     def ciphertext(self):
+        """Retrieve the available encrypted ciphertext.
+
+        Cipher text may not be available until a complete block of data has
+        been encrypted or finish() has been called.
+        """
         if self._bio == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
         if not self.encrypting:
@@ -168,6 +217,11 @@ class Cipher(object):
         return bytes(api.buffer(c_data, read))
 
     def plaintext(self):
+        """Retrieve the available decrypted plaintext.
+
+        Plain text may not be available until a complete block of data has been
+        decrypted or finish() has been called.
+        """
         if self._bio == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
         if not self.decrypting:
