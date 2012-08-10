@@ -10,7 +10,6 @@ TYPES = [
     'static const int OBJ_NAME_TYPE_COMP_METH;',
     'static const int OBJ_NAME_TYPE_NUM;',
     'struct obj_name_st { int type; int alias; const char *name; const char *data; ...; };',
-    'typedef ... ASN1_OBJECT;',
     'typedef struct obj_name_st OBJ_NAME;',
 ]
 
