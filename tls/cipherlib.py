@@ -29,7 +29,7 @@ be 16 zero bytes.
 """
 import weakref
 
-from tls import err
+from tls import err, hmac
 from tls.c import api
 from tls.util import all_obj_type_names as __available_algorithms
 
@@ -64,16 +64,23 @@ class Cipher(object):
     By default the cipher will encrypt using 128bit AES in CBC mode. Passing
     the encrypt argument as False will cause the cipher to decrypt. The
     algorithm agrument may be any string from the set of available algorithms.
+
+    The default cipher object will be authenticated used a SHA1 HMAC. The
+    message digest used for the HMAC may be changed by passing a valid digest
+    name as the digest paramter. To disable the HMAC, pass None instead.
     """
 
-    def __init__(self, encrypt=True, algorithm='AES-128-CBC'):
+    def __init__(self, encrypt=True, algorithm='AES-128-CBC', digest='SHA1'):
+        self._algorithm = algorithm
+        self._digest = digest
         # initialise attributes to empty
+        self._encrypting = bool(encrypt)
+        self._initialised = False
         self._bio = api.NULL
         self._cipher = api.NULL
         self._ctx = api.NULL
         self._sink = api.NULL
-        self._encrypting = bool(encrypt)
-        self._initialised = False
+        self._hmac = None
         self._weakrefs = []
         # create cipher object from cipher name
         cipher = api.EVP_get_cipherbyname(algorithm)
@@ -96,6 +103,24 @@ class Cipher(object):
         if not api.EVP_CipherInit_ex(self._ctx,
                 cipher, api.NULL, api.NULL, api.NULL, 1 if encrypt else 0):
             raise ValueError("Unable to initialise cipher")
+
+    @property
+    def algorithm(self):
+        return self._algorithm
+
+    @property
+    def digest(self):
+        return self._digest
+
+    @property
+    def digest_size(self):
+        if self._digest is None:
+            return 0
+        md = api.EVP_get_digestbyname(self._digest)
+        if md == api.NULL:
+            msg = "Unknown message digest name '{0}'".format(self._digest)
+            raise ValueError(msg)
+        return api.EVP_MD_size(md)
 
     @property
     def block_size(self):
@@ -166,6 +191,8 @@ class Cipher(object):
         if not api.EVP_CipherInit_ex(self._ctx,
                 api.NULL, api.NULL, c_key, c_iv, -1):
             raise ValueError("Unable to initialise cipher")
+        if self.digest is not None:
+            self._hmac = hmac.HMAC(key, digestmod=self.digest)
         self._initialised = True
 
     def update(self, data):
@@ -186,6 +213,8 @@ class Cipher(object):
             else:
                 msg = 'Unable to decrypt data'
             raise IOError(msg)
+        if self._hmac is not None:
+            self._hmac.update(data)
 
     def finish(self):
         """Complete the encryption or decryption process.
@@ -197,6 +226,10 @@ class Cipher(object):
             raise ValueError("Cipher object failed to be initialised")
         if not self._initialised:
             raise ValueError("Must call initialise() before finish()")
+        if self.encrypting and self._hmac is not None:
+            digest = self._hmac.digest()
+            self._hmac = None
+            self.update(digest)
         api.BIO_flush(self._bio)
 
     def ciphertext(self):
@@ -231,4 +264,4 @@ class Cipher(object):
         c_data = api.new('unsigned char[]', size)
         read = api.BIO_read(self._sink, c_data, size)
         assert size == read, "Expect to read {0}, got {1}".format(size, read)
-        return bytes(api.buffer(c_data, read))
+        return bytes(api.buffer(c_data, (read - self.digest_size)))

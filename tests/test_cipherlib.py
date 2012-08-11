@@ -1,5 +1,6 @@
 """Test Python cipherlib API module"""
 import unittest2 as unittest
+import math
 import mock
 
 from tls import cipherlib
@@ -21,11 +22,14 @@ class TestAlgorithms(unittest.TestCase):
 class CipherObject(object):
 
     def setUp(self):
-        self.cipher = cipherlib.Cipher(self.ENCRYPT, self.ALGORITHM)
+        self.cipher = cipherlib.Cipher(self.ENCRYPT, self.ALGORITHM, self.DIGEST)
 
     def tearDown(self):
         if hasattr(self, 'cipher'):
             del self.cipher
+
+    def test_digest_size(self):
+        self.assertEqual(self.DIGEST_SIZE, self.cipher.digest_size)
 
     def test_block_size(self):
         self.assertEqual(self.LEN_BLOCK, self.cipher.block_size)
@@ -80,7 +84,9 @@ class CipherObject(object):
         self.cipher.update('\x00' * self.LEN_BLOCK)
         self.cipher.finish()
         ciphertext = self.cipher.ciphertext()
-        self.assertEqual(len(ciphertext), self.LEN_BLOCK*2)
+        length = math.ceil(float(self.LEN_BLOCK + self.cipher.digest_size + 1)
+                / self.LEN_BLOCK) * self.LEN_BLOCK
+        self.assertEqual(len(ciphertext), length)
 
     def test_ciphertext_invalid(self):
         if self.ENCRYPT:
@@ -118,6 +124,8 @@ class CipherObject(object):
 class TestAesEncryptObject(CipherObject, unittest.TestCase):
 
     ALGORITHM = 'AES-128-CBC'
+    DIGEST = 'SHA1'
+    DIGEST_SIZE = 20
     ENCRYPT = True
     IVECTOR = '\x00' * 16
     KEY = '\x00' * 16
@@ -135,6 +143,8 @@ class TestAesEncryptObject(CipherObject, unittest.TestCase):
 class TestRc4DecryptObject(CipherObject, unittest.TestCase):
 
     ALGORITHM = 'RC4'
+    DIGEST = 'MD5'
+    DIGEST_SIZE = 16
     ENCRYPT = False
     IVECTOR = ''
     KEY = '\x00' * 16
@@ -151,6 +161,8 @@ class TestRc4DecryptObject(CipherObject, unittest.TestCase):
 class TestDesEncryptObject(CipherObject, unittest.TestCase):
 
     ALGORITHM = 'DES-ECB'
+    DIGEST = None
+    DIGEST_SIZE = 0
     ENCRYPT = True
     IVECTOR = ''
     KEY = '\x00' * 8

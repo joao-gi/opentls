@@ -13,7 +13,7 @@ class HMAC(object):
     This supports the API for Cryptographic Hash Functions (PEP 247) with the
     following exceptions:
 
-     - There is now copy() method.
+     - There is no copy() method.
      - After calling digest() or hexdigest() the HMAC can no longer be updated
 
     These exceptions are limitations of OpenSSL's HMAC functions.
