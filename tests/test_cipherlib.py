@@ -61,8 +61,9 @@ class CipherObject(object):
     def test_invalid_name(self):
         self.assertRaises(ValueError, cipherlib.Cipher, self.ENCRYPT, 'UNDEF')
 
-    def test_initialise(self):
+    def test_initialised(self):
         self.cipher.initialise(self.KEY, self.IVECTOR)
+        self.assertTrue(self.cipher.is_initialised)
 
     def test_initialise_invalid_key(self):
         self.assertRaises(ValueError, self.cipher.initialise,

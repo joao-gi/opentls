@@ -114,11 +114,11 @@ class Cipher(object):
 
     @property
     def digest_size(self):
-        if self._digest is None:
+        if self.digest is None:
             return 0
-        md = api.EVP_get_digestbyname(self._digest)
+        md = api.EVP_get_digestbyname(self.digest)
         if md == api.NULL:
-            msg = "Unknown message digest name '{0}'".format(self._digest)
+            msg = "Unknown message digest name '{0}'".format(self.digest)
             raise ValueError(msg)
         return api.EVP_MD_size(md)
 
@@ -168,6 +168,10 @@ class Cipher(object):
             raise ValueError("Cipher object failed to be initialised")
         return bytes(api.OBJ_nid2sn(api.EVP_CIPHER_nid(self._cipher)))
 
+    @property
+    def is_initialised(self):
+        return self._initialised
+
     def initialise(self, key, ivector):
         """Initialise this cipher's state with a key and optional ivector
 
@@ -203,7 +207,7 @@ class Cipher(object):
         """
         if self._ctx == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
-        if not self._initialised:
+        if not self.is_initialised:
             raise ValueError("Must call initialise() before update()")
         c_data = api.new('char[]', data)
         written = api.BIO_write(self._bio, c_data, len(data))
@@ -224,7 +228,7 @@ class Cipher(object):
         """
         if self._ctx == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
-        if not self._initialised:
+        if not self.is_initialised:
             raise ValueError("Must call initialise() before finish()")
         if self.encrypting and self._hmac is not None:
             digest = self._hmac.digest()
