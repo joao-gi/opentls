@@ -5,6 +5,7 @@ the algorithms_available attribute. The algorithms_guaranteed lists cipher
 algorithms that are guaranteed to be available on all platforms.
 
 Cipher objects have these methods:
+
  - initialise(key, ivector): Prepares the cipher with a cipher key and optional
                              ivector. The ivector may be None if not required.
  - update(data):             Pass more data to the cipher for encryption or
@@ -26,6 +27,11 @@ be 16 zero bytes.
     >>> c.finish()
     >>> c.ciphertext()[:8]
     b'\xac\xaf\xb7\xa8\xe5\xd8\x02/\x19:q\x1a\xd7\x15\x08/'
+
+By default Cipher object will verified using a SHA1 based HMAC. This prevents
+the ciphertext from being manipulated. The message digest used for the HMAC can
+be changed by passing a different digest name as digest to the construction.
+The HMAC can be disabled by passing None.
 """
 import weakref
 
@@ -257,7 +263,8 @@ class Cipher(object):
         """Retrieve the available decrypted plaintext.
 
         Plain text may not be available until a complete block of data has been
-        decrypted or finish() has been called.
+        decrypted or finish() has been called. If finish() has been called the
+        HMAC will be verified (if required) when plaintext() is called.
         """
         if self._bio == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
