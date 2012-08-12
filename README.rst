@@ -25,7 +25,7 @@ This package is distributed under the
 
 Status
 ------
-|build_status| Three usable modules have been implemented.
+|build_status| Four usable modules have been implemented.
 
 ``tls.random`` is an implementation
 of Python's random module
@@ -44,6 +44,11 @@ from the standard library implementation
 because OpenSSL's HMAC objects
 can not be copied.
 
+``tls.cipherlib`` is a common interface to
+symmetric ciphers for Python.
+The API is modeled after 
+Python's hashlib module.
+
 Additionally, some parts of OpenSSL's APIs have been wrapped
 using `cffi <https://cffi.readthedocs.org/en/latest/index.html>`_.
 This wrapping is limited to:
@@ -53,6 +58,7 @@ This wrapping is limited to:
   * filters (null, zlib, base64 and message digests)
 * error message handling
 * message digests (cryptographically secure hash functions)
+* symmetric ciphers
 * random data (pseudo and cryptographically strong)
 
 The low level OpenSSL APIs are in the `tls.c.api` object.
