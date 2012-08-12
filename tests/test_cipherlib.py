@@ -28,6 +28,12 @@ class CipherObject(object):
         if hasattr(self, 'cipher'):
             del self.cipher
 
+    def test_algorithm(self):
+        self.assertEqual(self.ALGORITHM, self.cipher.algorithm)
+    
+    def test_digest(self):
+        self.assertEqual(self.DIGEST, self.cipher.digest)
+
     def test_digest_size(self):
         self.assertEqual(self.DIGEST_SIZE, self.cipher.digest_size)
 
