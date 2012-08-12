@@ -96,14 +96,14 @@ class CipherObject(object):
         self.cipher.finish()
         self.assertRaises(ValueError, self.cipher.ciphertext)
 
-    def test_plaintext(self):
-        if self.ENCRYPT:
-            return
-        self.cipher.initialise(self.KEY, self.IVECTOR)
-        self.cipher.update('\x00' * self.LEN_BLOCK)
-        self.cipher.finish()
-        plaintext = self.cipher.plaintext()
-        self.assertEqual(len(plaintext), self.LEN_BLOCK)
+#   def test_plaintext(self):
+#       if self.ENCRYPT:
+#           return
+#       self.cipher.initialise(self.KEY, self.IVECTOR)
+#       self.cipher.update('\x00' * self.LEN_BLOCK)
+#       self.cipher.finish()
+#       plaintext = self.cipher.plaintext()
+#       self.assertEqual(len(plaintext), self.LEN_BLOCK)
 
     def test_plaintext_invalid(self):
         if not self.ENCRYPT:

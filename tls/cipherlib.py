@@ -213,7 +213,7 @@ class Cipher(object):
             else:
                 msg = 'Unable to decrypt data'
             raise IOError(msg)
-        if self._hmac is not None:
+        if self.encrypting and self._hmac is not None:
             self._hmac.update(data)
 
     def finish(self):
@@ -231,6 +231,7 @@ class Cipher(object):
             self._hmac = None
             self.update(digest)
         api.BIO_flush(self._bio)
+        self._initialised = False
 
     def ciphertext(self):
         """Retrieve the available encrypted ciphertext.
@@ -263,5 +264,21 @@ class Cipher(object):
             return ""
         c_data = api.new('unsigned char[]', size)
         read = api.BIO_read(self._sink, c_data, size)
-        assert size == read, "Expect to read {0}, got {1}".format(size, read)
-        return bytes(api.buffer(c_data, (read - self.digest_size)))
+        assert size == read, "Expected to read {0}, got {1}".format(size, read)
+        if self.encrypting or self._hmac is None:
+            self._hmac = None
+            return bytes(api.buffer(c_data, read))
+        else:
+            hmac_len = self.digest_size
+            data_len = max(0, size - hmac_len)
+            data = bytes(api.buffer(c_data, data_len))
+            digest = bytes(api.buffer(c_data + data_len, hmac_len))
+            self._hmac.update(data)
+            auth = self._hmac.digest()
+            self._hmac = None
+            valid = 0
+            for x, y in zip(auth, digest):
+                valid |= ord(x) ^ ord(y)
+            if valid != 0:
+                raise ValueError("Invalid decrypt")
+            return data
