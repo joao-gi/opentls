@@ -264,11 +264,10 @@ class Cipher(object):
         if not self.decrypting:
             raise ValueError("Cipher does not decrypt")
         size = api.BIO_pending(self._sink)
-        if size <= 0:
-            return ""
         c_data = api.new('unsigned char[]', size)
-        read = api.BIO_read(self._sink, c_data, size)
-        assert size == read, "Expected to read {0}, got {1}".format(size, read)
+        if size > 0:
+            read = api.BIO_read(self._sink, c_data, size)
+            assert size == read, "Expected to read {0}, got {1}".format(size, read)
         if self.encrypting or self._hmac is None:
             self._hmac = None
             return bytes(api.buffer(c_data, read))
@@ -279,10 +278,10 @@ class Cipher(object):
             digest = bytes(api.buffer(c_data + data_len, hmac_len))
             self._hmac.update(data)
             auth = self._hmac.digest()
-            self._hmac = None
-            valid = 0
+            valid = 0 if api.BIO_get_cipher_status(self._bio) else 1
             for x, y in zip(auth, digest):
                 valid |= ord(x) ^ ord(y)
             if valid != 0:
                 raise ValueError("Invalid decrypt")
+            self._hmac = None
             return data

@@ -201,21 +201,57 @@ class CipherTests(object):
         self.plaintext = self.hexstr_to_bytestr(self.plaintext)
         self.ciphertext = self.hexstr_to_bytestr(self.ciphertext)
 
-    def test_encrypt_decrypt(self):
-        # encrypt
+    def _encrypt(self):
         cipher = cipherlib.Cipher(True, self.algorithm)
         cipher.initialise(self.key, self.iv)
         cipher.update(self.plaintext)
         cipher.finish()
-        result = cipher.ciphertext()
-        self.assertEqual(result[:len(self.ciphertext)], self.ciphertext)
-        # decrypt
+        return cipher.ciphertext()
+
+    def _decrypt(self, data):
         cipher = cipherlib.Cipher(False, self.algorithm)
         cipher.initialise(self.key, self.iv)
-        cipher.update(result)
+        cipher.update(data)
         cipher.finish()
-        result = cipher.plaintext()
+        return cipher.plaintext()
+
+    def test_encrypt_decrypt(self):
+        result = self._encrypt()
+        self.assertEqual(result[:len(self.ciphertext)], self.ciphertext)
+        result = self._decrypt(result)
         self.assertEqual(result[:len(self.plaintext)], self.plaintext)
+
+    def test_bitflip_data_decrypt(self):
+        result = self._encrypt()
+        result = chr(ord(result[0]) ^ 0x80) + result[1:]
+        self.assertRaises(ValueError, self._decrypt, result)
+
+    def test_bitflip_hmac_decrypt(self):
+        result = self._encrypt()
+        pos = len(self.ciphertext)
+        result = result[:pos] + chr(ord(result[pos]) ^ 0x80) + result[pos+1:]
+        self.assertRaises(ValueError, self._decrypt, result)
+
+    def test_bitflip_padding_decrypt(self):
+        result = self._encrypt()
+        result = result[:-1] + chr(ord(result[-1]) ^ 0x01)
+        self.assertRaises(ValueError, self._decrypt, result)
+
+    def test_trunc_data_decrypt(self):
+        result = self._encrypt()
+        result = result[1:]
+        self.assertRaises(ValueError, self._decrypt, result)
+
+    def test_trunc_hmac_decrypt(self):
+        result = self._encrypt()
+        pos = len(self.ciphertext)
+        result = result[:pos] + result[pos+1:]
+        self.assertRaises(ValueError, self._decrypt, result)
+
+    def test_trunc_padding_decrypt(self):
+        result = self._encrypt()
+        result = result[:-1]
+        self.assertRaises(ValueError, self._decrypt, result)
 
 
 class Test_AES_ECB_128_v1(CipherTests, unittest.TestCase):
