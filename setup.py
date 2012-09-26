@@ -42,7 +42,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: System :: Networking'
     ],
-    install_requires=['cffi==0.2.1'],
+    install_requires=['cffi==0.3'],
     tests_require=['mock', 'unittest2'],
     test_suite="unittest2.collector"
 )
