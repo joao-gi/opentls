@@ -59,7 +59,7 @@ FUNCTIONS = [
     'int EVP_CIPHER_CTX_key_length(const EVP_CIPHER_CTX *ctx);',
     'int EVP_CIPHER_CTX_iv_length(const EVP_CIPHER_CTX *ctx);',
     'void *EVP_CIPHER_CTX_get_app_data(const EVP_CIPHER_CTX *ctx);',
-    'void EVP_CIPHER_CTX_set_app_data(const EVP_CIPHER_CTX *ctx, void *data);',
+    'void EVP_CIPHER_CTX_set_app_data(EVP_CIPHER_CTX *ctx, void *data);',
     'int EVP_CIPHER_CTX_type(const EVP_CIPHER_CTX *ctx);',
     'unsigned long EVP_CIPHER_CTX_flags(const EVP_CIPHER_CTX *ctx);',
     'unsigned long EVP_CIPHER_CTX_mode(const EVP_CIPHER_CTX *ctx);',

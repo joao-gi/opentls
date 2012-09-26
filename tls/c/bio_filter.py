@@ -38,5 +38,5 @@ FUNCTIONS = [
     # BIO base64
     'BIO_METHOD *BIO_f_base64(void);',
     # BIO zlib
-    'BIO_METHOD *BIO_f_zlib(void);',
+#   'BIO_METHOD *BIO_f_zlib(void);',
 ]

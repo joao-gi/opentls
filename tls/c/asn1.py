@@ -14,7 +14,7 @@ FUNCTIONS = [
     'ASN1_OBJECT *ASN1_OBJECT_new(void);',
     'void ASN1_OBJECT_free(ASN1_OBJECT *a);',
     # ASN1 OBJECT IDENTIFIER
-    'ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, unsigned char **pp, long length);',
+    'ASN1_OBJECT *d2i_ASN1_OBJECT(ASN1_OBJECT **a, const unsigned char **pp, long length);',
     'int i2d_ASN1_OBJECT(ASN1_OBJECT *a, unsigned char **pp);',
     # ASN1 STRING
     'ASN1_STRING * ASN1_STRING_new(void);',
