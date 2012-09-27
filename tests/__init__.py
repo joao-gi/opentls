@@ -12,26 +12,26 @@ cffi.verifier.cleanup_tmpdir()
 
 logging.basicConfig()
 
-def expect_fail_with(major, minor, fix, comparison=operator.eq):
+def expect_fail_with(major, minor, fix, patch='a', comparison=operator.eq):
     "Decorate function with expected failure compared to given OpenSSL versions"
     def expect_failure(func):
         return unittest.expectedFailure(func)
     def noop(func):
         return func
-    if comparison(tls.c.api.version()[0:3], (major, minor, fix)):
+    if comparison(tls.c.api.version()[0:4], (major, minor, fix, patch)):
         return expect_failure
     return noop
 
 expect_fail_before = functools.partial(expect_fail_with, comparison=operator.lt)
 expect_fail_after = functools.partial(expect_fail_with, comparison=operator.ge)
 
-def skip_with(major, minor, fix, comparison=operator.eq, message='incompatible OpenSSL version'):
+def skip_with(major, minor, fix, patch='a', comparison=operator.eq, message='incompatible OpenSSL version'):
     "Decorate function to skip compared to given OpenSSL versions"
     def skip(func):
         return unittest.skip(message)(func)
     def noop(func):
         return func
-    if comparison(tls.c.api.version()[0:3], (major, minor, fix)):
+    if comparison(tls.c.api.version()[0:4], (major, minor, fix, patch)):
         return skip
     return noop
 
