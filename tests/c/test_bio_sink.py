@@ -24,7 +24,7 @@ class BioWrite(object):
     def test_puts(self):
         put = api.BIO_puts(self.bio, self.data)
         self.assertEqual(api.BIO_wpending(self.bio), 0)
-        self.assertEqual(put, len(bytes(self.data)))
+        self.assertEqual(put, len(api.string(self.data)))
 
     def test_flush(self):
         api.BIO_flush(self.bio)
@@ -84,8 +84,8 @@ class BioRead(object):
     def test_read_all(self):
         buf = api.new('char[]', len(self.data))
         read = api.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(bytes(buf)))
-        self.assertEqual(bytes(buf), bytes(self.data))
+        self.assertEqual(read, len(api.string(buf)))
+        self.assertEqual(api.string(buf), api.string(self.data))
 
     def test_read_one(self):
         count = 0
@@ -101,21 +101,21 @@ class BioRead(object):
     def test_read_long(self):
         buf = api.new('char[]', 2 * len(self.data))
         size = api.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(size, len(bytes(self.data)))
+        self.assertEqual(size, len(api.string(self.data)))
 
     def test_gets(self):
         buf = api.new('char[]', len(self.data))
         got = api.BIO_gets(self.bio, buf, len(buf))
         self.assertEqual(got + 1, len(buf))
-        self.assertEqual(bytes(buf), bytes(self.data))
+        self.assertEqual(api.string(buf), api.string(self.data))
 
     def test_pending(self):
         pending = api.BIO_pending(self.bio)
-        self.assertEqual(pending, len(bytes(self.data)))
+        self.assertEqual(pending, len(api.string(self.data)))
 
     def test_ctrl_pending(self):
         pending = api.BIO_ctrl_pending(self.bio)
-        self.assertEqual(pending, len(bytes(self.data)))
+        self.assertEqual(pending, len(api.string(self.data)))
 
     def test_tell(self):
         start = api.BIO_tell(self.bio)
@@ -130,13 +130,13 @@ class BioRead(object):
         api.BIO_seek(self.bio, 1)
         buf = api.new('char[]', len(self.data))
         read = api.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(bytes(self.data)) - 1)
-        self.assertEqual(bytes(buf), bytes(self.data)[1:])
+        self.assertEqual(read, len(api.string(self.data)) - 1)
+        self.assertEqual(api.string(buf), api.string(self.data)[1:])
 
     def test_eof(self):
         buf = api.new('char[]', len(self.data) + 1)
         read = api.BIO_read(self.bio, buf, len(buf))
-        self.assertEqual(read, len(bytes(self.data)))
+        self.assertEqual(read, len(api.string(self.data)))
         self.assertTrue(api.BIO_eof(self.bio))
 
 
@@ -165,9 +165,9 @@ class TestBioMem(unittest.TestCase):
             api.BIO_write(mem, data, 11)
             buf = api.new('char[]', 5)
             api.BIO_read(mem, buf, len(buf))
-            self.assertEqual(bytes(buf), b"HELLO")
+            self.assertEqual(api.string(buf), b"HELLO")
             api.BIO_gets(mem, buf, len(buf))
-            self.assertEqual(bytes(buf), b" WOR")
+            self.assertEqual(api.string(buf), b" WOR")
         finally:
             api.BIO_free(mem)
 
@@ -222,7 +222,7 @@ class TestBioFileRead(BioRead, unittest.TestCase):
         fd, cls.name = tempfile.mkstemp()
         os.close(fd)
         with open(cls.name, 'wb') as dest:
-            dest.write(bytes(cls.data))
+            dest.write(api.string(cls.data))
 
     @classmethod
     def tearDownClass(cls):
@@ -266,7 +266,7 @@ class TestBioFdRead(BioRead, unittest.TestCase):
         fd, cls.name = tempfile.mkstemp()
         os.close(fd)
         with open(cls.name, 'wb') as dest:
-            dest.write(bytes(cls.data))
+            dest.write(api.string(cls.data))
 
     @classmethod
     def tearDownClass(cls):
@@ -300,7 +300,7 @@ class TestBioNullWrite(BioWrite, unittest.TestCase):
 
 class TestBioNullRead(BioRead, unittest.TestCase):
 
-    data = b""
+    data = api.new('char[]', b"")
 
     @property
     def method(self):

@@ -223,7 +223,7 @@ class TestEVP(unittest.TestCase):
         self._test_md_name('SHA512')
 
     def _test_md_nid(self, nid, name):
-        self.assertEqual(name, bytes(api.OBJ_nid2sn(nid)))
+        self.assertEqual(name, api.string(api.OBJ_nid2sn(nid)))
         md = api.EVP_get_digestbynid(nid)
         self.assertTrue(md)
 

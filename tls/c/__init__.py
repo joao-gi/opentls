@@ -178,6 +178,7 @@ class API(object):
         self.callback = self.ffi.callback
         self.cast = self.ffi.cast
         self.new = self.ffi.new
+        self.string = self.ffi.string
         self.relate = CdataOwner._relate
         CdataOwner._add_coownership(self)
 

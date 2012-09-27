@@ -28,7 +28,7 @@ def all_obj_type_names(objtype, unique_names=True):
         if nid == api.NID_undef:
             nid = api.OBJ_ln2nid(name)
         if nid != api.NID_undef:
-            hashes.setdefault(nid, set()).add(bytes(name))
+            hashes.setdefault(nid, set()).add(api.string(name))
 
     selection = slice(1) if unique_names else slice(sys.maxint)
     algorithms = set()

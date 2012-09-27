@@ -20,10 +20,10 @@ class BioFilter(object):
 
     def test_filter(self):
         buf = api.new('char[]', len(self.output))
-        api.BIO_write(self.bio, self.input, len(bytes(self.input)))
+        api.BIO_write(self.bio, self.input, len(api.string(self.input)))
         api.BIO_flush(self.bio)
         api.BIO_read(self.sink, buf, len(buf))
-        self.assertEqual(bytes(buf), bytes(self.output))
+        self.assertEqual(api.string(buf), api.string(self.output))
 
 
 class TestNullFilter(BioFilter, unittest.TestCase):
@@ -72,7 +72,7 @@ class HashFilter(BioFilter):
         BioFilter.test_filter(self)
         buf = api.new('char[]', api.EVP_MD_size(self.md))
         api.BIO_gets(self.filter, buf, len(buf))
-        hash_value = b''.join(b'{0:02x}'.format(ord(v)) for v in bytes(buf))
+        hash_value = b''.join(b'{0:02x}'.format(ord(v)) for v in api.buffer(buf))
         self.assertEqual(hash_value, self.hash)
 
 

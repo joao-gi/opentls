@@ -30,7 +30,7 @@ def log_errors(func=None, level=logging.ERROR):
         errcode = api.ERR_get_error()
         while errcode != 0:
             cstring = api.ERR_error_string(errcode, api.NULL)
-            errmsg = bytes(cstring)
+            errmsg = api.string(cstring)
             messages.append(errmsg)
             if level is not None:
                 logger.log(level, errmsg)

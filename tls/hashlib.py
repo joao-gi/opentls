@@ -88,7 +88,7 @@ class MessageDigest(object):
         name = api.OBJ_nid2sn(nid)
         if name == api.NULL:
             raise DigestError('Failed to get digest name')
-        return bytes(name)
+        return api.string(name)
 
     @property
     def digest_size(self):

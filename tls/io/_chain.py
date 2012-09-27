@@ -184,7 +184,7 @@ class BIOChain(object):
         read = api.BIO_read(self._bio, data, len(data))
         if read < 0:
             raise IOError('unsupported operation')
-        return bytes(data)
+        return api.string(data)
 
     @_not_closed
     @err.log_errors

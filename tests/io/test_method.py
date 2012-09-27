@@ -4,6 +4,7 @@ from StringIO import StringIO
 import unittest2 as unittest
 
 from ..c.test_bio_sink import BioWrite, BioRead
+from tls.c import api
 from tls import io
 
 
@@ -20,7 +21,7 @@ class TestStringIOWrite(BioWrite, unittest.TestCase):
 class TestStringIORead(BioRead, unittest.TestCase):
 
     def setUp(self):
-        fileobj = StringIO(bytes(self.data))
+        fileobj = StringIO(api.string(self.data))
         self.bio = io.wrap_io(fileobj)
 
     test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)

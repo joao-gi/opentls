@@ -172,7 +172,7 @@ class Cipher(object):
     def name(self):
         if self._cipher == api.NULL:
             raise ValueError("Cipher object failed to be initialised")
-        return bytes(api.OBJ_nid2sn(api.EVP_CIPHER_nid(self._cipher)))
+        return api.string(api.OBJ_nid2sn(api.EVP_CIPHER_nid(self._cipher)))
 
     @property
     def is_initialised(self):

@@ -8,7 +8,7 @@ class TestNidTo(unittest.TestCase):
 
     def test_nid2ln(self):
         name = api.OBJ_nid2ln(api.NID_md5)
-        self.assertEqual(b'md5', bytes(name))
+        self.assertEqual(b'md5', api.string(name))
 
     def test_nid2ln_error(self):
         name = api.OBJ_nid2ln(-1)
@@ -16,7 +16,7 @@ class TestNidTo(unittest.TestCase):
 
     def test_nid2sn(self):
         name = api.OBJ_nid2sn(api.NID_md5)
-        self.assertEqual(b'MD5', bytes(name))
+        self.assertEqual(b'MD5', api.string(name))
 
     def test_nid2sn_error(self):
         name = api.OBJ_nid2sn(-1)
