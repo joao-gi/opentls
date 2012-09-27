@@ -53,7 +53,7 @@ class RandTests(object):
     def test_median(self):
         """Test that the median is "close" to the expected mean."""
         sorted_ = sorted(self.data)
-        median = sorted_[int(self.samples / 2)]
+        median = sorted_[self.samples // 2]
         self.assertAlmostEqual(median, 127.5, delta=5.0)
 
     def test_mean(self):
@@ -66,14 +66,14 @@ class RandTests(object):
 
     def test_variance(self):
         """Test the variance is "close" to the expected mean."""
-        expected_mean = 255 / 2
+        expected_mean = 255 // 2
         average = cumulative_average()
         average.send(None)
         for value in self.data:
             deviation_squared = (value - expected_mean) ** 2
             variance = average.send(deviation_squared)
-        expected_variance = (expected_mean / 2) ** 2
-        self.assertAlmostEqual(variance, expected_variance, delta=expected_variance / 2)
+        expected_variance = (expected_mean // 2) ** 2
+        self.assertAlmostEqual(variance, expected_variance, delta=expected_variance // 2)
 
     def test_buckets(self):
         """Test the distribution of values across the range."""
@@ -82,7 +82,7 @@ class RandTests(object):
             counts[value] = 1 + counts.get(value, 0)
         for value, count in counts.items():
             self.assertGreater(count, 0)
-            self.assertLess(count, 2.0 * (self.samples / 255))
+            self.assertLess(count, 2.0 * (self.samples / 255.0))
 
     def test_kolmogorov_smirnov(self):
         """Apply the Kolmogorov-Smirnov goodness-of-fit function.
