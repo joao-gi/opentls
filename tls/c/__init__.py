@@ -44,7 +44,10 @@ class CdataOwner(object):
                 obj = CdataOwner(obj)
             return obj
 
-        ffi.new = types.MethodType(new, ffi, FFI)
+        try:
+            ffi.new = types.MethodType(new, ffi, FFI)
+        except TypeError:
+            ffi.new = types.MethodType(new, ffi)
 
     @classmethod
     def _relate(cls, primary, dependant, name):
