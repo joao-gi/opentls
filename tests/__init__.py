@@ -2,7 +2,11 @@
 import functools
 import logging
 import operator
-import unittest2 as unittest
+
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 import cffi
 

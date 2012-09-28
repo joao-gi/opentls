@@ -1,6 +1,10 @@
 """Test BIO Filters"""
 from itertools import islice
-import unittest2 as unittest
+
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 

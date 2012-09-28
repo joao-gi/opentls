@@ -1,7 +1,11 @@
 """Test BIO Sinks"""
 import os
 import tempfile
-import unittest2 as unittest
+
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tests import expect_fail_before
 from tls.c import api

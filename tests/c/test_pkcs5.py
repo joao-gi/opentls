@@ -3,7 +3,10 @@
 Test vectors for PBKDF2 taken from RFC 6070
 https://tools.ietf.org/html/rfc6070
 """
-import unittest2 as unittest
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 

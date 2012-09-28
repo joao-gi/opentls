@@ -1,5 +1,8 @@
 """Test Python IO API for OpenSSL BIO"""
-import unittest2 as unittest
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 from tls import io

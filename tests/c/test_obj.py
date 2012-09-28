@@ -1,5 +1,8 @@
 """Test objects API"""
-import unittest2 as unittest
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 

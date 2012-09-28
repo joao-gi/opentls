@@ -9,7 +9,11 @@ http://www.johndcook.com/blog/2010/12/06/how-to-test-a-random-number-generator-2
 import ctypes
 import math
 import random
-import unittest2 as unittest
+
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 

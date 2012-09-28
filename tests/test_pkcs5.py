@@ -1,5 +1,8 @@
 """Test Python pkcs5 API module"""
-import unittest2 as unittest
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls import pkcs5
 

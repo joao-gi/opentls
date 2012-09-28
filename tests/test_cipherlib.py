@@ -1,7 +1,11 @@
 """Test Python cipherlib API module"""
-import unittest2 as unittest
 import math
 import mock
+
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls import cipherlib
 from tls.c import api

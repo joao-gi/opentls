@@ -3,7 +3,10 @@
 Test vectors obtained from:
 http://www.inconteam.com/software-development/41-encryption/55-aes-test-vectors
 """
-import unittest2 as unittest
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 

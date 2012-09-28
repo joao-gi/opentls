@@ -1,8 +1,11 @@
 """Test Python hashlib API implementation using OpenSSL"""
 from functools import partial
-
-import unittest2 as unittest
 import mock
+
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 from tls import hashlib

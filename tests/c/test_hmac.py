@@ -5,7 +5,10 @@ from Python's hashlib module.
 
 https://tools.ietf.org/html/rfc2104
 """
-import unittest2 as unittest
+try:
+    import unittest
+except ImportError:
+    import unittest2 as unittest
 
 from tls.c import api
 
