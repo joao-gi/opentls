@@ -34,6 +34,7 @@ be changed by passing a different digest name as digest to the construction.
 The HMAC can be disabled by passing None.
 """
 from __future__ import absolute_import, division, print_function
+import numbers
 import weakref
 
 from tls import err, hmac
@@ -77,7 +78,7 @@ class Cipher(object):
     name as the digest paramter. To disable the HMAC, pass None instead.
     """
 
-    def __init__(self, encrypt=True, algorithm='AES-128-CBC', digest='SHA1'):
+    def __init__(self, encrypt=True, algorithm=b'AES-128-CBC', digest=b'SHA1'):
         self._algorithm = algorithm
         self._digest = digest
         # initialise attributes to empty
@@ -288,7 +289,11 @@ class Cipher(object):
             auth = self._hmac.digest()
             valid = 0 if api.BIO_get_cipher_status(self._bio) else 1
             for x, y in zip(auth, digest):
-                valid |= ord(x) ^ ord(y)
+                if not isinstance(x, numbers.Integral):
+                    x = ord(x)
+                if not isinstance(y, numbers.Integral):
+                    y = ord(y)
+                valid |= x ^ y
             if valid != 0:
                 raise ValueError("Invalid decrypt")
             self._hmac = None

@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function
 import math
 import mock
+import six
 
 try:
     import unittest
@@ -64,7 +65,7 @@ class CipherObject(object):
         self.assertEqual(self.ALGORITHM, self.cipher.name)
 
     def test_invalid_name(self):
-        self.assertRaises(ValueError, cipherlib.Cipher, self.ENCRYPT, 'UNDEF')
+        self.assertRaises(ValueError, cipherlib.Cipher, self.ENCRYPT, b'UNDEF')
 
     def test_initialised(self):
         self.cipher.initialise(self.KEY, self.IVECTOR)
@@ -72,18 +73,18 @@ class CipherObject(object):
 
     def test_initialise_invalid_key(self):
         self.assertRaises(ValueError, self.cipher.initialise,
-                self.KEY + '\FF', self.IVECTOR)
+                self.KEY + b'\FF', self.IVECTOR)
 
     def test_initialise_invalid_ivector(self):
         self.assertRaises(ValueError, self.cipher.initialise,
-                self.KEY, self.IVECTOR + '\FF')
+                self.KEY, self.IVECTOR + b'\FF')
 
     def test_update(self):
         self.cipher.initialise(self.KEY, self.IVECTOR)
-        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.update(b'\x00' * self.LEN_BLOCK)
 
     def test_update_invalid(self):
-        self.assertRaises(ValueError, self.cipher.update, '\x00' * self.LEN_BLOCK)
+        self.assertRaises(ValueError, self.cipher.update, b'\x00' * self.LEN_BLOCK)
 
     def test_finish(self):
         self.cipher.initialise(self.KEY, self.IVECTOR)
@@ -93,7 +94,7 @@ class CipherObject(object):
         if not self.ENCRYPT:
             return
         self.cipher.initialise(self.KEY, self.IVECTOR)
-        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.update(b'\x00' * self.LEN_BLOCK)
         self.cipher.finish()
         ciphertext = self.cipher.ciphertext()
         length = math.ceil(float(self.LEN_BLOCK + self.cipher.digest_size + 1)
@@ -104,7 +105,7 @@ class CipherObject(object):
         if self.ENCRYPT:
             return
         self.cipher.initialise(self.KEY, self.IVECTOR)
-        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.update(b'\x00' * self.LEN_BLOCK)
         self.cipher.finish()
         self.assertRaises(ValueError, self.cipher.ciphertext)
 
@@ -121,7 +122,7 @@ class CipherObject(object):
         if not self.ENCRYPT:
             return
         self.cipher.initialise(self.KEY, self.IVECTOR)
-        self.cipher.update('\x00' * self.LEN_BLOCK)
+        self.cipher.update(b'\x00' * self.LEN_BLOCK)
         self.cipher.finish()
         self.assertRaises(ValueError, self.cipher.plaintext)
 
@@ -135,12 +136,12 @@ class CipherObject(object):
 
 class TestAesEncryptObject(CipherObject, unittest.TestCase):
 
-    ALGORITHM = 'AES-128-CBC'
-    DIGEST = 'SHA1'
+    ALGORITHM = b'AES-128-CBC'
+    DIGEST = b'SHA1'
     DIGEST_SIZE = 20
     ENCRYPT = True
-    IVECTOR = '\x00' * 16
-    KEY = '\x00' * 16
+    IVECTOR = b'\x00' * 16
+    KEY = b'\x00' * 16
     LEN_BLOCK = 16
     LEN_IV = 16
     LEN_KEY = 16
@@ -154,12 +155,12 @@ class TestAesEncryptObject(CipherObject, unittest.TestCase):
 
 class TestRc4DecryptObject(CipherObject, unittest.TestCase):
 
-    ALGORITHM = 'RC4'
-    DIGEST = 'MD5'
+    ALGORITHM = b'RC4'
+    DIGEST = b'MD5'
     DIGEST_SIZE = 16
     ENCRYPT = False
-    IVECTOR = ''
-    KEY = '\x00' * 16
+    IVECTOR = b''
+    KEY = b'\x00' * 16
     LEN_BLOCK = 1
     LEN_IV = 0
     LEN_KEY = 16
@@ -172,12 +173,12 @@ class TestRc4DecryptObject(CipherObject, unittest.TestCase):
 
 class TestDesEncryptObject(CipherObject, unittest.TestCase):
 
-    ALGORITHM = 'DES-ECB'
+    ALGORITHM = b'DES-ECB'
     DIGEST = None
     DIGEST_SIZE = 0
     ENCRYPT = True
-    IVECTOR = ''
-    KEY = '\x00' * 8
+    IVECTOR = b''
+    KEY = b'\x00' * 8
     LEN_BLOCK = 8
     LEN_IV = 0
     LEN_KEY = 8
@@ -196,7 +197,7 @@ class CipherTests(object):
         chars = []
         for pos in range(0, len(hexstr), 2):
             chars.append(int(hexstr[pos:pos+2], 16))
-        return "".join(chr(c) for c in chars)
+        return b"".join(six.int2byte(c) for c in chars)
 
     @classmethod
     def setUpClass(self):
@@ -228,18 +229,20 @@ class CipherTests(object):
 
     def test_bitflip_data_decrypt(self):
         result = self._encrypt()
-        result = chr(ord(result[0]) ^ 0x80) + result[1:]
+        result = six.int2byte(ord(result[:1]) ^ 0x80) + result[1:]
         self.assertRaises(ValueError, self._decrypt, result)
 
     def test_bitflip_hmac_decrypt(self):
         result = self._encrypt()
         pos = len(self.ciphertext)
-        result = result[:pos] + chr(ord(result[pos]) ^ 0x80) + result[pos+1:]
+        result = (result[:pos]
+                + six.int2byte(ord(result[pos:pos+1]) ^ 0x80)
+                + result[pos+1:])
         self.assertRaises(ValueError, self._decrypt, result)
 
     def test_bitflip_padding_decrypt(self):
         result = self._encrypt()
-        result = result[:-1] + chr(ord(result[-1]) ^ 0x01)
+        result = result[:-1] + six.int2byte(ord(result[-1:]) ^ 0x01)
         self.assertRaises(ValueError, self._decrypt, result)
 
     def test_trunc_data_decrypt(self):
