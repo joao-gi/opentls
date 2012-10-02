@@ -46,6 +46,7 @@ More condensed:
     >>> hashlib.sha224(b"Nobody inspects the spammish repetition").hexdigest()
     'a4337bc45a8fc544c03f52dc550cd6e1e87021bc896588bd79e901e2
 """
+from __future__ import absolute_import, division, print_function
 import functools
 import itertools
 import weakref

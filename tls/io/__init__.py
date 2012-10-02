@@ -18,6 +18,8 @@ For example, wrapping a StringIO object:
     >>> api.BIO_free(bio)
 
 """
+from __future__ import absolute_import, division, print_function
+
 from tls.io._base import BIOBase
 from tls.io._chain import BIOChain
 from tls.io._method import BIOMethod

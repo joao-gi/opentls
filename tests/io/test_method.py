@@ -1,4 +1,5 @@
 """Test Python IO API for OpenSSL BIO"""
+from __future__ import absolute_import, division, print_function
 from StringIO import StringIO
 
 try:

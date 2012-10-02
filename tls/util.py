@@ -5,6 +5,7 @@ The following utilities are provided:
   - all_obj_type_names(objtype): Returns a set of object names for an OpenSSL
         object type.
 """
+from __future__ import absolute_import, division, print_function
 import sys
 
 from tls.c import api

@@ -1,4 +1,5 @@
 """Types specialisations of BIOChain"""
+from __future__ import absolute_import, division, print_function
 from tls.io import BIOChain
 from tls.c import api
 from tls import err

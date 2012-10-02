@@ -3,6 +3,8 @@
 Test vectors obtained from:
 http://www.inconteam.com/software-development/41-encryption/55-aes-test-vectors
 """
+from __future__ import absolute_import, division, print_function
+
 try:
     import unittest
 except ImportError:

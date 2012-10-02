@@ -3,6 +3,8 @@
 Test vectors for PBKDF2 taken from RFC 6070
 https://tools.ietf.org/html/rfc6070
 """
+from __future__ import absolute_import, division, print_function
+
 try:
     import unittest
 except ImportError:

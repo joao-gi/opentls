@@ -5,6 +5,8 @@ from Python's hashlib module.
 
 https://tools.ietf.org/html/rfc2104
 """
+from __future__ import absolute_import, division, print_function
+
 try:
     import unittest
 except ImportError:

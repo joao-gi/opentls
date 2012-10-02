@@ -33,7 +33,7 @@ sufficiently seeded.
 The PseudoRandom class is also provided which is not suitable for all
 cryptogrpahic purposes.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from random import Random as _Random
 import math

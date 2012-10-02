@@ -33,6 +33,7 @@ the ciphertext from being manipulated. The message digest used for the HMAC can
 be changed by passing a different digest name as digest to the construction.
 The HMAC can be disabled by passing None.
 """
+from __future__ import absolute_import, division, print_function
 import weakref
 
 from tls import err, hmac

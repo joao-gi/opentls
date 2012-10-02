@@ -8,6 +8,7 @@ ERROR level. If an exception was raised inside the function errors are logged
 at the DEBUG level. log_errors can also be used as a function to log all
 openssls errors at the ERROR level.
 """
+from __future__ import absolute_import, division, print_function
 import functools
 import logging
 

@@ -6,6 +6,7 @@ in 'Beautiful Testing' titled 'How to test a random number generator'.
 
 http://www.johndcook.com/blog/2010/12/06/how-to-test-a-random-number-generator-2/
 """
+from __future__ import absolute_import, division, print_function
 import ctypes
 import math
 import random

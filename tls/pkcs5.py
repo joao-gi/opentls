@@ -12,6 +12,7 @@ following properties.
  - salt:       The salt used to seed the key derivation function.
  - iterations: The number of iterations used when deriving the key.
 """
+from __future__ import absolute_import, division, print_function
 from collections import namedtuple
 
 from tls import random

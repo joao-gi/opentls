@@ -1,4 +1,5 @@
 """Python API for accessing OpenSSL BIO objects"""
+from __future__ import absolute_import, division, print_function
 import functools
 import io
 import sys

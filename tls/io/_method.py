@@ -1,4 +1,5 @@
 """Wrapper for Python objects for OpenSSL BIO system"""
+from __future__ import absolute_import, division, print_function
 from tls.c import api
 from tls.io import BIOBase
 

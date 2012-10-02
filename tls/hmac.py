@@ -2,6 +2,7 @@
 
 Implements the HMAC algorithm as described by RFC 2104.
 """
+from __future__ import absolute_import, division, print_function
 import weakref
 
 from tls.c import api

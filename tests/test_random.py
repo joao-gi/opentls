@@ -1,4 +1,6 @@
 """Test Python random API implementation using OpenSSL"""
+from __future__ import absolute_import, division, print_function
+
 try:
     import unittest
 except ImportError:
