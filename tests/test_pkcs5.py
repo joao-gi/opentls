@@ -40,7 +40,7 @@ class TestDeriveKey(unittest.TestCase):
         self.assertEqual(secret.iterations, iterations)
 
     def test_4096_iteration(self):
-        key = '\x4b\x00\x79\x01\xb7\x65\x48\x9a\xbe\xad\x49\xd9\x26\xf7\x21\xd0\x65\xa4\x29\xc1'
+        key = b'\x4b\x00\x79\x01\xb7\x65\x48\x9a\xbe\xad\x49\xd9\x26\xf7\x21\xd0\x65\xa4\x29\xc1'
         password = b'password'
         salt = b'salt'
         iterations = 4096
