@@ -3,6 +3,7 @@
 Implements the HMAC algorithm as described by RFC 2104.
 """
 from __future__ import absolute_import, division, print_function
+import numbers
 import weakref
 
 from tls.c import api
@@ -54,10 +55,11 @@ class HMAC(object):
         if isinstance(digestmod, bytes):
             md = api.EVP_get_digestbyname(digestmod)
         if md == api.NULL:
-            name = getattr(digestmod, '__name__', '')
+            name = getattr(digestmod, '__name__', '').encode()
             md = api.EVP_get_digestbyname(name)
         if md == api.NULL:
-            name = getattr(digestmod, '__name__', '').replace('openssl_', '')
+            name = getattr(digestmod, '__name__', '').encode()
+            name = name.replace(b'openssl_', b'')
             md = api.EVP_get_digestbyname(name)
         if md == api.NULL:
             for name in getattr(digestmod, 'args', []):
@@ -104,7 +106,10 @@ class HMAC(object):
         """
         if self._ctx is None:
             raise ValueError('HMAC already closed')
-        return ''.join('{0:02x}'.format(ord(b)) for b in self.digest())
+        return ''.join(
+                '{0:02x}'.format(
+                    b if isinstance(b, numbers.Integral) else ord(b))
+                for b in self.digest())
 
 
 def new(key, msg=None, digestmod=None):

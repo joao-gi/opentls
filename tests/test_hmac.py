@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function
 import hashlib
 import mock
+import numbers
 
 try:
     import unittest
@@ -23,7 +24,7 @@ class TestHMAC(unittest.TestCase):
         self.assertRaises(ValueError, hmac.update, b'')
 
     def test_init_str(self):
-        hmac = HMAC(b'', None, 'sha1')
+        hmac = HMAC(b'', None, b'sha1')
         self.assertEqual(hmac.digest_size, 20)
 
     def test_init_pep(self):
@@ -56,7 +57,8 @@ class HMACTests(object):
 
     def test_multiple_updates(self):
         hmac = new(self.key, None, self.md)
-        for ch in self.data:
+        for i in range(len(self.data)):
+            ch = self.data[i:i+1]
             hmac.update(ch)
         self.assertEqual(self.digest, hmac.digest())
 
@@ -66,7 +68,8 @@ class HMACTests(object):
         received = []
         for pos in range(0, len(hexdigest), 2):
             received.append(int(hexdigest[pos:pos+2], 16))
-        expected = [ord(b) for b in self.digest]
+        expected = [b if isinstance(b, numbers.Integral) else ord(b)
+                for b in self.digest]
         self.assertEqual(expected, received)
 
 
