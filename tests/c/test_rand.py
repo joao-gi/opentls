@@ -99,7 +99,7 @@ class RandTests(object):
         for num, value in enumerate(self.data):
             if num >= samples:
                 break
-            for x in xrange(value + 1):
+            for x in range(value + 1):
                 counts[x] = 1 + counts.get(x, 0)
         empirical = [counts.get(i,0) / samples for i in range(256)]
         theoretical = [1.0 - (x / 255.0) for x in range(256)]

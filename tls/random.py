@@ -89,7 +89,7 @@ class Random(_Random):
 
     def getrandbits(self, bits):
         """getrandbits(k) -> x.  Generates a long int with k random bits."""
-        bytes = int(math.ceil(bits // 8))
+        bytes = math.ceil(bits / 8)
         shift = abs(8 - (bits % 8)) % 8
         buff = api.new('unsigned char[]', bytes)
         bptr = api.cast('unsigned char*', buff)
