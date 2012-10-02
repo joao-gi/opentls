@@ -80,19 +80,19 @@ class TestAlgorithms(unittest.TestCase):
         self.assertIn(b'MD5', hashlib.algorithms_available)
 
     def test_md5(self):
-        self.assertTrue(hasattr(hashlib, b'md5'))
+        self.assertTrue(hasattr(hashlib, 'md5'))
 
     def test_sha1(self):
-        self.assertTrue(hasattr(hashlib, b'sha1'))
+        self.assertTrue(hasattr(hashlib, 'sha1'))
 
     def test_sha224(self):
-        self.assertTrue(hasattr(hashlib, b'sha224'))
+        self.assertTrue(hasattr(hashlib, 'sha224'))
 
     def test_sha256(self):
-        self.assertTrue(hasattr(hashlib, b'sha256'))
+        self.assertTrue(hasattr(hashlib, 'sha256'))
 
     def test_sha384(self):
-        self.assertTrue(hasattr(hashlib, b'sha384'))
+        self.assertTrue(hasattr(hashlib, 'sha384'))
 
     def test_sha512(self):
-        self.assertTrue(hasattr(hashlib, b'sha512'))
+        self.assertTrue(hasattr(hashlib, 'sha512'))

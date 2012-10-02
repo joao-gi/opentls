@@ -114,7 +114,7 @@ class MessageDigest(object):
     def hexdigest(self):
         "Return the digest value as a string of hexadecimal digits."
         buff, size = self._digest()
-        return ''.join('{0:02x}'.format(b)
+        return b''.join('{0:02x}'.format(b).encode()
                 for b in itertools.islice(buff, size))
 
     def copy(self):
@@ -146,24 +146,23 @@ def new(name, data=None):
     Return a new hashing object using the named algorithm;
     optionally initialized with data (which must be bytes).
     """
-    name = name.encode()
     digest = api.EVP_get_digestbyname(name)
     return MessageDigest(digest, data)
 
-if 'MD5' in algorithms_available:
-    md5 = functools.partial(new, 'MD5')
+if b'MD5' in algorithms_available:
+    md5 = functools.partial(new, b'MD5')
 
-if 'SHA1' in algorithms_available:
-    sha1 = functools.partial(new, 'SHA1')
+if b'SHA1' in algorithms_available:
+    sha1 = functools.partial(new, b'SHA1')
 
-if 'SHA224' in algorithms_available:
-    sha224 = functools.partial(new, 'SHA224')
+if b'SHA224' in algorithms_available:
+    sha224 = functools.partial(new, b'SHA224')
 
-if 'SHA256' in algorithms_available:
-    sha256 = functools.partial(new, 'SHA256')
+if b'SHA256' in algorithms_available:
+    sha256 = functools.partial(new, b'SHA256')
 
-if 'SHA384' in algorithms_available:
-    sha384 = functools.partial(new, 'SHA384')
+if b'SHA384' in algorithms_available:
+    sha384 = functools.partial(new, b'SHA384')
 
-if 'SHA512' in algorithms_available:
-    sha512 = functools.partial(new, 'SHA512')
+if b'SHA512' in algorithms_available:
+    sha512 = functools.partial(new, b'SHA512')
