@@ -311,6 +311,5 @@ class TestBioNullRead(BioRead, unittest.TestCase):
     def method(self):
         return api.BIO_s_null()
 
-    test_gets = unittest.expectedFailure(BioRead.test_gets)
     test_seek = unittest.expectedFailure(BioRead.test_seek)
     test_tell = unittest.expectedFailure(BioRead.test_tell)

@@ -77,7 +77,7 @@ class HashFilter(BioFilter):
         BioFilter.test_filter(self)
         buf = api.new('char[]', api.EVP_MD_size(self.md))
         api.BIO_gets(self.filter, buf, len(buf))
-        hash_value = b''.join(b'{0:02x}'.format(ord(v)) for v in api.buffer(buf))
+        hash_value = b''.join('{0:02x}'.format(ord(b)).encode() for b in buf)
         self.assertEqual(hash_value, self.hash)
 
 
