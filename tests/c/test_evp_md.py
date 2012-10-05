@@ -31,7 +31,7 @@ class DigestTests(object):
         size = api.new('unsigned int*')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_short))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join('{0:02x}'.format(v).encode() for v in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_short)
 
     def test_long(self):
@@ -40,7 +40,7 @@ class DigestTests(object):
         size = api.new('unsigned int*')
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(self.data_long))
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join('{0:02x}'.format(v).encode() for v in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_long)
 
     def test_copy(self):
@@ -51,13 +51,13 @@ class DigestTests(object):
 
         api.EVP_MD_CTX_copy_ex(self.ctx_two, self.ctx)
         api.EVP_DigestFinal_ex(self.ctx_two, buf, size)
-        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join('{0:02x}'.format(v).encode() for v in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_short)
 
         data = api.new('char[]', self.data_long[len(self.data_short):])
         api.EVP_DigestUpdate(self.ctx, api.cast('void*', data), len(data)-1)
         api.EVP_DigestFinal_ex(self.ctx, buf, size)
-        hash_value = b''.join(b'{0:02x}'.format(val) for val in islice(buf, size[0]))
+        hash_value = b''.join('{0:02x}'.format(v).encode() for v in islice(buf, size[0]))
         self.assertEqual(hash_value, self.hash_long)
 
 
@@ -172,60 +172,61 @@ class TestEVP(unittest.TestCase):
         self._test_md_func('sha512')
 
     def _test_md_name(self, name, nid_name=None):
-        nid_name = 'NID_' + name.lower() if nid_name is None else nid_name
+        if nid_name is None:
+            nid_name = b'NID_' + name.lower()
         md_name = name
-        num = getattr(api, nid_name)
+        num = getattr(api, nid_name.decode())
         md = api.EVP_get_digestbyname(md_name)
         self.assertTrue(md)
         self.assertEqual(api.EVP_MD_type(md), num)
 
     def test_dsa_name(self):
-        self._test_md_name('DSA', 'NID_dsa')
+        self._test_md_name(b'DSA', b'NID_dsa')
 
     def test_dsa_sha_name(self):
-        self._test_md_name('DSA-SHA', 'NID_dsaWithSHA')
+        self._test_md_name(b'DSA-SHA', b'NID_dsaWithSHA')
 
     @unittest.skip('unpredictable support')
     def test_dsa_sha1_name(self):
-        self._test_md_name('DSA-SHA1', 'NID_dsaWithSHA1')
+        self._test_md_name(b'DSA-SHA1', b'NID_dsaWithSHA1')
 
     def test_ecdsa_name(self):
-        self._test_md_name('ecdsa-with-SHA1', 'NID_ecdsa_with_SHA1')
+        self._test_md_name(b'ecdsa-with-SHA1', b'NID_ecdsa_with_SHA1')
 
     @unittest.skip('unpredictable support')
     def test_md2_name(self):
-        self._test_md_name('MD2')
+        self._test_md_name(b'MD2')
 
     def test_md4_name(self):
-        self._test_md_name('MD4')
+        self._test_md_name(b'MD4')
 
     def test_md5_name(self):
-        self._test_md_name('MD5')
+        self._test_md_name(b'MD5')
 
     @unittest.skip('unpredictable support')
     def test_mdc2_name(self):
-        self._test_md_name('MDC2')
+        self._test_md_name(b'MDC2')
 
     def test_ripemd160_name(self):
-        self._test_md_name('RIPEMD160')
+        self._test_md_name(b'RIPEMD160')
 
     def test_sha_name(self):
-        self._test_md_name('SHA')
+        self._test_md_name(b'SHA')
 
     def test_sha1_name(self):
-        self._test_md_name('SHA1')
+        self._test_md_name(b'SHA1')
 
     def test_sha224_name(self):
-        self._test_md_name('SHA224')
+        self._test_md_name(b'SHA224')
 
     def test_sha256_name(self):
-        self._test_md_name('SHA256')
+        self._test_md_name(b'SHA256')
 
     def test_sha384_name(self):
-        self._test_md_name('SHA384')
+        self._test_md_name(b'SHA384')
 
     def test_sha512_name(self):
-        self._test_md_name('SHA512')
+        self._test_md_name(b'SHA512')
 
     def _test_md_nid(self, nid, name):
         self.assertEqual(name, api.string(api.OBJ_nid2sn(nid)))
