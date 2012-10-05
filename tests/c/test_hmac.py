@@ -101,7 +101,7 @@ class TestMd5002(HMACTests, MD5Test, Vector002, unittest.TestCase):
 
 class TestMd5003(HMACTests, MD5Test, Vector003, unittest.TestCase):
 
-    digest = 'V\xbe4R\x1d\x14L\x88\xdb\xb8\xc73\xf0\xe8\xb3\xf6'
+    digest = b'V\xbe4R\x1d\x14L\x88\xdb\xb8\xc73\xf0\xe8\xb3\xf6'
 
 
 # SHA1 TESTS
