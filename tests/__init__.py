@@ -23,7 +23,7 @@ def expect_fail_with(major, minor, fix, patch='a', comparison=operator.eq):
         return unittest.expectedFailure(func)
     def noop(func):
         return func
-    if comparison(tls.c.api.version()[0:4], (major, minor, fix, patch)):
+    if comparison(tls.c.api.version_info()[0:4], (major, minor, fix, patch)):
         return expect_failure
     return noop
 
@@ -36,7 +36,7 @@ def skip_with(major, minor, fix, patch='a', comparison=operator.eq, message='inc
         return unittest.skip(message)(func)
     def noop(func):
         return func
-    if comparison(tls.c.api.version()[0:4], (major, minor, fix, patch)):
+    if comparison(tls.c.api.version_info()[0:4], (major, minor, fix, patch)):
         return skip
     return noop
 

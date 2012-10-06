@@ -193,14 +193,14 @@ class API(object):
         for function in self.TEARDOWN:
             atexit.register(getattr(self, function))
 
-    def version(self):
+    def version_info(self):
         "Return SSL version information"
         version = self.SSLeay()
         major = version >> (7 * 4) & 0xFF
         minor = version >> (5 * 4) & 0xFF
         fix = version >> (3 * 4) & 0xFF
         patch = version >> (1 * 4) & 0xFF
-        patch = None if not patch else chr(96 + patch)
+        patch = '' if not patch else chr(96 + patch)
         status = version & 0x0F
         if status == 0x0F:
             status = 'release'
@@ -209,5 +209,12 @@ class API(object):
         else:
             status = 'beta{}'.format(status)
         return self.SSLVersion(major, minor, fix, patch, status)
+
+    def version(self, detail=None):
+        "Return SSL version string"
+        detail = self.SSLEAY_VERSION if detail is None else detail
+        version = self.SSLeay()
+        buff = self.SSLeay_version(detail)
+        return api.string(buff)
 
 api = API()
