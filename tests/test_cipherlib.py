@@ -2,7 +2,6 @@
 from __future__ import absolute_import, division, print_function
 import math
 import mock
-import six
 
 try:
     import unittest2 as unittest
@@ -13,6 +12,12 @@ from tls import cipherlib
 from tls.c import api
 
 from .c import test_evp_cipher as vectors
+
+
+if hasattr(str, 'decode'):
+    int2byte = chr
+else:
+    int2byte = lambda i: bytes((i,))
 
 
 class TestAlgorithms(unittest.TestCase):
@@ -197,7 +202,7 @@ class CipherTests(object):
         chars = []
         for pos in range(0, len(hexstr), 2):
             chars.append(int(hexstr[pos:pos+2], 16))
-        return b"".join(six.int2byte(c) for c in chars)
+        return b"".join(int2byte(c) for c in chars)
 
     @classmethod
     def setUpClass(self):
@@ -229,20 +234,20 @@ class CipherTests(object):
 
     def test_bitflip_data_decrypt(self):
         result = self._encrypt()
-        result = six.int2byte(ord(result[:1]) ^ 0x80) + result[1:]
+        result = int2byte(ord(result[:1]) ^ 0x80) + result[1:]
         self.assertRaises(ValueError, self._decrypt, result)
 
     def test_bitflip_hmac_decrypt(self):
         result = self._encrypt()
         pos = len(self.ciphertext)
         result = (result[:pos]
-                + six.int2byte(ord(result[pos:pos+1]) ^ 0x80)
+                + int2byte(ord(result[pos:pos+1]) ^ 0x80)
                 + result[pos+1:])
         self.assertRaises(ValueError, self._decrypt, result)
 
     def test_bitflip_padding_decrypt(self):
         result = self._encrypt()
-        result = result[:-1] + six.int2byte(ord(result[-1:]) ^ 0x01)
+        result = result[:-1] + int2byte(ord(result[-1:]) ^ 0x01)
         self.assertRaises(ValueError, self._decrypt, result)
 
     def test_trunc_data_decrypt(self):
