@@ -21,10 +21,10 @@ test:
 	coverage run setup.py test
 
 unittest:
-	coverage run -m unittest2 discover
+	coverage run -m unittest discover
 
 coverage:
-	coverage report --include="tls*"
+	coverage report --show-missing --include="tls*"
 
 clean:
 	python setup.py clean --all

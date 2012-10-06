@@ -4,6 +4,8 @@ use_setuptools()
 
 from setuptools import setup
 import re
+import sys
+
 
 def load_version(filename='tls/version.py'):
     "Parse a __version__ number from a source file"
@@ -15,6 +17,8 @@ def load_version(filename='tls/version.py'):
             raise RuntimeError(msg)
         version = match.group(1)
         return version
+
+PYTHON3K = sys.version_info[0] > 2
 
 setup(
     name='opentls',
@@ -36,6 +40,8 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Security :: Cryptography',
@@ -43,6 +49,6 @@ setup(
         'Topic :: System :: Networking'
     ],
     install_requires=['cffi==0.3'],
-    tests_require=['mock', 'six', 'unittest2'],
-    test_suite="unittest2.collector"
+    tests_require=['mock', 'six'] + [] if PYTHON3K else ['unittest2'],
+    test_suite="tests" if PYTHON3K else "unittest2.collector"
 )
