@@ -8,7 +8,7 @@ install:
   - python setup.py install
 script:
   - python -m tls.version
-  - python setup.py test
+  - coverage run setup.py test
   - coverage report --include="tls*"
 notifications:
     email: aaron.iles+travis-ci@gmail.com
