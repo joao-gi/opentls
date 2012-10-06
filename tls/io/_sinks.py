@@ -35,9 +35,10 @@ class BIOFile(BIOChain):
             msg += " ".join("'{0}'".format(m) for m in sorted(self.MODES))
             msg += " not '{0}'".format(mode)
             raise ValueError(msg)
-        self._mode = mode
-        mode = api.new('char[]', mode)
-        filename = api.new('char[]', filename)
+        self._filename = filename.encode()
+        self._mode = mode.encode()
+        mode = api.new('char[]', self._mode)
+        filename = api.new('char[]', self._filename)
         bio = api.BIO_new_file(filename, mode)
         if api.cast('void*', bio) == api.NULL:
             messages = err.log_errors()
@@ -45,10 +46,10 @@ class BIOFile(BIOChain):
         super(BIOFile, self).__init__(bio)
 
     def readable(self):
-        return self._mode.startswith('r') or self._mode.endswith('+')
+        return self._mode.startswith(b'r') or self._mode.endswith(b'+')
 
     def writable(self):
-        return self._mode.startswith('w') or self._mode.endswith('+')
+        return self._mode.startswith(b'w') or self._mode.endswith(b'+')
 
 
 class BIOMemBuffer(BIOChain):

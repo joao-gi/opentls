@@ -104,7 +104,7 @@ class BIOChain(object):
     @_not_closed
     @err.log_errors
     def readline(self, limit=-1):
-        limit = sys.maxint if limit < 0 else limit
+        limit = sys.maxsize if limit < 0 else limit
         segments = []
         while limit > 0:
             size = api.BIO_pending(self._bio)
@@ -114,14 +114,14 @@ class BIOChain(object):
                 raise IOError('unsupported operation')
             segments.append(bytes(api.buffer(buf, read)))
             limit -= read
-            if segments[-1][-1] == '\n':
+            if segments[-1][-1:] == b'\n':
                 break
-        return ''.join(segments)
+        return b''.join(segments)
 
     @_not_closed
     @err.log_errors
     def readlines(self, hint=-1):
-        hint = sys.maxint if hint < 0 else hint
+        hint = sys.maxsize if hint < 0 else hint
         lines = []
         while hint > 0:
             try:
@@ -200,7 +200,7 @@ class BIOChain(object):
             if read == 0:
                 break
             segments.append(bytes(api.buffer(data, read)))
-        return "".join(segments)
+        return b"".join(segments)
 
     def readinto(self, b):
         raise IOError('unsupported operation')

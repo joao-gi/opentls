@@ -66,7 +66,7 @@ class ChainTest(object):
         self.assertTrue(self.fileobj.readable())
 
     def test_seek(self):
-        self.assertEquals(1, self.fileobj.seek(1))
+        self.assertEqual(1, self.fileobj.seek(1))
 
     def test_seekable(self):
         self.assertTrue(self.fileobj.seekable())
@@ -100,7 +100,7 @@ class TestChainWrite(ChainTest, unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.readlines)
 
     def test_writelines(self):
-        self.fileobj.writelines(['a', 'b', 'c'])
+        self.fileobj.writelines([b'a', b'b', b'c'])
 
     def test_read(self):
         self.assertRaises(IOError, self.fileobj.read, 1)
@@ -112,7 +112,7 @@ class TestChainWrite(ChainTest, unittest.TestCase):
         self.assertRaises(IOError, self.fileobj.readinto, bytearray(1))
 
     def test_write(self):
-        self.fileobj.write('a')
+        self.fileobj.write(b'a')
 
 
 class TestChainRead(ChainTest, unittest.TestCase):
@@ -137,16 +137,16 @@ class TestChainRead(ChainTest, unittest.TestCase):
         self.assertEqual([b'HELLO\n', b'WORLD\n'], self.fileobj.readlines())
 
     def test_writelines(self):
-        self.assertRaises(IOError, self.fileobj.writelines, ['a', 'b', 'c'])
+        self.assertRaises(IOError, self.fileobj.writelines, [b'a', b'b', b'c'])
 
     def test_read(self):
-        self.assertEquals(b'H', self.fileobj.read(1))
+        self.assertEqual(b'H', self.fileobj.read(1))
 
     def test_readall(self):
-        self.assertEquals(b'HELLO\nWORLD\n', self.fileobj.readall())
+        self.assertEqual(b'HELLO\nWORLD\n', self.fileobj.readall())
 
     def test_readinto(self):
         self.assertRaises(IOError, self.fileobj.readinto, bytearray(1))
 
     def test_write(self):
-        self.assertRaises(IOError, self.fileobj.write, 'a')
+        self.assertRaises(IOError, self.fileobj.write, b'a')

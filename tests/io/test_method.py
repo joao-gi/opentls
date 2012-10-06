@@ -1,6 +1,10 @@
 """Test Python IO API for OpenSSL BIO"""
 from __future__ import absolute_import, division, print_function
-from StringIO import StringIO
+
+try:
+    from cStringIO import StringIO as BytesIO
+except ImportError:
+    from io import BytesIO
 
 try:
     import unittest
@@ -15,7 +19,7 @@ from tls import io
 class TestStringIOWrite(BioWrite, unittest.TestCase):
 
     def setUp(self):
-        fileobj = StringIO()
+        fileobj = BytesIO()
         self.bio = io.wrap_io(fileobj)
 
     test_eof = unittest.expectedFailure(BioWrite.test_eof)
@@ -25,7 +29,7 @@ class TestStringIOWrite(BioWrite, unittest.TestCase):
 class TestStringIORead(BioRead, unittest.TestCase):
 
     def setUp(self):
-        fileobj = StringIO(api.string(self.data))
+        fileobj = BytesIO(api.string(self.data))
         self.bio = io.wrap_io(fileobj)
 
     test_ctrl_pending = unittest.expectedFailure(BioRead.test_ctrl_pending)

@@ -10,8 +10,9 @@ BIO_TYPES = {}
 
 def _populate_bio_types():
     "Dynamically populate module with BIO type contants from tls.c.api"
-    for name, value in api.__dict__.iteritems():
+    for name in api.__dict__:
         if name.startswith('BIO_TYPE_'):
+            value = getattr(api, name)
             BIO_TYPES[value] = name
             globals()[name] = value
             __all__.append(name)
