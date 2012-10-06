@@ -4,9 +4,9 @@ import os
 import tempfile
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from tests import expect_fail_before
 from tls.c import api

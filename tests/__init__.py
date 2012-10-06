@@ -5,9 +5,9 @@ import logging
 import operator
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 import cffi
 

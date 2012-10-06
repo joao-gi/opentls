@@ -5,9 +5,9 @@ import mock
 import numbers
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from .c.test_hmac import Vector001, Vector002, Vector003
 

@@ -2,9 +2,9 @@
 from __future__ import absolute_import, division, print_function
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from .c.test_rand import RandTests
 from tls import random

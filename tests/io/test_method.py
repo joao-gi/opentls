@@ -7,9 +7,9 @@ except ImportError:
     from io import BytesIO
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from ..c.test_bio_sink import BioWrite, BioRead
 from tls.c import api

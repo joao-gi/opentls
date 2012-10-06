@@ -3,9 +3,9 @@ from __future__ import absolute_import, division, print_function
 from itertools import islice
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from tls.c import api
 

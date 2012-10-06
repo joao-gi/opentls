@@ -5,9 +5,9 @@ import mock
 import six
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from tls import cipherlib
 from tls.c import api

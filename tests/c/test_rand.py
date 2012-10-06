@@ -12,9 +12,9 @@ import math
 import random
 
 try:
-    import unittest
-except ImportError:
     import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from tls.c import api
 
