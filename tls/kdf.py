@@ -1,6 +1,6 @@
-"""Password-Based Cryptography Specification module.
+"""Key Derivation Functions module.
 
- - derive_key(password, length, salt=None, iterations=1000):
+ - pbkdf2(password, length, salt=None, iterations=1000):
     Uses PBKDF2 to generate a Secret object that includes the derived key. If
     salt is None a random salt of 8 bytes will be generated using the
     tls.random module.
@@ -18,13 +18,13 @@ from collections import namedtuple
 from tls import random
 from tls.c import api
 
-__all__ = ['Secret', 'derive_key']
+__all__ = ['Secret', 'derive_key', 'pbkdf2']
 
 
 Secret = namedtuple('Secret', 'key salt iterations')
 
 
-def derive_key(password, length, salt=None, iterations=1000):
+def pbkdf2(password, length, salt=None, iterations=1000):
     "Derive a shared secret including encryption key from password"
     if salt is None:
         salt = random.getrandbytes(8)

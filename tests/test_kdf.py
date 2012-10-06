@@ -1,4 +1,4 @@
-"""Test Python pkcs5 API module"""
+"""Test Python kdf API module"""
 from __future__ import absolute_import, division, print_function
 
 try:
@@ -6,13 +6,13 @@ try:
 except ImportError:
     import unittest
 
-from tls import pkcs5
+from tls import kdf
 
 
 class TestDeriveKey(unittest.TestCase):
 
     def test_defaults(self):
-        secret = pkcs5.derive_key(b"password", 32)
+        secret = kdf.pbkdf2(b"password", 32)
         self.assertEqual(secret.iterations, 1000)
         self.assertEqual(len(secret.key), 32)
         self.assertEqual(len(secret.salt), 8)
@@ -23,7 +23,7 @@ class TestDeriveKey(unittest.TestCase):
         salt = b'salt'
         iterations = 1
         keylen = 20
-        secret = pkcs5.derive_key(password, keylen, salt, iterations)
+        secret = kdf.pbkdf2(password, keylen, salt, iterations)
         self.assertEqual(secret.key, key)
         self.assertEqual(secret.salt, salt)
         self.assertEqual(secret.iterations, iterations)
@@ -34,7 +34,7 @@ class TestDeriveKey(unittest.TestCase):
         salt = b'salt'
         iterations = 2
         keylen = 20
-        secret = pkcs5.derive_key(password, keylen, salt, iterations)
+        secret = kdf.pbkdf2(password, keylen, salt, iterations)
         self.assertEqual(secret.key, key)
         self.assertEqual(secret.salt, salt)
         self.assertEqual(secret.iterations, iterations)
@@ -45,7 +45,7 @@ class TestDeriveKey(unittest.TestCase):
         salt = b'salt'
         iterations = 4096
         keylen = 20
-        secret = pkcs5.derive_key(password, keylen, salt, iterations)
+        secret = kdf.pbkdf2(password, keylen, salt, iterations)
         self.assertEqual(secret.key, key)
         self.assertEqual(secret.salt, salt)
         self.assertEqual(secret.iterations, iterations)
@@ -56,7 +56,7 @@ class TestDeriveKey(unittest.TestCase):
         salt = b'saltSALTsaltSALTsaltSALTsaltSALTsalt'
         iterations = 4096
         keylen = 25
-        secret = pkcs5.derive_key(password, keylen, salt, iterations)
+        secret = kdf.pbkdf2(password, keylen, salt, iterations)
         self.assertEqual(secret.key, key)
         self.assertEqual(secret.salt, salt)
         self.assertEqual(secret.iterations, iterations)
@@ -67,7 +67,7 @@ class TestDeriveKey(unittest.TestCase):
         salt = b'sa\0lt'
         iterations = 4096
         keylen = 16
-        secret = pkcs5.derive_key(password, keylen, salt, iterations)
+        secret = kdf.pbkdf2(password, keylen, salt, iterations)
         self.assertEqual(secret.key, key)
         self.assertEqual(secret.salt, salt)
         self.assertEqual(secret.iterations, iterations)

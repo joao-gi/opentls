@@ -25,12 +25,12 @@ This package is distributed under the
 
 Status
 ------
-|build_status| Four usable modules have been implemented.
+|build_status| Five usable modules have been implemented.
 
-``tls.random`` is an implementation
-of Python's random module
-using OpenSSL's pseudo-random number API.
-It is suitable for cryptographic use.
+``tls.cipherlib`` is a common interface to
+symmetric ciphers for Python.
+The API is modeled after 
+Python's hashlib module.
 
 ``tls.hashlib`` is an implementation
 of Python's hashlib module
@@ -44,10 +44,15 @@ from the standard library implementation
 because OpenSSL's HMAC objects
 can not be copied.
 
-``tls.cipherlib`` is a common interface to
-symmetric ciphers for Python.
-The API is modeled after 
-Python's hashlib module.
+``tls.kdf`` implements
+password based
+key derivation functions from
+the PKCS5 standard
+
+``tls.random`` is an implementation
+of Python's random module
+using OpenSSL's pseudo-random number API.
+It is suitable for cryptographic use.
 
 Additionally, some parts of OpenSSL's APIs have been wrapped
 using `cffi <https://cffi.readthedocs.org/en/latest/index.html>`_.
